@@ -1,69 +1,22 @@
 // Make ssbos size based ?
 
-VF_Shaders :: enum 
+r_buffer_create :: (hint : Buffer_Hint, data : *void, size : u64) -> GLuint
 {
-	Sprite;
-	Count;
-}
-
-Instance_Buffers :: enum 
-{
-	Sprite;
-	Count;
-}
-
-R_GL_Image :: struct 
-{
-	id : GLuint;
-	resident : GLuint64;
-	w : int;
-	h : int;
-};
-
-vf_shader_paths :[VF_Shaders.Count]string: .["sprite"];
-
-R_GL_State :: struct 
-{
-	arena : *Arena;
-	white_square : Handle;
-	base_path : string;
-	shaders_folder : string;
+	ssbo : GLuint;
+	glCreateBuffers(1, *ssbo);
 	
-	vf_shaders : [VF_Shaders.Count]GLuint;
-	inst_buffers : [Instance_Buffers.Count]GLuint;
-}
-
-r_gl_state : *R_GL_State;
-
-r_init :: () 
-{
-	gl_create_context(the_window, 4, 6);
-	gl_load(*gl);
+	gl_hint : u32;
 	
-	print ("GL Vendor = %\n", to_string(glGetString(GL_VENDOR)));
-	print ("GL Version = %\n", to_string(glGetString(GL_VERSION)));
-	
-	arena := arena_init(MB(32), MB(32));
-	r_gl_state = push_struct(arena, R_GL_State);
-	r_gl_state.arena = arena;
-	
-	stupid_fucking_opengl : GLuint;
-	glCreateVertexArrays(1, *stupid_fucking_opengl);
-	glBindVertexArray(stupid_fucking_opengl);
-	
-	r_gl_state.base_path = path_strip_filename(get_path_of_running_executable());
-	r_gl_state.shaders_folder = join(r_gl_state.base_path, "../shaders");
-	
-	compile_shaders();
-	
-	for 0 .. Instance_Buffers.Count - 1 
-	{
-		r_gl_state.inst_buffers[it] = make_ssbo(MB(8));
+	if hint == {
+		case .Static_Draw;
+		gl_hint = GL_STATIC_DRAW;
+		case .Dynamic_Draw;
+		gl_hint = GL_DYNAMIC_DRAW;
 	}
 	
-	data : [1]s64 : .[0xFFFFFFFF];
+	glNamedBufferData(ssbo, xx size, data, gl_hint);
 	
-	r_gl_state.white_square = r_image_create(1, 1, 4, xx data.data, GL_NEAREST);
+	return ssbo;
 }
 
 get_white_square :: () -> Handle
@@ -83,15 +36,33 @@ tex_size_from_handle :: (h : Handle) -> Vector2
 	return .{xx image.w, xx image.h};
 }
 
-r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : Tex_Params) -> Handle
+r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : Tex_Param,
+									 mag_filter : Tex_Param,
+									 wrap : Tex_Param) -> Handle
 {
 	img : *R_GL_Image;
 	
-	if params == .Linear {
-		img = r_gl_image_create(w, h, n, bytes, GL_LINEAR);
-	} else {
-		img = r_gl_image_create(w, h, n, bytes, GL_NEAREST);
-	}
+	gl_min_filter, gl_mag_filter, gl_wrap : GLint;
+	
+	gl_param_from_tex_param_table : []GLint =
+		.[
+			GL_NEAREST,
+			GL_LINEAR,
+			GL_NEAREST_MIPMAP_NEAREST,
+			GL_LINEAR_MIPMAP_NEAREST,
+			GL_NEAREST_MIPMAP_LINEAR,
+			GL_LINEAR_MIPMAP_LINEAR,
+			GL_CLAMP_TO_EDGE,
+			GL_REPEAT,
+			];
+	
+	gl_min_filter = gl_param_from_tex_param_table[xx min_filter];
+	
+	gl_mag_filter = gl_param_from_tex_param_table[xx mag_filter];
+	
+	gl_wrap = gl_param_from_tex_param_table[xx wrap];
+	
+	img = r_gl_image_create(w, h, n, bytes, gl_min_filter, gl_mag_filter, gl_wrap);
 	
 	out : Handle;
 	out.U64[0] = xx img;
@@ -99,7 +70,195 @@ r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : Tex_Params) 
 	return out;
 }
 
-r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : GLint) -> *R_GL_Image
+r_init :: () 
+{
+	gl_create_context(the_window, 4, 6);
+	gl_load(*gl);
+	
+	print ("GL Vendor = %\n", to_string(glGetString(GL_VENDOR)));
+	print ("GL Version = %\n", to_string(glGetString(GL_VERSION)));
+	
+	arena := arena_init(MB(32), MB(32));
+	r_gl_state = push_struct(arena, R_GL_State);
+	r_gl_state.arena = arena;
+	
+	stupid_fucking_opengl : GLuint;
+	glCreateVertexArrays(1, *stupid_fucking_opengl);
+	glBindVertexArray(stupid_fucking_opengl);
+	
+	compile_shaders();
+	
+	for 0 .. Instance_Buffers.Count - 1 
+	{
+		r_gl_state.inst_buffers[it] = r_buffer_create(.Dynamic_Draw, xx 0, MB(8));
+	}
+	
+	r_gl_state.skinning_transforms = r_buffer_create(.Dynamic_Draw, xx 0, MB(8));
+	
+	data : [1]s64 : .[0xFFFFFFFF];
+	
+	r_gl_state.white_square = r_image_create(1, 1, 4, xx data.data, .Nearest, .Nearest, .Repeat);
+}
+
+r_submit :: (pb : R_Push_Buffer)
+{
+	glViewport(0, 0, xx pb.viewport.x, xx pb.viewport.y);
+	
+	glClearColor(0.2, 0.2, 0.3, 1.0);
+	glEnable(GL_BLEND);
+	
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_CULL_FACE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+	if pb.mesh_batches.count 
+	{
+		shader := r_gl_state.vf_shaders[VF_Shaders.Mesh];
+		glUseProgram(shader);
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, r_gl_state.skinning_transforms);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		model_loc := glGetUniformLocation(shader, "u_model");
+		color_loc := glGetUniformLocation(shader, "u_color");
+		color_map_loc := glGetUniformLocation(shader, "u_color_map");
+		flags_loc := glGetUniformLocation(shader, "u_flags");
+		base_xform_loc := glGetUniformLocation(shader, "u_base_xform_index");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
+		if pb.skinning_xforms.count
+		{
+			buffer := r_gl_state.skinning_transforms;
+			
+			xform_size := pb.skinning_xforms.first.size;
+			xforms := pb.skinning_xforms.first.base;
+			
+			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, xx xform_size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			
+			memcpy(ssbo_data, xforms, xx xform_size);
+			
+			glUnmapNamedBuffer(buffer);
+		}
+		
+		batches := pb.mesh_batches;
+		batch := batches.first;
+		
+		while batch
+		{
+			meshes : *R_Mesh = xx batch.base;
+			
+			for 0 .. batch.count - 1 
+			{
+				mesh := meshes + it;
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mesh.vertex_buffer);
+				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+				glUniformMatrix4fv(model_loc, 1, GL_TRUE, *mesh.xform.coef[0][0]);
+				glUniform4fv(color_loc, 1, *mesh.color.component[0]);
+				glUniform1ui(flags_loc, cast, force(u32)mesh.flags);
+				
+				l, r := uvec2_from_u64(mesh.color_map);
+				glUniform2ui(color_map_loc, l, r);
+				
+				if mesh.flags & .Animated
+				{
+					xform_batch :*Matrix4= xx mesh.skinning_xform_batch.base;
+					xform_base := mesh.base_skinning_xform;
+					
+					xform_index :u32= xx (xform_base - xform_batch);
+					
+					glUniform1ui(base_xform_loc, xform_index);
+					ooga : int;
+				}
+				
+				glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, xx (mesh.start * size_of(u32)));
+			}
+			
+			batch = batch.next;
+		}
+		
+		// ui batches
+		if pb.sprite_batches.count 
+		{
+			buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
+			shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+			
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+			glUseProgram(shader);
+			
+			proj_loc := glGetUniformLocation(shader, "u_proj");
+			view_loc := glGetUniformLocation(shader, "u_view");
+			
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.ui_view.coef[0][0]);
+			glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.ui_proj.coef[0][0]);
+			
+			batches := pb.sprite_batches;
+			batch := batches.first;
+			
+			while batch
+			{
+				ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+				
+				memcpy(ssbo_data, batch.base, batch.size);
+				
+				glUnmapNamedBuffer(buffer);
+				
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+				
+				batch = batch.next;
+			}
+		}
+		
+	}
+	
+}
+
+#scope_file;
+
+VF_Shaders :: enum 
+{
+	Sprite;
+	Mesh;
+	Count;
+}
+
+Instance_Buffers :: enum 
+{
+	Sprite;
+	Count;
+}
+
+R_GL_Image :: struct 
+{
+	id : GLuint;
+	resident : GLuint64;
+	w : int;
+	h : int;
+};
+
+vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh"];
+
+R_GL_State :: struct 
+{
+	arena : *Arena;
+	white_square : Handle;
+	
+	vf_shaders : [VF_Shaders.Count]GLuint;
+	inst_buffers : [Instance_Buffers.Count]GLuint;
+	
+	skinning_transforms : GLuint;
+}
+
+r_gl_state : *R_GL_State;
+
+r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : GLint,
+											mag_filter : GLint,
+											wrap  : GLint) -> *R_GL_Image
 {
 	img : *R_GL_Image = push_struct(r_gl_state.arena, R_GL_Image);
 	
@@ -108,8 +267,8 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : GLint) ->
 	id : GLuint;
 	glCreateTextures(GL_TEXTURE_2D, 1, *id);
 	
-	glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, params);
-	glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, params);
+	glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, min_filter);
+	glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, mag_filter);
 	
 	glTextureStorage2D(id, 1, GL_RGBA32F, xx w, xx h);
 	
@@ -118,8 +277,10 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : GLint) ->
 		glTextureSubImage2D(id, 0, 0, 0, xx w, xx h, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
 	}
 	
-	glTextureParameteri(id, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTextureParameteri(id, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTextureParameteri(id, GL_TEXTURE_WRAP_S, wrap);
+	glTextureParameteri(id, GL_TEXTURE_WRAP_T, wrap);
+	
+	glGenerateTextureMipmap(id);
 	
 	resident := glGetTextureHandleARB(id);
 	glMakeTextureHandleResidentARB(resident);
@@ -135,69 +296,16 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, params : GLint) ->
 uvec2_from_u64 :: (v : u64) -> u32, u32 
 {
 	l : u32 = cast(u32) (v & 0xFFFFFFFF); 
-	r: u32 = cast(u32) (v >> 32);
+	r : u32 = cast(u32) (v >> 32);
 	
 	return l, r;
-}
-
-r_submit :: (pb : R_Push_Buffer)
-{
-	
-	glViewport(0, 0, xx pb.viewport.x, xx pb.viewport.y);
-	
-	glClearColor(0.2, 0.2, 0.3, 1.0);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	// sprite batches
-	{
-		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
-		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
-		
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-		glUseProgram(shader);
-		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
-		
-		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
-		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
-		
-		batches := pb.sprite_batches;
-		batch := batches.first;
-		
-		while batch
-		{
-			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-			
-			memcpy(ssbo_data, batch.base, batch.size);
-			
-			glUnmapNamedBuffer(buffer);
-			
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
-			
-			batch = batch.next;
-		}
-	}
-	
-}
-
-make_ssbo :: (size : u64) -> GLuint 
-{
-	ssbo : GLuint;
-	glCreateBuffers(1, *ssbo);
-	glNamedBufferData(ssbo, xx size, xx 0, GL_STREAM_DRAW);
-	
-	return ssbo;
 }
 
 compile_shaders :: () 
 {
 	for 0 .. VF_Shaders.Count - 1 
 	{
-		abs_path := tprint("%/%.glsl", r_gl_state.shaders_folder, vf_shader_paths[it]);
+		abs_path := tprint("%/%.glsl", shaders_folder, vf_shader_paths[it]);
 		
 		shader_file := read_entire_file(abs_path, true);
 		defer free(shader_file);
@@ -212,14 +320,14 @@ compile_shaders :: ()
 		
 		fragment_shader_text := right;
 		
-		combined_vertex_shader_text := tprint("%0%", common_shader_text, vertex_shader_text);
-		combined_fragment_shader_text := tprint("%0%", common_shader_text, fragment_shader_text);
+		combined_vertex_shader_text := tprint("%0%\0", common_shader_text, vertex_shader_text);
+		combined_fragment_shader_text := tprint("%0%\0", common_shader_text, fragment_shader_text);
 		
 		r_gl_state.vf_shaders[it] = make_shader_program(combined_vertex_shader_text, combined_fragment_shader_text);
 	}
 }
 
-check_compile_errors :: (shader : GLuint, type : *u8) 
+check_compile_errors :: (shader : GLuint, code : string) 
 {
 	success : s32;
 	infoLog: [1024]u8;
@@ -227,7 +335,7 @@ check_compile_errors :: (shader : GLuint, type : *u8)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, *success);
 	if !success {
 		glGetShaderInfoLog(shader, 1024, xx 0, xx infoLog.data);
-		print("% compilation error:\n%\n", to_string(type), to_string(infoLog.data));
+		print("% compilation error:\n%\n", code, to_string(infoLog.data));
 		assert(false);
 	}
 }
@@ -250,12 +358,12 @@ make_shader_program :: (vertexShaderSource : string, fragmentShaderSource : stri
 	glShaderSource(vert_shader, 1, *(vertexShaderSource.data), xx 0);
 	glCompileShader(vert_shader);
 	
-	check_compile_errors(vert_shader, "vertex shader");
+	check_compile_errors(vert_shader, vertexShaderSource);
 	
 	frag_shader := glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(frag_shader, 1, *(fragmentShaderSource.data), xx 0);
 	glCompileShader(frag_shader);
-	check_compile_errors(frag_shader, "fragment shader");
+	check_compile_errors(frag_shader, fragmentShaderSource);
 	
 	shader_prog := glCreateProgram();
 	glAttachShader(shader_prog, vert_shader);
@@ -268,4 +376,4 @@ make_shader_program :: (vertexShaderSource : string, fragmentShaderSource : stri
 	glDeleteShader(frag_shader);
 	
 	return shader_prog;
-}
+} 

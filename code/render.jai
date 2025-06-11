@@ -2,10 +2,35 @@
 // U32 : w, h
 // U64 : ptr, tex_id
 
-Tex_Params :: enum 
+Vertex :: struct 
 {
-	Linear;
+	pos : Vector3;
+	uv_x : float;
+	normal : Vector3;
+	uv_y : float;
+	color : Vector4;
+	tangent : Vector3;
+	pad : float;
+	joints : [4]u32;
+	weights : Vector4;
+};
+
+Tex_Param :: enum 
+{
 	Nearest;
+	Linear;
+	Nearest_Mipmap_Nearest;
+	Linear_Mipmap_Nearest;
+	Nearest_Mipmap_Linear;
+	Linear_Mipmap_Linear;
+	Clamp_To_Edge;
+	Repeat;
+}
+
+Buffer_Hint :: enum
+{
+	Static_Draw;
+	Dynamic_Draw;
 }
 
 R_Sprite :: struct 
@@ -32,11 +57,45 @@ Batch_List :: struct
 	count : u32;
 };
 
+R_Flags :: enum_flags u32
+{
+	Animated;
+}
+
+// What I am going to do is this
+// every mesh holds the joints pointer
+// but it is allocated and calculated only
+// per model
+
+R_Mesh :: struct
+{
+	start : u32;
+	count : u32;
+	
+	xform : Matrix4;
+	
+	vertex_buffer : u32;
+	index_buffer : u32;
+	
+	color : Vector4;
+	color_map : u64;
+	
+	flags : R_Flags;
+	
+	base_skinning_xform : *Matrix4;
+	skinning_xform_batch : *Batch;
+}
+
 R_Push_Buffer :: struct 
 {
 	sprite_batches : Batch_List;
+	mesh_batches : Batch_List;
+	skinning_xforms : Batch_List;
+	
 	proj : Matrix4;
 	view : Matrix4;
+	ui_proj : Matrix4;
+	ui_view : Matrix4;
 	viewport : Vector2;
 }
 
@@ -85,9 +144,139 @@ push_sprite :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float,
 	
 	model = rotate(model, roll);
 	
-	model = scale(model, .{size.x, size.y, 0});
+	model = scale(model, .{size.x, -size.y, 0});
 	
 	sprite.model = model;
 	sprite.color = color;
 	sprite.tex_id = tex_id_from_handle(tex_id);
+}
+
+push_animation :: (pb : *R_Push_Buffer, key : string, counter : float, kf_index : []Key_Frame_Index) -> *Matrix4, *Batch
+{
+	anim, jaunt := animation_data_from_key(key);
+	
+	jaunt_count := jaunt.count;
+	
+	xforms : *Matrix4 = xx push_batch(*pb.skinning_xforms, size_of(Matrix4) * jaunt_count, xx MB(1));
+	
+	for 0 .. jaunt_count - 1
+	{
+		bind_pose := matrix_from_transform(jaunt[it].bind_pose);
+		
+		xforms[it] = bind_pose;
+	}
+	
+	for 0 .. jaunt_count - 1
+	{
+		if anim[it].pos.count
+		{
+			while (kf_index[it].pos + 1 < anim[it].pos.count) && (anim[it].pos[kf_index[it].pos + 1].timestamp <= counter)
+			{
+				kf_index[it].pos += 1;
+			}
+			
+			frame := kf_index[it].pos;
+			
+			xforms[it] = translate(Matrix4_Identity, anim[it].pos[frame].v.xyz);
+			
+		}
+		
+		if anim[it].rot.count
+		{
+			while (kf_index[it].rot + 1 < anim[it].rot.count) && (anim[it].rot[kf_index[it].rot + 1].timestamp <= counter)
+			{
+				kf_index[it].rot += 1;
+			}
+			
+			frame := kf_index[it].rot;
+			
+			xforms[it] = rotate(xforms[it], cast,force(Quaternion) anim[it].rot[frame].v);
+		}
+		
+		if anim[it].scale.count
+		{
+			while (kf_index[it].scale + 1 < anim[it].scale.count) && (anim[it].scale[kf_index[it].scale + 1].timestamp <= counter)
+			{
+				kf_index[it].scale += 1;
+			}
+			
+			frame := kf_index[it].scale;
+			
+			xforms[it] = scale(xforms[it], anim[it].scale[frame].v.xyz);
+		}
+		
+	}
+	
+	for 0 .. jaunt_count - 1
+	{
+		
+		if jaunt[it].parent_index != -1
+		{
+			xforms[it] = xforms[jaunt[it].parent_index] * xforms[it];
+			//print("e");
+		}
+		
+		jeff : int;
+	}
+	
+	for 0 .. jaunt_count - 1
+	{
+		xforms[it] *= jaunt[it].offset;
+		
+		jeff : int;
+	}
+	
+	return xforms, pb.skinning_xforms.last;
+}
+
+push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, key : string, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
+{
+	asset := meshes_from_key(key);
+	
+	for 0 .. asset.count - 1
+	{
+		a_mesh := asset[it];
+		
+		for 0 .. a_mesh.num_primitives - 1
+		{
+			r_mesh :*R_Mesh = xx push_batch(*pb.mesh_batches, size_of(R_Mesh), xx MB(1));
+			a_prim := a_mesh.primitives + it;
+			
+			r_mesh.start = a_prim.start;
+			r_mesh.count = a_prim.count;
+			
+			r_mesh.xform = model * a_mesh.xform;
+			r_mesh.vertex_buffer = a_mesh.vertex_buffer;
+			r_mesh.index_buffer = a_mesh.index_buffer;
+			
+			color, color_map := material_data_from_key(a_prim.material);
+			
+			if color == .{}
+			{
+				r_mesh.color = .{1, 1, 1, 1};
+			}
+			else
+			{
+				r_mesh.color = color;
+			}
+			
+			if color_map.U64[0]
+			{
+				r_mesh.color_map = tex_id_from_handle(color_map);
+			}
+			else
+			{
+				r_mesh.color_map = tex_id_from_handle(get_white_square());
+			}
+			
+			if joints
+			{
+				r_mesh.flags |= .Animated;
+				//r_mesh.skinning_xform_batch = pb.skinning_xforms.last;
+				r_mesh.base_skinning_xform = joints;
+				r_mesh.skinning_xform_batch = an_batch;
+			}
+			
+		}
+	}
 }

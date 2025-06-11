@@ -4,12 +4,6 @@
 uniform mat4 u_view;
 uniform mat4 u_proj;
 
-#define Corner_00 0
-#define Corner_01 1
-#define Corner_10 2
-#define Corner_11 3
-#define Corner_COUNT 4
-
 struct Rect
 {
 	vec2 tl;
@@ -80,5 +74,11 @@ void main()
 {
 	R_Rect2 obj = rects[a_index];
 	vec4 tex_col = texture(sampler2D(obj.tex_id), a_uv);
-	out_color = obj.color * tex_col;
+	
+	if (tex_col.a < 0.1)
+	{
+		discard;
+	}
+	
+	out_color = obj.color * vec4(tex_col.xyz, 1);
 }

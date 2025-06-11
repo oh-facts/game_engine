@@ -1,0 +1,16 @@
+# bin
+.out/
+out/
+release/
+releases/
+build/
+builds/
+.build/
+.Build/
+
+# editor
+.vs
+.vscode
+.cache
+*.swp
+*.zip
