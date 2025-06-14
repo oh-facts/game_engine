@@ -29,3 +29,7 @@ tagLOGFONTW :: struct{
 }
 
 LOGFONTW :: tagLOGFONTW;
+
+#scope_file
+
+dwrite :: #library,system "Dwrite";

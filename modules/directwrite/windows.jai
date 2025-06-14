@@ -15,242 +15,242 @@ DWRITE_ERR_BASE :: 0x5000;
 IDXGISurface :: struct {}
 
 DWRITE_MEASURING_MODE :: enum s32 {
-    NATURAL     :: 0;
-
-    GDI_CLASSIC :: 1;
-
-    GDI_NATURAL :: 2;
-
-    DWRITE_MEASURING_MODE_NATURAL     :: NATURAL;
-
-    DWRITE_MEASURING_MODE_GDI_CLASSIC :: GDI_CLASSIC;
-
-    DWRITE_MEASURING_MODE_GDI_NATURAL :: GDI_NATURAL;
+	NATURAL     :: 0;
+	
+	GDI_CLASSIC :: 1;
+	
+	GDI_NATURAL :: 2;
+	
+	DWRITE_MEASURING_MODE_NATURAL     :: NATURAL;
+	
+	DWRITE_MEASURING_MODE_GDI_CLASSIC :: GDI_CLASSIC;
+	
+	DWRITE_MEASURING_MODE_GDI_NATURAL :: GDI_NATURAL;
 }
 
 DWRITE_GLYPH_IMAGE_FORMATS :: enum s32 {
-    NONE                   :: 0;
-
-    TRUETYPE               :: 1;
-
-    CFF                    :: 2;
-
-    COLR                   :: 4;
-
-    SVG                    :: 8;
-
-    PNG                    :: 16;
-
-    JPEG                   :: 32;
-
-    TIFF                   :: 64;
-
-    PREMULTIPLIED_B8G8R8A8 :: 128;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_NONE                   :: NONE;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE               :: TRUETYPE;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_CFF                    :: CFF;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_COLR                   :: COLR;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_SVG                    :: SVG;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_PNG                    :: PNG;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_JPEG                   :: JPEG;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_TIFF                   :: TIFF;
-
-    DWRITE_GLYPH_IMAGE_FORMATS_PREMULTIPLIED_B8G8R8A8 :: PREMULTIPLIED_B8G8R8A8;
+	NONE                   :: 0;
+	
+	TRUETYPE               :: 1;
+	
+	CFF                    :: 2;
+	
+	COLR                   :: 4;
+	
+	SVG                    :: 8;
+	
+	PNG                    :: 16;
+	
+	JPEG                   :: 32;
+	
+	TIFF                   :: 64;
+	
+	PREMULTIPLIED_B8G8R8A8 :: 128;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_NONE                   :: NONE;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE               :: TRUETYPE;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_CFF                    :: CFF;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_COLR                   :: COLR;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_SVG                    :: SVG;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_PNG                    :: PNG;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_JPEG                   :: JPEG;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_TIFF                   :: TIFF;
+	
+	DWRITE_GLYPH_IMAGE_FORMATS_PREMULTIPLIED_B8G8R8A8 :: PREMULTIPLIED_B8G8R8A8;
 }
 
 D2D1_ALPHA_MODE :: enum s32 {
-    UNKNOWN       :: 0;
-
-    PREMULTIPLIED :: 1;
-
-    STRAIGHT      :: 2;
-
-    IGNORE        :: 3;
-
-    FORCE_DWORD   :: -1;
-
-    D2D1_ALPHA_MODE_UNKNOWN       :: UNKNOWN;
-
-    D2D1_ALPHA_MODE_PREMULTIPLIED :: PREMULTIPLIED;
-
-    D2D1_ALPHA_MODE_STRAIGHT      :: STRAIGHT;
-
-    D2D1_ALPHA_MODE_IGNORE        :: IGNORE;
-
-    D2D1_ALPHA_MODE_FORCE_DWORD   :: FORCE_DWORD;
+	UNKNOWN       :: 0;
+	
+	PREMULTIPLIED :: 1;
+	
+	STRAIGHT      :: 2;
+	
+	IGNORE        :: 3;
+	
+	FORCE_DWORD   :: -1;
+	
+	D2D1_ALPHA_MODE_UNKNOWN       :: UNKNOWN;
+	
+	D2D1_ALPHA_MODE_PREMULTIPLIED :: PREMULTIPLIED;
+	
+	D2D1_ALPHA_MODE_STRAIGHT      :: STRAIGHT;
+	
+	D2D1_ALPHA_MODE_IGNORE        :: IGNORE;
+	
+	D2D1_ALPHA_MODE_FORCE_DWORD   :: FORCE_DWORD;
 }
 
 D2D1_PIXEL_FORMAT :: struct {
-    format:    DXGI_FORMAT;
-    alphaMode: D2D1_ALPHA_MODE;
+	format:    DXGI_FORMAT;
+	alphaMode: D2D1_ALPHA_MODE;
 }
 
 D2D_POINT_2U :: struct {
-    x: u32;
-    y: u32;
+	x: u32;
+	y: u32;
 }
 
 D2D_POINT_2F :: struct {
-    x: float;
-    y: float;
+	x: float;
+	y: float;
 }
 
 D2D_POINT_2L :: POINT;
 
 D2D_VECTOR_2F :: struct {
-    x: float;
-    y: float;
+	x: float;
+	y: float;
 }
 
 D2D_VECTOR_3F :: struct {
-    x: float;
-    y: float;
-    z: float;
+	x: float;
+	y: float;
+	z: float;
 }
 
 D2D_VECTOR_4F :: struct {
-    x: float;
-    y: float;
-    z: float;
-    w: float;
+	x: float;
+	y: float;
+	z: float;
+	w: float;
 }
 
 D2D_RECT_F :: struct {
-    left:   float;
-    top:    float;
-    right:  float;
-    bottom: float;
+	left:   float;
+	top:    float;
+	right:  float;
+	bottom: float;
 }
 
 D2D_RECT_U :: struct {
-    left:   u32;
-    top:    u32;
-    right:  u32;
-    bottom: u32;
+	left:   u32;
+	top:    u32;
+	right:  u32;
+	bottom: u32;
 }
 
 D2D_RECT_L :: RECT;
 
 D2D_SIZE_F :: struct {
-    width:  float;
-    height: float;
+	width:  float;
+	height: float;
 }
 
 D2D_SIZE_U :: struct {
-    width:  u32;
-    height: u32;
+	width:  u32;
+	height: u32;
 }
 
 D2D_MATRIX_3X2_F :: struct {
-    union {
-        struct {
-            m11: float;
-
-            m12: float;
-
-            m21: float;
-
-            m22: float;
-
-            dx:  float;
-
-            dy:  float;
-        }
-
-        struct {
-            _11: float;
-            _12: float;
-            _21: float;
-            _22: float;
-            _31: float;
-            _32: float;
-        }
-
-        m: [3] [2] float;
-    }
+	union {
+		struct {
+			m11: float;
+			
+			m12: float;
+			
+			m21: float;
+			
+			m22: float;
+			
+			dx:  float;
+			
+			dy:  float;
+		}
+		
+		struct {
+			_11: float;
+			_12: float;
+			_21: float;
+			_22: float;
+			_31: float;
+			_32: float;
+		}
+		
+		m: [3] [2] float;
+	}
 }
 
 D2D_MATRIX_4X3_F :: struct {
-    union {
-        struct {
-            _11: float;
-            _12: float;
-            _13: float;
-            _21: float;
-            _22: float;
-            _23: float;
-            _31: float;
-            _32: float;
-            _33: float;
-            _41: float;
-            _42: float;
-            _43: float;
-        }
-
-        m: [4] [3] float;
-    }
+	union {
+		struct {
+			_11: float;
+			_12: float;
+			_13: float;
+			_21: float;
+			_22: float;
+			_23: float;
+			_31: float;
+			_32: float;
+			_33: float;
+			_41: float;
+			_42: float;
+			_43: float;
+		}
+		
+		m: [4] [3] float;
+	}
 }
 
 D2D_MATRIX_4X4_F :: struct {
-    union {
-        struct {
-            _11: float;
-            _12: float;
-            _13: float;
-            _14: float;
-            _21: float;
-            _22: float;
-            _23: float;
-            _24: float;
-            _31: float;
-            _32: float;
-            _33: float;
-            _34: float;
-            _41: float;
-            _42: float;
-            _43: float;
-            _44: float;
-        }
-
-        m: [4] [4] float;
-    }
+	union {
+		struct {
+			_11: float;
+			_12: float;
+			_13: float;
+			_14: float;
+			_21: float;
+			_22: float;
+			_23: float;
+			_24: float;
+			_31: float;
+			_32: float;
+			_33: float;
+			_34: float;
+			_41: float;
+			_42: float;
+			_43: float;
+			_44: float;
+		}
+		
+		m: [4] [4] float;
+	}
 }
 
 D2D_MATRIX_5X4_F :: struct {
-    union {
-        struct {
-            _11: float;
-            _12: float;
-            _13: float;
-            _14: float;
-            _21: float;
-            _22: float;
-            _23: float;
-            _24: float;
-            _31: float;
-            _32: float;
-            _33: float;
-            _34: float;
-            _41: float;
-            _42: float;
-            _43: float;
-            _44: float;
-            _51: float;
-            _52: float;
-            _53: float;
-            _54: float;
-        }
-
-        m: [5] [4] float;
-    }
+	union {
+		struct {
+			_11: float;
+			_12: float;
+			_13: float;
+			_14: float;
+			_21: float;
+			_22: float;
+			_23: float;
+			_24: float;
+			_31: float;
+			_32: float;
+			_33: float;
+			_34: float;
+			_41: float;
+			_42: float;
+			_43: float;
+			_44: float;
+			_51: float;
+			_52: float;
+			_53: float;
+			_54: float;
+		}
+		
+		m: [5] [4] float;
+	}
 }
 
 D2D1_POINT_2F :: D2D_POINT_2F;
@@ -264,384 +264,384 @@ D2D1_SIZE_U :: D2D_SIZE_U;
 D2D1_MATRIX_3X2_F :: D2D_MATRIX_3X2_F;
 
 DWRITE_FONT_FILE_TYPE :: enum s32 {
-    UNKNOWN             :: 0;
-
-    CFF                 :: 1;
-
-    TRUETYPE            :: 2;
-
-    OPENTYPE_COLLECTION :: 3;
-
-    TYPE1_PFM           :: 4;
-
-    TYPE1_PFB           :: 5;
-
-    VECTOR              :: 6;
-
-    BITMAP              :: 7;
-
-    TRUETYPE_COLLECTION :: 3;
-
-    DWRITE_FONT_FILE_TYPE_UNKNOWN             :: UNKNOWN;
-
-    DWRITE_FONT_FILE_TYPE_CFF                 :: CFF;
-
-    DWRITE_FONT_FILE_TYPE_TRUETYPE            :: TRUETYPE;
-
-    DWRITE_FONT_FILE_TYPE_OPENTYPE_COLLECTION :: OPENTYPE_COLLECTION;
-
-    DWRITE_FONT_FILE_TYPE_TYPE1_PFM           :: TYPE1_PFM;
-
-    DWRITE_FONT_FILE_TYPE_TYPE1_PFB           :: TYPE1_PFB;
-
-    DWRITE_FONT_FILE_TYPE_VECTOR              :: VECTOR;
-
-    DWRITE_FONT_FILE_TYPE_BITMAP              :: BITMAP;
-
-    DWRITE_FONT_FILE_TYPE_TRUETYPE_COLLECTION :: TRUETYPE_COLLECTION;
+	UNKNOWN             :: 0;
+	
+	CFF                 :: 1;
+	
+	TRUETYPE            :: 2;
+	
+	OPENTYPE_COLLECTION :: 3;
+	
+	TYPE1_PFM           :: 4;
+	
+	TYPE1_PFB           :: 5;
+	
+	VECTOR              :: 6;
+	
+	BITMAP              :: 7;
+	
+	TRUETYPE_COLLECTION :: 3;
+	
+	DWRITE_FONT_FILE_TYPE_UNKNOWN             :: UNKNOWN;
+	
+	DWRITE_FONT_FILE_TYPE_CFF                 :: CFF;
+	
+	DWRITE_FONT_FILE_TYPE_TRUETYPE            :: TRUETYPE;
+	
+	DWRITE_FONT_FILE_TYPE_OPENTYPE_COLLECTION :: OPENTYPE_COLLECTION;
+	
+	DWRITE_FONT_FILE_TYPE_TYPE1_PFM           :: TYPE1_PFM;
+	
+	DWRITE_FONT_FILE_TYPE_TYPE1_PFB           :: TYPE1_PFB;
+	
+	DWRITE_FONT_FILE_TYPE_VECTOR              :: VECTOR;
+	
+	DWRITE_FONT_FILE_TYPE_BITMAP              :: BITMAP;
+	
+	DWRITE_FONT_FILE_TYPE_TRUETYPE_COLLECTION :: TRUETYPE_COLLECTION;
 }
 
 DWRITE_FONT_FACE_TYPE :: enum s32 {
-    CFF                 :: 0;
-
-    TRUETYPE            :: 1;
-
-    OPENTYPE_COLLECTION :: 2;
-
-    TYPE1               :: 3;
-
-    VECTOR              :: 4;
-
-    BITMAP              :: 5;
-
-    UNKNOWN             :: 6;
-
-    RAW_CFF             :: 7;
-
-    TRUETYPE_COLLECTION :: 2;
-
-    DWRITE_FONT_FACE_TYPE_CFF                 :: CFF;
-
-    DWRITE_FONT_FACE_TYPE_TRUETYPE            :: TRUETYPE;
-
-    DWRITE_FONT_FACE_TYPE_OPENTYPE_COLLECTION :: OPENTYPE_COLLECTION;
-
-    DWRITE_FONT_FACE_TYPE_TYPE1               :: TYPE1;
-
-    DWRITE_FONT_FACE_TYPE_VECTOR              :: VECTOR;
-
-    DWRITE_FONT_FACE_TYPE_BITMAP              :: BITMAP;
-
-    DWRITE_FONT_FACE_TYPE_UNKNOWN             :: UNKNOWN;
-
-    DWRITE_FONT_FACE_TYPE_RAW_CFF             :: RAW_CFF;
-
-    DWRITE_FONT_FACE_TYPE_TRUETYPE_COLLECTION :: TRUETYPE_COLLECTION;
+	CFF                 :: 0;
+	
+	TRUETYPE            :: 1;
+	
+	OPENTYPE_COLLECTION :: 2;
+	
+	TYPE1               :: 3;
+	
+	VECTOR              :: 4;
+	
+	BITMAP              :: 5;
+	
+	UNKNOWN             :: 6;
+	
+	RAW_CFF             :: 7;
+	
+	TRUETYPE_COLLECTION :: 2;
+	
+	DWRITE_FONT_FACE_TYPE_CFF                 :: CFF;
+	
+	DWRITE_FONT_FACE_TYPE_TRUETYPE            :: TRUETYPE;
+	
+	DWRITE_FONT_FACE_TYPE_OPENTYPE_COLLECTION :: OPENTYPE_COLLECTION;
+	
+	DWRITE_FONT_FACE_TYPE_TYPE1               :: TYPE1;
+	
+	DWRITE_FONT_FACE_TYPE_VECTOR              :: VECTOR;
+	
+	DWRITE_FONT_FACE_TYPE_BITMAP              :: BITMAP;
+	
+	DWRITE_FONT_FACE_TYPE_UNKNOWN             :: UNKNOWN;
+	
+	DWRITE_FONT_FACE_TYPE_RAW_CFF             :: RAW_CFF;
+	
+	DWRITE_FONT_FACE_TYPE_TRUETYPE_COLLECTION :: TRUETYPE_COLLECTION;
 }
 
 DWRITE_FONT_SIMULATIONS :: enum s32 {
-    NONE    :: 0;
-
-    BOLD    :: 1;
-
-    OBLIQUE :: 2;
-
-    DWRITE_FONT_SIMULATIONS_NONE    :: NONE;
-
-    DWRITE_FONT_SIMULATIONS_BOLD    :: BOLD;
-
-    DWRITE_FONT_SIMULATIONS_OBLIQUE :: OBLIQUE;
+	NONE    :: 0;
+	
+	BOLD    :: 1;
+	
+	OBLIQUE :: 2;
+	
+	DWRITE_FONT_SIMULATIONS_NONE    :: NONE;
+	
+	DWRITE_FONT_SIMULATIONS_BOLD    :: BOLD;
+	
+	DWRITE_FONT_SIMULATIONS_OBLIQUE :: OBLIQUE;
 }
 
 DWRITE_FONT_WEIGHT :: enum s32 {
-    THIN        :: 100;
-
-    EXTRA_LIGHT :: 200;
-
-    ULTRA_LIGHT :: 200;
-
-    LIGHT       :: 300;
-
-    SEMI_LIGHT  :: 350;
-
-    NORMAL      :: 400;
-
-    REGULAR     :: 400;
-
-    MEDIUM      :: 500;
-
-    DEMI_BOLD   :: 600;
-
-    SEMI_BOLD   :: 600;
-
-    BOLD        :: 700;
-
-    EXTRA_BOLD  :: 800;
-
-    ULTRA_BOLD  :: 800;
-
-    BLACK       :: 900;
-
-    HEAVY       :: 900;
-
-    EXTRA_BLACK :: 950;
-
-    ULTRA_BLACK :: 950;
-
-    DWRITE_FONT_WEIGHT_THIN        :: THIN;
-
-    DWRITE_FONT_WEIGHT_EXTRA_LIGHT :: EXTRA_LIGHT;
-
-    DWRITE_FONT_WEIGHT_ULTRA_LIGHT :: ULTRA_LIGHT;
-
-    DWRITE_FONT_WEIGHT_LIGHT       :: LIGHT;
-
-    DWRITE_FONT_WEIGHT_SEMI_LIGHT  :: SEMI_LIGHT;
-
-    DWRITE_FONT_WEIGHT_NORMAL      :: NORMAL;
-
-    DWRITE_FONT_WEIGHT_REGULAR     :: REGULAR;
-
-    DWRITE_FONT_WEIGHT_MEDIUM      :: MEDIUM;
-
-    DWRITE_FONT_WEIGHT_DEMI_BOLD   :: DEMI_BOLD;
-
-    DWRITE_FONT_WEIGHT_SEMI_BOLD   :: SEMI_BOLD;
-
-    DWRITE_FONT_WEIGHT_BOLD        :: BOLD;
-
-    DWRITE_FONT_WEIGHT_EXTRA_BOLD  :: EXTRA_BOLD;
-
-    DWRITE_FONT_WEIGHT_ULTRA_BOLD  :: ULTRA_BOLD;
-
-    DWRITE_FONT_WEIGHT_BLACK       :: BLACK;
-
-    DWRITE_FONT_WEIGHT_HEAVY       :: HEAVY;
-
-    DWRITE_FONT_WEIGHT_EXTRA_BLACK :: EXTRA_BLACK;
-
-    DWRITE_FONT_WEIGHT_ULTRA_BLACK :: ULTRA_BLACK;
+	THIN        :: 100;
+	
+	EXTRA_LIGHT :: 200;
+	
+	ULTRA_LIGHT :: 200;
+	
+	LIGHT       :: 300;
+	
+	SEMI_LIGHT  :: 350;
+	
+	NORMAL      :: 400;
+	
+	REGULAR     :: 400;
+	
+	MEDIUM      :: 500;
+	
+	DEMI_BOLD   :: 600;
+	
+	SEMI_BOLD   :: 600;
+	
+	BOLD        :: 700;
+	
+	EXTRA_BOLD  :: 800;
+	
+	ULTRA_BOLD  :: 800;
+	
+	BLACK       :: 900;
+	
+	HEAVY       :: 900;
+	
+	EXTRA_BLACK :: 950;
+	
+	ULTRA_BLACK :: 950;
+	
+	DWRITE_FONT_WEIGHT_THIN        :: THIN;
+	
+	DWRITE_FONT_WEIGHT_EXTRA_LIGHT :: EXTRA_LIGHT;
+	
+	DWRITE_FONT_WEIGHT_ULTRA_LIGHT :: ULTRA_LIGHT;
+	
+	DWRITE_FONT_WEIGHT_LIGHT       :: LIGHT;
+	
+	DWRITE_FONT_WEIGHT_SEMI_LIGHT  :: SEMI_LIGHT;
+	
+	DWRITE_FONT_WEIGHT_NORMAL      :: NORMAL;
+	
+	DWRITE_FONT_WEIGHT_REGULAR     :: REGULAR;
+	
+	DWRITE_FONT_WEIGHT_MEDIUM      :: MEDIUM;
+	
+	DWRITE_FONT_WEIGHT_DEMI_BOLD   :: DEMI_BOLD;
+	
+	DWRITE_FONT_WEIGHT_SEMI_BOLD   :: SEMI_BOLD;
+	
+	DWRITE_FONT_WEIGHT_BOLD        :: BOLD;
+	
+	DWRITE_FONT_WEIGHT_EXTRA_BOLD  :: EXTRA_BOLD;
+	
+	DWRITE_FONT_WEIGHT_ULTRA_BOLD  :: ULTRA_BOLD;
+	
+	DWRITE_FONT_WEIGHT_BLACK       :: BLACK;
+	
+	DWRITE_FONT_WEIGHT_HEAVY       :: HEAVY;
+	
+	DWRITE_FONT_WEIGHT_EXTRA_BLACK :: EXTRA_BLACK;
+	
+	DWRITE_FONT_WEIGHT_ULTRA_BLACK :: ULTRA_BLACK;
 }
 
 DWRITE_FONT_STRETCH :: enum s32 {
-    UNDEFINED       :: 0;
-
-    ULTRA_CONDENSED :: 1;
-
-    EXTRA_CONDENSED :: 2;
-
-    CONDENSED       :: 3;
-
-    SEMI_CONDENSED  :: 4;
-
-    NORMAL          :: 5;
-
-    MEDIUM          :: 5;
-
-    SEMI_EXPANDED   :: 6;
-
-    EXPANDED        :: 7;
-
-    EXTRA_EXPANDED  :: 8;
-
-    ULTRA_EXPANDED  :: 9;
-
-    DWRITE_FONT_STRETCH_UNDEFINED       :: UNDEFINED;
-
-    DWRITE_FONT_STRETCH_ULTRA_CONDENSED :: ULTRA_CONDENSED;
-
-    DWRITE_FONT_STRETCH_EXTRA_CONDENSED :: EXTRA_CONDENSED;
-
-    DWRITE_FONT_STRETCH_CONDENSED       :: CONDENSED;
-
-    DWRITE_FONT_STRETCH_SEMI_CONDENSED  :: SEMI_CONDENSED;
-
-    DWRITE_FONT_STRETCH_NORMAL          :: NORMAL;
-
-    DWRITE_FONT_STRETCH_MEDIUM          :: MEDIUM;
-
-    DWRITE_FONT_STRETCH_SEMI_EXPANDED   :: SEMI_EXPANDED;
-
-    DWRITE_FONT_STRETCH_EXPANDED        :: EXPANDED;
-
-    DWRITE_FONT_STRETCH_EXTRA_EXPANDED  :: EXTRA_EXPANDED;
-
-    DWRITE_FONT_STRETCH_ULTRA_EXPANDED  :: ULTRA_EXPANDED;
+	UNDEFINED       :: 0;
+	
+	ULTRA_CONDENSED :: 1;
+	
+	EXTRA_CONDENSED :: 2;
+	
+	CONDENSED       :: 3;
+	
+	SEMI_CONDENSED  :: 4;
+	
+	NORMAL          :: 5;
+	
+	MEDIUM          :: 5;
+	
+	SEMI_EXPANDED   :: 6;
+	
+	EXPANDED        :: 7;
+	
+	EXTRA_EXPANDED  :: 8;
+	
+	ULTRA_EXPANDED  :: 9;
+	
+	DWRITE_FONT_STRETCH_UNDEFINED       :: UNDEFINED;
+	
+	DWRITE_FONT_STRETCH_ULTRA_CONDENSED :: ULTRA_CONDENSED;
+	
+	DWRITE_FONT_STRETCH_EXTRA_CONDENSED :: EXTRA_CONDENSED;
+	
+	DWRITE_FONT_STRETCH_CONDENSED       :: CONDENSED;
+	
+	DWRITE_FONT_STRETCH_SEMI_CONDENSED  :: SEMI_CONDENSED;
+	
+	DWRITE_FONT_STRETCH_NORMAL          :: NORMAL;
+	
+	DWRITE_FONT_STRETCH_MEDIUM          :: MEDIUM;
+	
+	DWRITE_FONT_STRETCH_SEMI_EXPANDED   :: SEMI_EXPANDED;
+	
+	DWRITE_FONT_STRETCH_EXPANDED        :: EXPANDED;
+	
+	DWRITE_FONT_STRETCH_EXTRA_EXPANDED  :: EXTRA_EXPANDED;
+	
+	DWRITE_FONT_STRETCH_ULTRA_EXPANDED  :: ULTRA_EXPANDED;
 }
 
 DWRITE_FONT_STYLE :: enum s32 {
-    NORMAL  :: 0;
-
-    OBLIQUE :: 1;
-
-    ITALIC  :: 2;
-
-    DWRITE_FONT_STYLE_NORMAL  :: NORMAL;
-
-    DWRITE_FONT_STYLE_OBLIQUE :: OBLIQUE;
-
-    DWRITE_FONT_STYLE_ITALIC  :: ITALIC;
+	NORMAL  :: 0;
+	
+	OBLIQUE :: 1;
+	
+	ITALIC  :: 2;
+	
+	DWRITE_FONT_STYLE_NORMAL  :: NORMAL;
+	
+	DWRITE_FONT_STYLE_OBLIQUE :: OBLIQUE;
+	
+	DWRITE_FONT_STYLE_ITALIC  :: ITALIC;
 }
 
 DWRITE_INFORMATIONAL_STRING_ID :: enum s32 {
-    NONE                             :: 0;
-
-    COPYRIGHT_NOTICE                 :: 1;
-
-    VERSION_STRINGS                  :: 2;
-
-    TRADEMARK                        :: 3;
-
-    MANUFACTURER                     :: 4;
-
-    DESIGNER                         :: 5;
-
-    DESIGNER_URL                     :: 6;
-
-    DESCRIPTION                      :: 7;
-
-    FONT_VENDOR_URL                  :: 8;
-
-    LICENSE_DESCRIPTION              :: 9;
-
-    LICENSE_INFO_URL                 :: 10;
-
-    WIN32_FAMILY_NAMES               :: 11;
-
-    WIN32_SUBFAMILY_NAMES            :: 12;
-
-    TYPOGRAPHIC_FAMILY_NAMES         :: 13;
-
-    TYPOGRAPHIC_SUBFAMILY_NAMES      :: 14;
-
-    SAMPLE_TEXT                      :: 15;
-
-    FULL_NAME                        :: 16;
-
-    POSTSCRIPT_NAME                  :: 17;
-
-    POSTSCRIPT_CID_NAME              :: 18;
-
-    WEIGHT_STRETCH_STYLE_FAMILY_NAME :: 19;
-
-    DESIGN_SCRIPT_LANGUAGE_TAG       :: 20;
-
-    SUPPORTED_SCRIPT_LANGUAGE_TAG    :: 21;
-
-    PREFERRED_FAMILY_NAMES           :: 13;
-    PREFERRED_SUBFAMILY_NAMES        :: 14;
-    WWS_FAMILY_NAME                  :: 19;
-
-    DWRITE_INFORMATIONAL_STRING_NONE                             :: NONE;
-
-    DWRITE_INFORMATIONAL_STRING_COPYRIGHT_NOTICE                 :: COPYRIGHT_NOTICE;
-
-    DWRITE_INFORMATIONAL_STRING_VERSION_STRINGS                  :: VERSION_STRINGS;
-
-    DWRITE_INFORMATIONAL_STRING_TRADEMARK                        :: TRADEMARK;
-
-    DWRITE_INFORMATIONAL_STRING_MANUFACTURER                     :: MANUFACTURER;
-
-    DWRITE_INFORMATIONAL_STRING_DESIGNER                         :: DESIGNER;
-
-    DWRITE_INFORMATIONAL_STRING_DESIGNER_URL                     :: DESIGNER_URL;
-
-    DWRITE_INFORMATIONAL_STRING_DESCRIPTION                      :: DESCRIPTION;
-
-    DWRITE_INFORMATIONAL_STRING_FONT_VENDOR_URL                  :: FONT_VENDOR_URL;
-
-    DWRITE_INFORMATIONAL_STRING_LICENSE_DESCRIPTION              :: LICENSE_DESCRIPTION;
-
-    DWRITE_INFORMATIONAL_STRING_LICENSE_INFO_URL                 :: LICENSE_INFO_URL;
-
-    DWRITE_INFORMATIONAL_STRING_WIN32_FAMILY_NAMES               :: WIN32_FAMILY_NAMES;
-
-    DWRITE_INFORMATIONAL_STRING_WIN32_SUBFAMILY_NAMES            :: WIN32_SUBFAMILY_NAMES;
-
-    DWRITE_INFORMATIONAL_STRING_TYPOGRAPHIC_FAMILY_NAMES         :: TYPOGRAPHIC_FAMILY_NAMES;
-
-    DWRITE_INFORMATIONAL_STRING_TYPOGRAPHIC_SUBFAMILY_NAMES      :: TYPOGRAPHIC_SUBFAMILY_NAMES;
-
-    DWRITE_INFORMATIONAL_STRING_SAMPLE_TEXT                      :: SAMPLE_TEXT;
-
-    DWRITE_INFORMATIONAL_STRING_FULL_NAME                        :: FULL_NAME;
-
-    DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_NAME                  :: POSTSCRIPT_NAME;
-
-    DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_CID_NAME              :: POSTSCRIPT_CID_NAME;
-
-    DWRITE_INFORMATIONAL_STRING_WEIGHT_STRETCH_STYLE_FAMILY_NAME :: WEIGHT_STRETCH_STYLE_FAMILY_NAME;
-
-    DWRITE_INFORMATIONAL_STRING_DESIGN_SCRIPT_LANGUAGE_TAG       :: DESIGN_SCRIPT_LANGUAGE_TAG;
-
-    DWRITE_INFORMATIONAL_STRING_SUPPORTED_SCRIPT_LANGUAGE_TAG    :: SUPPORTED_SCRIPT_LANGUAGE_TAG;
-
-    DWRITE_INFORMATIONAL_STRING_PREFERRED_FAMILY_NAMES           :: PREFERRED_FAMILY_NAMES;
-    DWRITE_INFORMATIONAL_STRING_PREFERRED_SUBFAMILY_NAMES        :: PREFERRED_SUBFAMILY_NAMES;
-    DWRITE_INFORMATIONAL_STRING_WWS_FAMILY_NAME                  :: WWS_FAMILY_NAME;
+	NONE                             :: 0;
+	
+	COPYRIGHT_NOTICE                 :: 1;
+	
+	VERSION_STRINGS                  :: 2;
+	
+	TRADEMARK                        :: 3;
+	
+	MANUFACTURER                     :: 4;
+	
+	DESIGNER                         :: 5;
+	
+	DESIGNER_URL                     :: 6;
+	
+	DESCRIPTION                      :: 7;
+	
+	FONT_VENDOR_URL                  :: 8;
+	
+	LICENSE_DESCRIPTION              :: 9;
+	
+	LICENSE_INFO_URL                 :: 10;
+	
+	WIN32_FAMILY_NAMES               :: 11;
+	
+	WIN32_SUBFAMILY_NAMES            :: 12;
+	
+	TYPOGRAPHIC_FAMILY_NAMES         :: 13;
+	
+	TYPOGRAPHIC_SUBFAMILY_NAMES      :: 14;
+	
+	SAMPLE_TEXT                      :: 15;
+	
+	FULL_NAME                        :: 16;
+	
+	POSTSCRIPT_NAME                  :: 17;
+	
+	POSTSCRIPT_CID_NAME              :: 18;
+	
+	WEIGHT_STRETCH_STYLE_FAMILY_NAME :: 19;
+	
+	DESIGN_SCRIPT_LANGUAGE_TAG       :: 20;
+	
+	SUPPORTED_SCRIPT_LANGUAGE_TAG    :: 21;
+	
+	PREFERRED_FAMILY_NAMES           :: 13;
+	PREFERRED_SUBFAMILY_NAMES        :: 14;
+	WWS_FAMILY_NAME                  :: 19;
+	
+	DWRITE_INFORMATIONAL_STRING_NONE                             :: NONE;
+	
+	DWRITE_INFORMATIONAL_STRING_COPYRIGHT_NOTICE                 :: COPYRIGHT_NOTICE;
+	
+	DWRITE_INFORMATIONAL_STRING_VERSION_STRINGS                  :: VERSION_STRINGS;
+	
+	DWRITE_INFORMATIONAL_STRING_TRADEMARK                        :: TRADEMARK;
+	
+	DWRITE_INFORMATIONAL_STRING_MANUFACTURER                     :: MANUFACTURER;
+	
+	DWRITE_INFORMATIONAL_STRING_DESIGNER                         :: DESIGNER;
+	
+	DWRITE_INFORMATIONAL_STRING_DESIGNER_URL                     :: DESIGNER_URL;
+	
+	DWRITE_INFORMATIONAL_STRING_DESCRIPTION                      :: DESCRIPTION;
+	
+	DWRITE_INFORMATIONAL_STRING_FONT_VENDOR_URL                  :: FONT_VENDOR_URL;
+	
+	DWRITE_INFORMATIONAL_STRING_LICENSE_DESCRIPTION              :: LICENSE_DESCRIPTION;
+	
+	DWRITE_INFORMATIONAL_STRING_LICENSE_INFO_URL                 :: LICENSE_INFO_URL;
+	
+	DWRITE_INFORMATIONAL_STRING_WIN32_FAMILY_NAMES               :: WIN32_FAMILY_NAMES;
+	
+	DWRITE_INFORMATIONAL_STRING_WIN32_SUBFAMILY_NAMES            :: WIN32_SUBFAMILY_NAMES;
+	
+	DWRITE_INFORMATIONAL_STRING_TYPOGRAPHIC_FAMILY_NAMES         :: TYPOGRAPHIC_FAMILY_NAMES;
+	
+	DWRITE_INFORMATIONAL_STRING_TYPOGRAPHIC_SUBFAMILY_NAMES      :: TYPOGRAPHIC_SUBFAMILY_NAMES;
+	
+	DWRITE_INFORMATIONAL_STRING_SAMPLE_TEXT                      :: SAMPLE_TEXT;
+	
+	DWRITE_INFORMATIONAL_STRING_FULL_NAME                        :: FULL_NAME;
+	
+	DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_NAME                  :: POSTSCRIPT_NAME;
+	
+	DWRITE_INFORMATIONAL_STRING_POSTSCRIPT_CID_NAME              :: POSTSCRIPT_CID_NAME;
+	
+	DWRITE_INFORMATIONAL_STRING_WEIGHT_STRETCH_STYLE_FAMILY_NAME :: WEIGHT_STRETCH_STYLE_FAMILY_NAME;
+	
+	DWRITE_INFORMATIONAL_STRING_DESIGN_SCRIPT_LANGUAGE_TAG       :: DESIGN_SCRIPT_LANGUAGE_TAG;
+	
+	DWRITE_INFORMATIONAL_STRING_SUPPORTED_SCRIPT_LANGUAGE_TAG    :: SUPPORTED_SCRIPT_LANGUAGE_TAG;
+	
+	DWRITE_INFORMATIONAL_STRING_PREFERRED_FAMILY_NAMES           :: PREFERRED_FAMILY_NAMES;
+	DWRITE_INFORMATIONAL_STRING_PREFERRED_SUBFAMILY_NAMES        :: PREFERRED_SUBFAMILY_NAMES;
+	DWRITE_INFORMATIONAL_STRING_WWS_FAMILY_NAME                  :: WWS_FAMILY_NAME;
 }
 
 DWRITE_FONT_METRICS :: struct {
-    designUnitsPerEm:       u16;
-
-    ascent:                 u16;
-
-    descent:                u16;
-
-    lineGap:                s16;
-
-    capHeight:              u16;
-
-    xHeight:                u16;
-
-    underlinePosition:      s16;
-
-    underlineThickness:     u16;
-
-    strikethroughPosition:  s16;
-
-    strikethroughThickness: u16;
+	designUnitsPerEm:       u16;
+	
+	ascent:                 u16;
+	
+	descent:                u16;
+	
+	lineGap:                s16;
+	
+	capHeight:              u16;
+	
+	xHeight:                u16;
+	
+	underlinePosition:      s16;
+	
+	underlineThickness:     u16;
+	
+	strikethroughPosition:  s16;
+	
+	strikethroughThickness: u16;
 }
 
 DWRITE_GLYPH_METRICS :: struct {
-    leftSideBearing:   s32;
-
-    advanceWidth:      u32;
-
-    rightSideBearing:  s32;
-
-    topSideBearing:    s32;
-
-    advanceHeight:     u32;
-
-    bottomSideBearing: s32;
-
-    verticalOriginY:   s32;
+	leftSideBearing:   s32;
+	
+	advanceWidth:      u32;
+	
+	rightSideBearing:  s32;
+	
+	topSideBearing:    s32;
+	
+	advanceHeight:     u32;
+	
+	bottomSideBearing: s32;
+	
+	verticalOriginY:   s32;
 }
 
 DWRITE_GLYPH_OFFSET :: struct {
-    advanceOffset:  float;
-
-    ascenderOffset: float;
+	advanceOffset:  float;
+	
+	ascenderOffset: float;
 }
 
 DWRITE_FACTORY_TYPE :: enum s32 {
-    SHARED   :: 0;
-
-    ISOLATED :: 1;
-
-    DWRITE_FACTORY_TYPE_SHARED   :: SHARED;
-
-    DWRITE_FACTORY_TYPE_ISOLATED :: ISOLATED;
+	SHARED   :: 0;
+	
+	ISOLATED :: 1;
+	
+	DWRITE_FACTORY_TYPE_SHARED   :: SHARED;
+	
+	DWRITE_FACTORY_TYPE_ISOLATED :: ISOLATED;
 }
 
 IDWriteFontFileLoader :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontfileloader_vtable: *IDWriteFontFileLoader_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontfileloader_vtable: *IDWriteFontFileLoader_VTable;
 }
 IDWriteFontFileLoader_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    CreateStreamFromKey: (this: *IDWriteFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, fontFileStream: **IDWriteFontFileStream) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	CreateStreamFromKey: (this: *IDWriteFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, fontFileStream: **IDWriteFontFileStream) -> HRESULT #cpp_method;
 }
 IDWriteFontFileLoader_CreateStreamFromKey :: inline (this: *IDWriteFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, fontFileStream: **IDWriteFontFileStream) -> HRESULT { return this.idwritefontfileloader_vtable.CreateStreamFromKey(this, fontFileReferenceKey, fontFileReferenceKeySize, fontFileStream); }
 
@@ -649,14 +649,14 @@ vtable :: (obj: *IDWriteFontFileLoader) -> *IDWriteFontFileLoader_VTable { retur
 
 
 IDWriteLocalFontFileLoader :: struct {
-    #as using idwritefontfileloader: IDWriteFontFileLoader;
-    #place idwritefontfileloader; idwritelocalfontfileloader_vtable: *IDWriteLocalFontFileLoader_VTable;
+#as using idwritefontfileloader: IDWriteFontFileLoader;
+#place idwritefontfileloader; idwritelocalfontfileloader_vtable: *IDWriteLocalFontFileLoader_VTable;
 }
 IDWriteLocalFontFileLoader_VTable :: struct #type_info_none {
-    using idwritefontfileloader: IDWriteFontFileLoader_VTable;
-    GetFilePathLengthFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePathLength: *u32) -> HRESULT #cpp_method;
-    GetFilePathFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePath: *s16, filePathSize: u32) -> HRESULT #cpp_method;
-    GetLastWriteTimeFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, lastWriteTime: *FILETIME) -> HRESULT #cpp_method;
+	using idwritefontfileloader: IDWriteFontFileLoader_VTable;
+	GetFilePathLengthFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePathLength: *u32) -> HRESULT #cpp_method;
+	GetFilePathFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePath: *s16, filePathSize: u32) -> HRESULT #cpp_method;
+	GetLastWriteTimeFromKey: (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, lastWriteTime: *FILETIME) -> HRESULT #cpp_method;
 }
 IDWriteLocalFontFileLoader_GetFilePathLengthFromKey :: inline (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePathLength: *u32) -> HRESULT { return this.idwritelocalfontfileloader_vtable.GetFilePathLengthFromKey(this, fontFileReferenceKey, fontFileReferenceKeySize, filePathLength); }
 IDWriteLocalFontFileLoader_GetFilePathFromKey :: inline (this: *IDWriteLocalFontFileLoader, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, filePath: *s16, filePathSize: u32) -> HRESULT { return this.idwritelocalfontfileloader_vtable.GetFilePathFromKey(this, fontFileReferenceKey, fontFileReferenceKeySize, filePath, filePathSize); }
@@ -666,15 +666,15 @@ vtable :: (obj: *IDWriteLocalFontFileLoader) -> *IDWriteLocalFontFileLoader_VTab
 
 
 IDWriteFontFileStream :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontfilestream_vtable: *IDWriteFontFileStream_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontfilestream_vtable: *IDWriteFontFileStream_VTable;
 }
 IDWriteFontFileStream_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    ReadFileFragment: (this: *IDWriteFontFileStream, fragmentStart: **void, fileOffset: u64, fragmentSize: u64, fragmentContext: **void) -> HRESULT #cpp_method;
-    ReleaseFileFragment: (this: *IDWriteFontFileStream, fragmentContext: *void) -> void #cpp_method;
-    GetFileSize: (this: *IDWriteFontFileStream, fileSize: *u64) -> HRESULT #cpp_method;
-    GetLastWriteTime: (this: *IDWriteFontFileStream, lastWriteTime: *u64) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	ReadFileFragment: (this: *IDWriteFontFileStream, fragmentStart: **void, fileOffset: u64, fragmentSize: u64, fragmentContext: **void) -> HRESULT #cpp_method;
+	ReleaseFileFragment: (this: *IDWriteFontFileStream, fragmentContext: *void) -> void #cpp_method;
+	GetFileSize: (this: *IDWriteFontFileStream, fileSize: *u64) -> HRESULT #cpp_method;
+	GetLastWriteTime: (this: *IDWriteFontFileStream, lastWriteTime: *u64) -> HRESULT #cpp_method;
 }
 IDWriteFontFileStream_ReadFileFragment :: inline (this: *IDWriteFontFileStream, fragmentStart: **void, fileOffset: u64, fragmentSize: u64, fragmentContext: **void) -> HRESULT { return this.idwritefontfilestream_vtable.ReadFileFragment(this, fragmentStart, fileOffset, fragmentSize, fragmentContext); }
 IDWriteFontFileStream_ReleaseFileFragment :: inline (this: *IDWriteFontFileStream, fragmentContext: *void) { this.idwritefontfilestream_vtable.ReleaseFileFragment(this, fragmentContext); }
@@ -685,14 +685,14 @@ vtable :: (obj: *IDWriteFontFileStream) -> *IDWriteFontFileStream_VTable { retur
 
 
 IDWriteFontFile :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontfile_vtable: *IDWriteFontFile_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontfile_vtable: *IDWriteFontFile_VTable;
 }
 IDWriteFontFile_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetReferenceKey: (this: *IDWriteFontFile, fontFileReferenceKey: **void, fontFileReferenceKeySize: *u32) -> HRESULT #cpp_method;
-    GetLoader: (this: *IDWriteFontFile, fontFileLoader: **IDWriteFontFileLoader) -> HRESULT #cpp_method;
-    Analyze: (this: *IDWriteFontFile, isSupportedFontType: *BOOL, fontFileType: *DWRITE_FONT_FILE_TYPE, fontFaceType: *DWRITE_FONT_FACE_TYPE, numberOfFaces: *u32) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetReferenceKey: (this: *IDWriteFontFile, fontFileReferenceKey: **void, fontFileReferenceKeySize: *u32) -> HRESULT #cpp_method;
+	GetLoader: (this: *IDWriteFontFile, fontFileLoader: **IDWriteFontFileLoader) -> HRESULT #cpp_method;
+	Analyze: (this: *IDWriteFontFile, isSupportedFontType: *BOOL, fontFileType: *DWRITE_FONT_FILE_TYPE, fontFaceType: *DWRITE_FONT_FACE_TYPE, numberOfFaces: *u32) -> HRESULT #cpp_method;
 }
 IDWriteFontFile_GetReferenceKey :: inline (this: *IDWriteFontFile, fontFileReferenceKey: **void, fontFileReferenceKeySize: *u32) -> HRESULT { return this.idwritefontfile_vtable.GetReferenceKey(this, fontFileReferenceKey, fontFileReferenceKeySize); }
 IDWriteFontFile_GetLoader :: inline (this: *IDWriteFontFile, fontFileLoader: **IDWriteFontFileLoader) -> HRESULT { return this.idwritefontfile_vtable.GetLoader(this, fontFileLoader); }
@@ -702,84 +702,84 @@ vtable :: (obj: *IDWriteFontFile) -> *IDWriteFontFile_VTable { return obj.idwrit
 
 
 DWRITE_PIXEL_GEOMETRY :: enum s32 {
-    FLAT :: 0;
-
-    RGB  :: 1;
-
-    BGR  :: 2;
-
-    DWRITE_PIXEL_GEOMETRY_FLAT :: FLAT;
-
-    DWRITE_PIXEL_GEOMETRY_RGB  :: RGB;
-
-    DWRITE_PIXEL_GEOMETRY_BGR  :: BGR;
+	FLAT :: 0;
+	
+	RGB  :: 1;
+	
+	BGR  :: 2;
+	
+	DWRITE_PIXEL_GEOMETRY_FLAT :: FLAT;
+	
+	DWRITE_PIXEL_GEOMETRY_RGB  :: RGB;
+	
+	DWRITE_PIXEL_GEOMETRY_BGR  :: BGR;
 }
 
 DWRITE_RENDERING_MODE :: enum s32 {
-    DEFAULT                     :: 0;
-
-    ALIASED                     :: 1;
-
-    GDI_CLASSIC                 :: 2;
-
-    GDI_NATURAL                 :: 3;
-
-    NATURAL                     :: 4;
-
-    NATURAL_SYMMETRIC           :: 5;
-
-    OUTLINE                     :: 6;
-
-    CLEARTYPE_GDI_CLASSIC       :: 2;
-    CLEARTYPE_GDI_NATURAL       :: 3;
-    CLEARTYPE_NATURAL           :: 4;
-    CLEARTYPE_NATURAL_SYMMETRIC :: 5;
-
-    DWRITE_RENDERING_MODE_DEFAULT                     :: DEFAULT;
-
-    DWRITE_RENDERING_MODE_ALIASED                     :: ALIASED;
-
-    DWRITE_RENDERING_MODE_GDI_CLASSIC                 :: GDI_CLASSIC;
-
-    DWRITE_RENDERING_MODE_GDI_NATURAL                 :: GDI_NATURAL;
-
-    DWRITE_RENDERING_MODE_NATURAL                     :: NATURAL;
-
-    DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC           :: NATURAL_SYMMETRIC;
-
-    DWRITE_RENDERING_MODE_OUTLINE                     :: OUTLINE;
-
-    DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC       :: CLEARTYPE_GDI_CLASSIC;
-    DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL       :: CLEARTYPE_GDI_NATURAL;
-    DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL           :: CLEARTYPE_NATURAL;
-    DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC :: CLEARTYPE_NATURAL_SYMMETRIC;
+	DEFAULT                     :: 0;
+	
+	ALIASED                     :: 1;
+	
+	GDI_CLASSIC                 :: 2;
+	
+	GDI_NATURAL                 :: 3;
+	
+	NATURAL                     :: 4;
+	
+	NATURAL_SYMMETRIC           :: 5;
+	
+	OUTLINE                     :: 6;
+	
+	CLEARTYPE_GDI_CLASSIC       :: 2;
+	CLEARTYPE_GDI_NATURAL       :: 3;
+	CLEARTYPE_NATURAL           :: 4;
+	CLEARTYPE_NATURAL_SYMMETRIC :: 5;
+	
+	DWRITE_RENDERING_MODE_DEFAULT                     :: DEFAULT;
+	
+	DWRITE_RENDERING_MODE_ALIASED                     :: ALIASED;
+	
+	DWRITE_RENDERING_MODE_GDI_CLASSIC                 :: GDI_CLASSIC;
+	
+	DWRITE_RENDERING_MODE_GDI_NATURAL                 :: GDI_NATURAL;
+	
+	DWRITE_RENDERING_MODE_NATURAL                     :: NATURAL;
+	
+	DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC           :: NATURAL_SYMMETRIC;
+	
+	DWRITE_RENDERING_MODE_OUTLINE                     :: OUTLINE;
+	
+	DWRITE_RENDERING_MODE_CLEARTYPE_GDI_CLASSIC       :: CLEARTYPE_GDI_CLASSIC;
+	DWRITE_RENDERING_MODE_CLEARTYPE_GDI_NATURAL       :: CLEARTYPE_GDI_NATURAL;
+	DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL           :: CLEARTYPE_NATURAL;
+	DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL_SYMMETRIC :: CLEARTYPE_NATURAL_SYMMETRIC;
 }
 
 DWRITE_MATRIX :: struct {
-    m11: float;
-
-    m12: float;
-
-    m21: float;
-
-    m22: float;
-
-    dx:  float;
-
-    dy:  float;
+	m11: float;
+	
+	m12: float;
+	
+	m21: float;
+	
+	m22: float;
+	
+	dx:  float;
+	
+	dy:  float;
 }
 
 IDWriteRenderingParams :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwriterenderingparams_vtable: *IDWriteRenderingParams_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwriterenderingparams_vtable: *IDWriteRenderingParams_VTable;
 }
 IDWriteRenderingParams_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetGamma: (this: *IDWriteRenderingParams) -> float #cpp_method;
-    GetEnhancedContrast: (this: *IDWriteRenderingParams) -> float #cpp_method;
-    GetClearTypeLevel: (this: *IDWriteRenderingParams) -> float #cpp_method;
-    GetPixelGeometry: (this: *IDWriteRenderingParams) -> DWRITE_PIXEL_GEOMETRY #cpp_method;
-    GetRenderingMode: (this: *IDWriteRenderingParams) -> DWRITE_RENDERING_MODE #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetGamma: (this: *IDWriteRenderingParams) -> float #cpp_method;
+	GetEnhancedContrast: (this: *IDWriteRenderingParams) -> float #cpp_method;
+	GetClearTypeLevel: (this: *IDWriteRenderingParams) -> float #cpp_method;
+	GetPixelGeometry: (this: *IDWriteRenderingParams) -> DWRITE_PIXEL_GEOMETRY #cpp_method;
+	GetRenderingMode: (this: *IDWriteRenderingParams) -> DWRITE_RENDERING_MODE #cpp_method;
 }
 IDWriteRenderingParams_GetGamma :: inline (this: *IDWriteRenderingParams) -> float { return this.idwriterenderingparams_vtable.GetGamma(this); }
 IDWriteRenderingParams_GetEnhancedContrast :: inline (this: *IDWriteRenderingParams) -> float { return this.idwriterenderingparams_vtable.GetEnhancedContrast(this); }
@@ -795,26 +795,26 @@ ID2D1SimplifiedGeometrySink :: struct {}
 IDWriteGeometrySink :: ID2D1SimplifiedGeometrySink;
 
 IDWriteFontFace :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontface_vtable: *IDWriteFontFace_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontface_vtable: *IDWriteFontFace_VTable;
 }
 IDWriteFontFace_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetType: (this: *IDWriteFontFace) -> DWRITE_FONT_FACE_TYPE #cpp_method;
-    GetFiles: (this: *IDWriteFontFace, numberOfFiles: *u32, fontFiles: **IDWriteFontFile) -> HRESULT #cpp_method;
-    GetIndex: (this: *IDWriteFontFace) -> u32 #cpp_method;
-    GetSimulations: (this: *IDWriteFontFace) -> DWRITE_FONT_SIMULATIONS #cpp_method;
-    IsSymbolFont: (this: *IDWriteFontFace) -> BOOL #cpp_method;
-    GetMetrics: (this: *IDWriteFontFace, fontFaceMetrics: *DWRITE_FONT_METRICS) -> void #cpp_method;
-    GetGlyphCount: (this: *IDWriteFontFace) -> u16 #cpp_method;
-    GetDesignGlyphMetrics: (this: *IDWriteFontFace, glyphIndices: *u16, glyphCount: u32, glyphMetrics: *DWRITE_GLYPH_METRICS, isSideways: BOOL = 0) -> HRESULT #cpp_method;
-    GetGlyphIndicesW: (this: *IDWriteFontFace, codePoints: *u32, codePointCount: u32, glyphIndices: *u16) -> HRESULT #cpp_method;
-    TryGetFontTable: (this: *IDWriteFontFace, openTypeTableTag: u32, tableData: **void, tableSize: *u32, tableContext: **void, exists: *BOOL) -> HRESULT #cpp_method;
-    ReleaseFontTable: (this: *IDWriteFontFace, tableContext: *void) -> void #cpp_method;
-    GetGlyphRunOutline: (this: *IDWriteFontFace, emSize: float, glyphIndices: *u16, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, glyphCount: u32, isSideways: BOOL, isRightToLeft: BOOL, geometrySink: *IDWriteGeometrySink) -> HRESULT #cpp_method;
-    GetRecommendedRenderingMode: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, measuringMode: DWRITE_MEASURING_MODE, renderingParams: *IDWriteRenderingParams, renderingMode: *DWRITE_RENDERING_MODE) -> HRESULT #cpp_method;
-    GetGdiCompatibleMetrics: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, fontFaceMetrics: *DWRITE_FONT_METRICS) -> HRESULT #cpp_method;
-    GetGdiCompatibleGlyphMetrics: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, glyphIndices: *u16, glyphCount: u32, glyphMetrics: *DWRITE_GLYPH_METRICS, isSideways: BOOL = 0) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetType: (this: *IDWriteFontFace) -> DWRITE_FONT_FACE_TYPE #cpp_method;
+	GetFiles: (this: *IDWriteFontFace, numberOfFiles: *u32, fontFiles: **IDWriteFontFile) -> HRESULT #cpp_method;
+	GetIndex: (this: *IDWriteFontFace) -> u32 #cpp_method;
+	GetSimulations: (this: *IDWriteFontFace) -> DWRITE_FONT_SIMULATIONS #cpp_method;
+	IsSymbolFont: (this: *IDWriteFontFace) -> BOOL #cpp_method;
+	GetMetrics: (this: *IDWriteFontFace, fontFaceMetrics: *DWRITE_FONT_METRICS) -> void #cpp_method;
+	GetGlyphCount: (this: *IDWriteFontFace) -> u16 #cpp_method;
+	GetDesignGlyphMetrics: (this: *IDWriteFontFace, glyphIndices: *u16, glyphCount: u32, glyphMetrics: *DWRITE_GLYPH_METRICS, isSideways: BOOL = 0) -> HRESULT #cpp_method;
+	GetGlyphIndicesW: (this: *IDWriteFontFace, codePoints: *u32, codePointCount: u32, glyphIndices: *u16) -> HRESULT #cpp_method;
+	TryGetFontTable: (this: *IDWriteFontFace, openTypeTableTag: u32, tableData: **void, tableSize: *u32, tableContext: **void, exists: *BOOL) -> HRESULT #cpp_method;
+	ReleaseFontTable: (this: *IDWriteFontFace, tableContext: *void) -> void #cpp_method;
+	GetGlyphRunOutline: (this: *IDWriteFontFace, emSize: float, glyphIndices: *u16, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, glyphCount: u32, isSideways: BOOL, isRightToLeft: BOOL, geometrySink: *IDWriteGeometrySink) -> HRESULT #cpp_method;
+	GetRecommendedRenderingMode: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, measuringMode: DWRITE_MEASURING_MODE, renderingParams: *IDWriteRenderingParams, renderingMode: *DWRITE_RENDERING_MODE) -> HRESULT #cpp_method;
+	GetGdiCompatibleMetrics: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, fontFaceMetrics: *DWRITE_FONT_METRICS) -> HRESULT #cpp_method;
+	GetGdiCompatibleGlyphMetrics: (this: *IDWriteFontFace, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, glyphIndices: *u16, glyphCount: u32, glyphMetrics: *DWRITE_GLYPH_METRICS, isSideways: BOOL = 0) -> HRESULT #cpp_method;
 }
 IDWriteFontFace_GetType :: inline (this: *IDWriteFontFace) -> DWRITE_FONT_FACE_TYPE { return this.idwritefontface_vtable.GetType(this); }
 IDWriteFontFace_GetFiles :: inline (this: *IDWriteFontFace, numberOfFiles: *u32, fontFiles: **IDWriteFontFile) -> HRESULT { return this.idwritefontface_vtable.GetFiles(this, numberOfFiles, fontFiles); }
@@ -836,12 +836,12 @@ vtable :: (obj: *IDWriteFontFace) -> *IDWriteFontFace_VTable { return obj.idwrit
 
 
 IDWriteFontCollectionLoader :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontcollectionloader_vtable: *IDWriteFontCollectionLoader_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontcollectionloader_vtable: *IDWriteFontCollectionLoader_VTable;
 }
 IDWriteFontCollectionLoader_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    CreateEnumeratorFromKey: (this: *IDWriteFontCollectionLoader, factory: *IDWriteFactory, collectionKey: *void, collectionKeySize: u32, fontFileEnumerator: **IDWriteFontFileEnumerator) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	CreateEnumeratorFromKey: (this: *IDWriteFontCollectionLoader, factory: *IDWriteFactory, collectionKey: *void, collectionKeySize: u32, fontFileEnumerator: **IDWriteFontFileEnumerator) -> HRESULT #cpp_method;
 }
 IDWriteFontCollectionLoader_CreateEnumeratorFromKey :: inline (this: *IDWriteFontCollectionLoader, factory: *IDWriteFactory, collectionKey: *void, collectionKeySize: u32, fontFileEnumerator: **IDWriteFontFileEnumerator) -> HRESULT { return this.idwritefontcollectionloader_vtable.CreateEnumeratorFromKey(this, factory, collectionKey, collectionKeySize, fontFileEnumerator); }
 
@@ -849,13 +849,13 @@ vtable :: (obj: *IDWriteFontCollectionLoader) -> *IDWriteFontCollectionLoader_VT
 
 
 IDWriteFontFileEnumerator :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontfileenumerator_vtable: *IDWriteFontFileEnumerator_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontfileenumerator_vtable: *IDWriteFontFileEnumerator_VTable;
 }
 IDWriteFontFileEnumerator_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    MoveNext: (this: *IDWriteFontFileEnumerator, hasCurrentFile: *BOOL) -> HRESULT #cpp_method;
-    GetCurrentFontFile: (this: *IDWriteFontFileEnumerator, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	MoveNext: (this: *IDWriteFontFileEnumerator, hasCurrentFile: *BOOL) -> HRESULT #cpp_method;
+	GetCurrentFontFile: (this: *IDWriteFontFileEnumerator, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
 }
 IDWriteFontFileEnumerator_MoveNext :: inline (this: *IDWriteFontFileEnumerator, hasCurrentFile: *BOOL) -> HRESULT { return this.idwritefontfileenumerator_vtable.MoveNext(this, hasCurrentFile); }
 IDWriteFontFileEnumerator_GetCurrentFontFile :: inline (this: *IDWriteFontFileEnumerator, fontFile: **IDWriteFontFile) -> HRESULT { return this.idwritefontfileenumerator_vtable.GetCurrentFontFile(this, fontFile); }
@@ -864,17 +864,17 @@ vtable :: (obj: *IDWriteFontFileEnumerator) -> *IDWriteFontFileEnumerator_VTable
 
 
 IDWriteLocalizedStrings :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritelocalizedstrings_vtable: *IDWriteLocalizedStrings_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritelocalizedstrings_vtable: *IDWriteLocalizedStrings_VTable;
 }
 IDWriteLocalizedStrings_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetCount: (this: *IDWriteLocalizedStrings) -> u32 #cpp_method;
-    FindLocaleName: (this: *IDWriteLocalizedStrings, localeName: *s16, index: *u32, exists: *BOOL) -> HRESULT #cpp_method;
-    GetLocaleNameLength: (this: *IDWriteLocalizedStrings, index: u32, length: *u32) -> HRESULT #cpp_method;
-    GetLocaleName: (this: *IDWriteLocalizedStrings, index: u32, localeName: *s16, size: u32) -> HRESULT #cpp_method;
-    GetStringLength: (this: *IDWriteLocalizedStrings, index: u32, length: *u32) -> HRESULT #cpp_method;
-    GetString: (this: *IDWriteLocalizedStrings, index: u32, stringBuffer: *s16, size: u32) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetCount: (this: *IDWriteLocalizedStrings) -> u32 #cpp_method;
+	FindLocaleName: (this: *IDWriteLocalizedStrings, localeName: *s16, index: *u32, exists: *BOOL) -> HRESULT #cpp_method;
+	GetLocaleNameLength: (this: *IDWriteLocalizedStrings, index: u32, length: *u32) -> HRESULT #cpp_method;
+	GetLocaleName: (this: *IDWriteLocalizedStrings, index: u32, localeName: *s16, size: u32) -> HRESULT #cpp_method;
+	GetStringLength: (this: *IDWriteLocalizedStrings, index: u32, length: *u32) -> HRESULT #cpp_method;
+	GetString: (this: *IDWriteLocalizedStrings, index: u32, stringBuffer: *s16, size: u32) -> HRESULT #cpp_method;
 }
 IDWriteLocalizedStrings_GetCount :: inline (this: *IDWriteLocalizedStrings) -> u32 { return this.idwritelocalizedstrings_vtable.GetCount(this); }
 IDWriteLocalizedStrings_FindLocaleName :: inline (this: *IDWriteLocalizedStrings, localeName: *s16, index: *u32, exists: *BOOL) -> HRESULT { return this.idwritelocalizedstrings_vtable.FindLocaleName(this, localeName, index, exists); }
@@ -887,15 +887,15 @@ vtable :: (obj: *IDWriteLocalizedStrings) -> *IDWriteLocalizedStrings_VTable { r
 
 
 IDWriteFontCollection :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontcollection_vtable: *IDWriteFontCollection_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontcollection_vtable: *IDWriteFontCollection_VTable;
 }
 IDWriteFontCollection_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetFontFamilyCount: (this: *IDWriteFontCollection) -> u32 #cpp_method;
-    GetFontFamily: (this: *IDWriteFontCollection, index: u32, fontFamily: **IDWriteFontFamily) -> HRESULT #cpp_method;
-    FindFamilyName: (this: *IDWriteFontCollection, familyName: *s16, index: *u32, exists: *BOOL) -> HRESULT #cpp_method;
-    GetFontFromFontFace: (this: *IDWriteFontCollection, fontFace: *IDWriteFontFace, font: **IDWriteFont) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetFontFamilyCount: (this: *IDWriteFontCollection) -> u32 #cpp_method;
+	GetFontFamily: (this: *IDWriteFontCollection, index: u32, fontFamily: **IDWriteFontFamily) -> HRESULT #cpp_method;
+	FindFamilyName: (this: *IDWriteFontCollection, familyName: *s16, index: *u32, exists: *BOOL) -> HRESULT #cpp_method;
+	GetFontFromFontFace: (this: *IDWriteFontCollection, fontFace: *IDWriteFontFace, font: **IDWriteFont) -> HRESULT #cpp_method;
 }
 IDWriteFontCollection_GetFontFamilyCount :: inline (this: *IDWriteFontCollection) -> u32 { return this.idwritefontcollection_vtable.GetFontFamilyCount(this); }
 IDWriteFontCollection_GetFontFamily :: inline (this: *IDWriteFontCollection, index: u32, fontFamily: **IDWriteFontFamily) -> HRESULT { return this.idwritefontcollection_vtable.GetFontFamily(this, index, fontFamily); }
@@ -906,14 +906,14 @@ vtable :: (obj: *IDWriteFontCollection) -> *IDWriteFontCollection_VTable { retur
 
 
 IDWriteFontList :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefontlist_vtable: *IDWriteFontList_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefontlist_vtable: *IDWriteFontList_VTable;
 }
 IDWriteFontList_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetFontCollection: (this: *IDWriteFontList, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
-    GetFontCount: (this: *IDWriteFontList) -> u32 #cpp_method;
-    GetFont: (this: *IDWriteFontList, index: u32, font: **IDWriteFont) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetFontCollection: (this: *IDWriteFontList, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
+	GetFontCount: (this: *IDWriteFontList) -> u32 #cpp_method;
+	GetFont: (this: *IDWriteFontList, index: u32, font: **IDWriteFont) -> HRESULT #cpp_method;
 }
 IDWriteFontList_GetFontCollection :: inline (this: *IDWriteFontList, fontCollection: **IDWriteFontCollection) -> HRESULT { return this.idwritefontlist_vtable.GetFontCollection(this, fontCollection); }
 IDWriteFontList_GetFontCount :: inline (this: *IDWriteFontList) -> u32 { return this.idwritefontlist_vtable.GetFontCount(this); }
@@ -923,14 +923,14 @@ vtable :: (obj: *IDWriteFontList) -> *IDWriteFontList_VTable { return obj.idwrit
 
 
 IDWriteFontFamily :: struct {
-    #as using idwritefontlist: IDWriteFontList;
-    #place idwritefontlist; idwritefontfamily_vtable: *IDWriteFontFamily_VTable;
+#as using idwritefontlist: IDWriteFontList;
+#place idwritefontlist; idwritefontfamily_vtable: *IDWriteFontFamily_VTable;
 }
 IDWriteFontFamily_VTable :: struct #type_info_none {
-    using idwritefontlist: IDWriteFontList_VTable;
-    GetFamilyNames: (this: *IDWriteFontFamily, names: **IDWriteLocalizedStrings) -> HRESULT #cpp_method;
-    GetFirstMatchingFont: (this: *IDWriteFontFamily, weight: DWRITE_FONT_WEIGHT, stretch: DWRITE_FONT_STRETCH, style: DWRITE_FONT_STYLE, matchingFont: **IDWriteFont) -> HRESULT #cpp_method;
-    GetMatchingFonts: (this: *IDWriteFontFamily, weight: DWRITE_FONT_WEIGHT, stretch: DWRITE_FONT_STRETCH, style: DWRITE_FONT_STYLE, matchingFonts: **IDWriteFontList) -> HRESULT #cpp_method;
+	using idwritefontlist: IDWriteFontList_VTable;
+	GetFamilyNames: (this: *IDWriteFontFamily, names: **IDWriteLocalizedStrings) -> HRESULT #cpp_method;
+	GetFirstMatchingFont: (this: *IDWriteFontFamily, weight: DWRITE_FONT_WEIGHT, stretch: DWRITE_FONT_STRETCH, style: DWRITE_FONT_STYLE, matchingFont: **IDWriteFont) -> HRESULT #cpp_method;
+	GetMatchingFonts: (this: *IDWriteFontFamily, weight: DWRITE_FONT_WEIGHT, stretch: DWRITE_FONT_STRETCH, style: DWRITE_FONT_STYLE, matchingFonts: **IDWriteFontList) -> HRESULT #cpp_method;
 }
 IDWriteFontFamily_GetFamilyNames :: inline (this: *IDWriteFontFamily, names: **IDWriteLocalizedStrings) -> HRESULT { return this.idwritefontfamily_vtable.GetFamilyNames(this, names); }
 IDWriteFontFamily_GetFirstMatchingFont :: inline (this: *IDWriteFontFamily, weight: DWRITE_FONT_WEIGHT, stretch: DWRITE_FONT_STRETCH, style: DWRITE_FONT_STYLE, matchingFont: **IDWriteFont) -> HRESULT { return this.idwritefontfamily_vtable.GetFirstMatchingFont(this, weight, stretch, style, matchingFont); }
@@ -940,22 +940,22 @@ vtable :: (obj: *IDWriteFontFamily) -> *IDWriteFontFamily_VTable { return obj.id
 
 
 IDWriteFont :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefont_vtable: *IDWriteFont_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefont_vtable: *IDWriteFont_VTable;
 }
 IDWriteFont_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetFontFamily: (this: *IDWriteFont, fontFamily: **IDWriteFontFamily) -> HRESULT #cpp_method;
-    GetWeight: (this: *IDWriteFont) -> DWRITE_FONT_WEIGHT #cpp_method;
-    GetStretch: (this: *IDWriteFont) -> DWRITE_FONT_STRETCH #cpp_method;
-    GetStyle: (this: *IDWriteFont) -> DWRITE_FONT_STYLE #cpp_method;
-    IsSymbolFont: (this: *IDWriteFont) -> BOOL #cpp_method;
-    GetFaceNames: (this: *IDWriteFont, names: **IDWriteLocalizedStrings) -> HRESULT #cpp_method;
-    GetInformationalStrings: (this: *IDWriteFont, informationalStringID: DWRITE_INFORMATIONAL_STRING_ID, informationalStrings: **IDWriteLocalizedStrings, exists: *BOOL) -> HRESULT #cpp_method;
-    GetSimulations: (this: *IDWriteFont) -> DWRITE_FONT_SIMULATIONS #cpp_method;
-    GetMetrics: (this: *IDWriteFont, fontMetrics: *DWRITE_FONT_METRICS) -> void #cpp_method;
-    HasCharacter: (this: *IDWriteFont, unicodeValue: u32, exists: *BOOL) -> HRESULT #cpp_method;
-    CreateFontFace: (this: *IDWriteFont, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetFontFamily: (this: *IDWriteFont, fontFamily: **IDWriteFontFamily) -> HRESULT #cpp_method;
+	GetWeight: (this: *IDWriteFont) -> DWRITE_FONT_WEIGHT #cpp_method;
+	GetStretch: (this: *IDWriteFont) -> DWRITE_FONT_STRETCH #cpp_method;
+	GetStyle: (this: *IDWriteFont) -> DWRITE_FONT_STYLE #cpp_method;
+	IsSymbolFont: (this: *IDWriteFont) -> BOOL #cpp_method;
+	GetFaceNames: (this: *IDWriteFont, names: **IDWriteLocalizedStrings) -> HRESULT #cpp_method;
+	GetInformationalStrings: (this: *IDWriteFont, informationalStringID: DWRITE_INFORMATIONAL_STRING_ID, informationalStrings: **IDWriteLocalizedStrings, exists: *BOOL) -> HRESULT #cpp_method;
+	GetSimulations: (this: *IDWriteFont) -> DWRITE_FONT_SIMULATIONS #cpp_method;
+	GetMetrics: (this: *IDWriteFont, fontMetrics: *DWRITE_FONT_METRICS) -> void #cpp_method;
+	HasCharacter: (this: *IDWriteFont, unicodeValue: u32, exists: *BOOL) -> HRESULT #cpp_method;
+	CreateFontFace: (this: *IDWriteFont, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
 }
 IDWriteFont_GetFontFamily :: inline (this: *IDWriteFont, fontFamily: **IDWriteFontFamily) -> HRESULT { return this.idwritefont_vtable.GetFontFamily(this, fontFamily); }
 IDWriteFont_GetWeight :: inline (this: *IDWriteFont) -> DWRITE_FONT_WEIGHT { return this.idwritefont_vtable.GetWeight(this); }
@@ -973,346 +973,346 @@ vtable :: (obj: *IDWriteFont) -> *IDWriteFont_VTable { return obj.idwritefont_vt
 
 
 DWRITE_READING_DIRECTION :: enum s32 {
-    LEFT_TO_RIGHT :: 0;
-
-    RIGHT_TO_LEFT :: 1;
-
-    TOP_TO_BOTTOM :: 2;
-
-    BOTTOM_TO_TOP :: 3;
-
-    DWRITE_READING_DIRECTION_LEFT_TO_RIGHT :: LEFT_TO_RIGHT;
-
-    DWRITE_READING_DIRECTION_RIGHT_TO_LEFT :: RIGHT_TO_LEFT;
-
-    DWRITE_READING_DIRECTION_TOP_TO_BOTTOM :: TOP_TO_BOTTOM;
-
-    DWRITE_READING_DIRECTION_BOTTOM_TO_TOP :: BOTTOM_TO_TOP;
+	LEFT_TO_RIGHT :: 0;
+	
+	RIGHT_TO_LEFT :: 1;
+	
+	TOP_TO_BOTTOM :: 2;
+	
+	BOTTOM_TO_TOP :: 3;
+	
+	DWRITE_READING_DIRECTION_LEFT_TO_RIGHT :: LEFT_TO_RIGHT;
+	
+	DWRITE_READING_DIRECTION_RIGHT_TO_LEFT :: RIGHT_TO_LEFT;
+	
+	DWRITE_READING_DIRECTION_TOP_TO_BOTTOM :: TOP_TO_BOTTOM;
+	
+	DWRITE_READING_DIRECTION_BOTTOM_TO_TOP :: BOTTOM_TO_TOP;
 }
 
 DWRITE_FLOW_DIRECTION :: enum s32 {
-    TOP_TO_BOTTOM :: 0;
-
-    BOTTOM_TO_TOP :: 1;
-
-    LEFT_TO_RIGHT :: 2;
-
-    RIGHT_TO_LEFT :: 3;
-
-    DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM :: TOP_TO_BOTTOM;
-
-    DWRITE_FLOW_DIRECTION_BOTTOM_TO_TOP :: BOTTOM_TO_TOP;
-
-    DWRITE_FLOW_DIRECTION_LEFT_TO_RIGHT :: LEFT_TO_RIGHT;
-
-    DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT :: RIGHT_TO_LEFT;
+	TOP_TO_BOTTOM :: 0;
+	
+	BOTTOM_TO_TOP :: 1;
+	
+	LEFT_TO_RIGHT :: 2;
+	
+	RIGHT_TO_LEFT :: 3;
+	
+	DWRITE_FLOW_DIRECTION_TOP_TO_BOTTOM :: TOP_TO_BOTTOM;
+	
+	DWRITE_FLOW_DIRECTION_BOTTOM_TO_TOP :: BOTTOM_TO_TOP;
+	
+	DWRITE_FLOW_DIRECTION_LEFT_TO_RIGHT :: LEFT_TO_RIGHT;
+	
+	DWRITE_FLOW_DIRECTION_RIGHT_TO_LEFT :: RIGHT_TO_LEFT;
 }
 
 DWRITE_TEXT_ALIGNMENT :: enum s32 {
-    LEADING   :: 0;
-
-    TRAILING  :: 1;
-
-    CENTER    :: 2;
-
-    JUSTIFIED :: 3;
-
-    DWRITE_TEXT_ALIGNMENT_LEADING   :: LEADING;
-
-    DWRITE_TEXT_ALIGNMENT_TRAILING  :: TRAILING;
-
-    DWRITE_TEXT_ALIGNMENT_CENTER    :: CENTER;
-
-    DWRITE_TEXT_ALIGNMENT_JUSTIFIED :: JUSTIFIED;
+	LEADING   :: 0;
+	
+	TRAILING  :: 1;
+	
+	CENTER    :: 2;
+	
+	JUSTIFIED :: 3;
+	
+	DWRITE_TEXT_ALIGNMENT_LEADING   :: LEADING;
+	
+	DWRITE_TEXT_ALIGNMENT_TRAILING  :: TRAILING;
+	
+	DWRITE_TEXT_ALIGNMENT_CENTER    :: CENTER;
+	
+	DWRITE_TEXT_ALIGNMENT_JUSTIFIED :: JUSTIFIED;
 }
 
 DWRITE_PARAGRAPH_ALIGNMENT :: enum s32 {
-    NEAR   :: 0;
-
-    FAR    :: 1;
-
-    CENTER :: 2;
-
-    DWRITE_PARAGRAPH_ALIGNMENT_NEAR   :: NEAR;
-
-    DWRITE_PARAGRAPH_ALIGNMENT_FAR    :: FAR;
-
-    DWRITE_PARAGRAPH_ALIGNMENT_CENTER :: CENTER;
+	NEAR   :: 0;
+	
+	FAR    :: 1;
+	
+	CENTER :: 2;
+	
+	DWRITE_PARAGRAPH_ALIGNMENT_NEAR   :: NEAR;
+	
+	DWRITE_PARAGRAPH_ALIGNMENT_FAR    :: FAR;
+	
+	DWRITE_PARAGRAPH_ALIGNMENT_CENTER :: CENTER;
 }
 
 DWRITE_WORD_WRAPPING :: enum s32 {
-    WRAP            :: 0;
-
-    NO_WRAP         :: 1;
-
-    EMERGENCY_BREAK :: 2;
-
-    WHOLE_WORD      :: 3;
-
-    CHARACTER       :: 4;
-
-    DWRITE_WORD_WRAPPING_WRAP            :: WRAP;
-
-    DWRITE_WORD_WRAPPING_NO_WRAP         :: NO_WRAP;
-
-    DWRITE_WORD_WRAPPING_EMERGENCY_BREAK :: EMERGENCY_BREAK;
-
-    DWRITE_WORD_WRAPPING_WHOLE_WORD      :: WHOLE_WORD;
-
-    DWRITE_WORD_WRAPPING_CHARACTER       :: CHARACTER;
+	WRAP            :: 0;
+	
+	NO_WRAP         :: 1;
+	
+	EMERGENCY_BREAK :: 2;
+	
+	WHOLE_WORD      :: 3;
+	
+	CHARACTER       :: 4;
+	
+	DWRITE_WORD_WRAPPING_WRAP            :: WRAP;
+	
+	DWRITE_WORD_WRAPPING_NO_WRAP         :: NO_WRAP;
+	
+	DWRITE_WORD_WRAPPING_EMERGENCY_BREAK :: EMERGENCY_BREAK;
+	
+	DWRITE_WORD_WRAPPING_WHOLE_WORD      :: WHOLE_WORD;
+	
+	DWRITE_WORD_WRAPPING_CHARACTER       :: CHARACTER;
 }
 
 DWRITE_LINE_SPACING_METHOD :: enum s32 {
-    DEFAULT      :: 0;
-
-    UNIFORM      :: 1;
-
-    PROPORTIONAL :: 2;
-
-    DWRITE_LINE_SPACING_METHOD_DEFAULT      :: DEFAULT;
-
-    DWRITE_LINE_SPACING_METHOD_UNIFORM      :: UNIFORM;
-
-    DWRITE_LINE_SPACING_METHOD_PROPORTIONAL :: PROPORTIONAL;
+	DEFAULT      :: 0;
+	
+	UNIFORM      :: 1;
+	
+	PROPORTIONAL :: 2;
+	
+	DWRITE_LINE_SPACING_METHOD_DEFAULT      :: DEFAULT;
+	
+	DWRITE_LINE_SPACING_METHOD_UNIFORM      :: UNIFORM;
+	
+	DWRITE_LINE_SPACING_METHOD_PROPORTIONAL :: PROPORTIONAL;
 }
 
 DWRITE_TRIMMING_GRANULARITY :: enum s32 {
-    NONE      :: 0;
-
-    CHARACTER :: 1;
-
-    WORD      :: 2;
-
-    DWRITE_TRIMMING_GRANULARITY_NONE      :: NONE;
-
-    DWRITE_TRIMMING_GRANULARITY_CHARACTER :: CHARACTER;
-
-    DWRITE_TRIMMING_GRANULARITY_WORD      :: WORD;
+	NONE      :: 0;
+	
+	CHARACTER :: 1;
+	
+	WORD      :: 2;
+	
+	DWRITE_TRIMMING_GRANULARITY_NONE      :: NONE;
+	
+	DWRITE_TRIMMING_GRANULARITY_CHARACTER :: CHARACTER;
+	
+	DWRITE_TRIMMING_GRANULARITY_WORD      :: WORD;
 }
 
 DWRITE_FONT_FEATURE_TAG :: enum s32 {
-    ALTERNATIVE_FRACTIONS            :: 1668441697;
-    PETITE_CAPITALS_FROM_CAPITALS    :: 1668297315;
-    SMALL_CAPITALS_FROM_CAPITALS     :: 1668493923;
-    CONTEXTUAL_ALTERNATES            :: 1953259875;
-    CASE_SENSITIVE_FORMS             :: 1702060387;
-    GLYPH_COMPOSITION_DECOMPOSITION  :: 1886217059;
-    CONTEXTUAL_LIGATURES             :: 1734962275;
-    CAPITAL_SPACING                  :: 1886613603;
-    CONTEXTUAL_SWASH                 :: 1752658787;
-    CURSIVE_POSITIONING              :: 1936880995;
-    DEFAULT                          :: 1953261156;
-    DISCRETIONARY_LIGATURES          :: 1734962276;
-    EXPERT_FORMS                     :: 1953527909;
-    FRACTIONS                        :: 1667330662;
-    FULL_WIDTH                       :: 1684633446;
-    HALF_FORMS                       :: 1718378856;
-    HALANT_FORMS                     :: 1852596584;
-    ALTERNATE_HALF_WIDTH             :: 1953259880;
-    HISTORICAL_FORMS                 :: 1953720680;
-    HORIZONTAL_KANA_ALTERNATES       :: 1634626408;
-    HISTORICAL_LIGATURES             :: 1734962280;
-    HALF_WIDTH                       :: 1684633448;
-    HOJO_KANJI_FORMS                 :: 1869246312;
-    JIS04_FORMS                      :: 875589738;
-    JIS78_FORMS                      :: 943157354;
-    JIS83_FORMS                      :: 859336810;
-    JIS90_FORMS                      :: 809070698;
-    KERNING                          :: 1852990827;
-    STANDARD_LIGATURES               :: 1634167148;
-    LINING_FIGURES                   :: 1836412524;
-    LOCALIZED_FORMS                  :: 1818455916;
-    MARK_POSITIONING                 :: 1802658157;
-    MATHEMATICAL_GREEK               :: 1802659693;
-    MARK_TO_MARK_POSITIONING         :: 1802333037;
-    ALTERNATE_ANNOTATION_FORMS       :: 1953259886;
-    NLC_KANJI_FORMS                  :: 1801677934;
-    OLD_STYLE_FIGURES                :: 1836412527;
-    ORDINALS                         :: 1852076655;
-    PROPORTIONAL_ALTERNATE_WIDTH     :: 1953259888;
-    PETITE_CAPITALS                  :: 1885430640;
-    PROPORTIONAL_FIGURES             :: 1836412528;
-    PROPORTIONAL_WIDTHS              :: 1684633456;
-    QUARTER_WIDTHS                   :: 1684633457;
-    REQUIRED_LIGATURES               :: 1734962290;
-    RUBY_NOTATION_FORMS              :: 2036495730;
-    STYLISTIC_ALTERNATES             :: 1953259891;
-    SCIENTIFIC_INFERIORS             :: 1718511987;
-    SMALL_CAPITALS                   :: 1885564275;
-    SIMPLIFIED_FORMS                 :: 1819307379;
-    STYLISTIC_SET_1                  :: 825258867;
-    STYLISTIC_SET_2                  :: 842036083;
-    STYLISTIC_SET_3                  :: 858813299;
-    STYLISTIC_SET_4                  :: 875590515;
-    STYLISTIC_SET_5                  :: 892367731;
-    STYLISTIC_SET_6                  :: 909144947;
-    STYLISTIC_SET_7                  :: 925922163;
-    STYLISTIC_SET_8                  :: 942699379;
-    STYLISTIC_SET_9                  :: 959476595;
-    STYLISTIC_SET_10                 :: 808547187;
-    STYLISTIC_SET_11                 :: 825324403;
-    STYLISTIC_SET_12                 :: 842101619;
-    STYLISTIC_SET_13                 :: 858878835;
-    STYLISTIC_SET_14                 :: 875656051;
-    STYLISTIC_SET_15                 :: 892433267;
-    STYLISTIC_SET_16                 :: 909210483;
-    STYLISTIC_SET_17                 :: 925987699;
-    STYLISTIC_SET_18                 :: 942764915;
-    STYLISTIC_SET_19                 :: 959542131;
-    STYLISTIC_SET_20                 :: 808612723;
-    SUBSCRIPT                        :: 1935832435;
-    SUPERSCRIPT                      :: 1936749939;
-    SWASH                            :: 1752397683;
-    TITLING                          :: 1819568500;
-    TRADITIONAL_NAME_FORMS           :: 1835101812;
-    TABULAR_FIGURES                  :: 1836412532;
-    TRADITIONAL_FORMS                :: 1684107892;
-    THIRD_WIDTHS                     :: 1684633460;
-    UNICASE                          :: 1667853941;
-    VERTICAL_WRITING                 :: 1953654134;
-    VERTICAL_ALTERNATES_AND_ROTATION :: 846492278;
-    SLASHED_ZERO                     :: 1869768058;
-
-    DWRITE_FONT_FEATURE_TAG_ALTERNATIVE_FRACTIONS            :: ALTERNATIVE_FRACTIONS;
-    DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS_FROM_CAPITALS    :: PETITE_CAPITALS_FROM_CAPITALS;
-    DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS_FROM_CAPITALS     :: SMALL_CAPITALS_FROM_CAPITALS;
-    DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_ALTERNATES            :: CONTEXTUAL_ALTERNATES;
-    DWRITE_FONT_FEATURE_TAG_CASE_SENSITIVE_FORMS             :: CASE_SENSITIVE_FORMS;
-    DWRITE_FONT_FEATURE_TAG_GLYPH_COMPOSITION_DECOMPOSITION  :: GLYPH_COMPOSITION_DECOMPOSITION;
-    DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_LIGATURES             :: CONTEXTUAL_LIGATURES;
-    DWRITE_FONT_FEATURE_TAG_CAPITAL_SPACING                  :: CAPITAL_SPACING;
-    DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_SWASH                 :: CONTEXTUAL_SWASH;
-    DWRITE_FONT_FEATURE_TAG_CURSIVE_POSITIONING              :: CURSIVE_POSITIONING;
-    DWRITE_FONT_FEATURE_TAG_DEFAULT                          :: DEFAULT;
-    DWRITE_FONT_FEATURE_TAG_DISCRETIONARY_LIGATURES          :: DISCRETIONARY_LIGATURES;
-    DWRITE_FONT_FEATURE_TAG_EXPERT_FORMS                     :: EXPERT_FORMS;
-    DWRITE_FONT_FEATURE_TAG_FRACTIONS                        :: FRACTIONS;
-    DWRITE_FONT_FEATURE_TAG_FULL_WIDTH                       :: FULL_WIDTH;
-    DWRITE_FONT_FEATURE_TAG_HALF_FORMS                       :: HALF_FORMS;
-    DWRITE_FONT_FEATURE_TAG_HALANT_FORMS                     :: HALANT_FORMS;
-    DWRITE_FONT_FEATURE_TAG_ALTERNATE_HALF_WIDTH             :: ALTERNATE_HALF_WIDTH;
-    DWRITE_FONT_FEATURE_TAG_HISTORICAL_FORMS                 :: HISTORICAL_FORMS;
-    DWRITE_FONT_FEATURE_TAG_HORIZONTAL_KANA_ALTERNATES       :: HORIZONTAL_KANA_ALTERNATES;
-    DWRITE_FONT_FEATURE_TAG_HISTORICAL_LIGATURES             :: HISTORICAL_LIGATURES;
-    DWRITE_FONT_FEATURE_TAG_HALF_WIDTH                       :: HALF_WIDTH;
-    DWRITE_FONT_FEATURE_TAG_HOJO_KANJI_FORMS                 :: HOJO_KANJI_FORMS;
-    DWRITE_FONT_FEATURE_TAG_JIS04_FORMS                      :: JIS04_FORMS;
-    DWRITE_FONT_FEATURE_TAG_JIS78_FORMS                      :: JIS78_FORMS;
-    DWRITE_FONT_FEATURE_TAG_JIS83_FORMS                      :: JIS83_FORMS;
-    DWRITE_FONT_FEATURE_TAG_JIS90_FORMS                      :: JIS90_FORMS;
-    DWRITE_FONT_FEATURE_TAG_KERNING                          :: KERNING;
-    DWRITE_FONT_FEATURE_TAG_STANDARD_LIGATURES               :: STANDARD_LIGATURES;
-    DWRITE_FONT_FEATURE_TAG_LINING_FIGURES                   :: LINING_FIGURES;
-    DWRITE_FONT_FEATURE_TAG_LOCALIZED_FORMS                  :: LOCALIZED_FORMS;
-    DWRITE_FONT_FEATURE_TAG_MARK_POSITIONING                 :: MARK_POSITIONING;
-    DWRITE_FONT_FEATURE_TAG_MATHEMATICAL_GREEK               :: MATHEMATICAL_GREEK;
-    DWRITE_FONT_FEATURE_TAG_MARK_TO_MARK_POSITIONING         :: MARK_TO_MARK_POSITIONING;
-    DWRITE_FONT_FEATURE_TAG_ALTERNATE_ANNOTATION_FORMS       :: ALTERNATE_ANNOTATION_FORMS;
-    DWRITE_FONT_FEATURE_TAG_NLC_KANJI_FORMS                  :: NLC_KANJI_FORMS;
-    DWRITE_FONT_FEATURE_TAG_OLD_STYLE_FIGURES                :: OLD_STYLE_FIGURES;
-    DWRITE_FONT_FEATURE_TAG_ORDINALS                         :: ORDINALS;
-    DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_ALTERNATE_WIDTH     :: PROPORTIONAL_ALTERNATE_WIDTH;
-    DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS                  :: PETITE_CAPITALS;
-    DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_FIGURES             :: PROPORTIONAL_FIGURES;
-    DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_WIDTHS              :: PROPORTIONAL_WIDTHS;
-    DWRITE_FONT_FEATURE_TAG_QUARTER_WIDTHS                   :: QUARTER_WIDTHS;
-    DWRITE_FONT_FEATURE_TAG_REQUIRED_LIGATURES               :: REQUIRED_LIGATURES;
-    DWRITE_FONT_FEATURE_TAG_RUBY_NOTATION_FORMS              :: RUBY_NOTATION_FORMS;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_ALTERNATES             :: STYLISTIC_ALTERNATES;
-    DWRITE_FONT_FEATURE_TAG_SCIENTIFIC_INFERIORS             :: SCIENTIFIC_INFERIORS;
-    DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS                   :: SMALL_CAPITALS;
-    DWRITE_FONT_FEATURE_TAG_SIMPLIFIED_FORMS                 :: SIMPLIFIED_FORMS;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_1                  :: STYLISTIC_SET_1;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_2                  :: STYLISTIC_SET_2;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_3                  :: STYLISTIC_SET_3;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_4                  :: STYLISTIC_SET_4;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_5                  :: STYLISTIC_SET_5;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_6                  :: STYLISTIC_SET_6;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_7                  :: STYLISTIC_SET_7;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_8                  :: STYLISTIC_SET_8;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_9                  :: STYLISTIC_SET_9;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_10                 :: STYLISTIC_SET_10;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_11                 :: STYLISTIC_SET_11;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_12                 :: STYLISTIC_SET_12;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_13                 :: STYLISTIC_SET_13;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_14                 :: STYLISTIC_SET_14;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_15                 :: STYLISTIC_SET_15;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_16                 :: STYLISTIC_SET_16;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_17                 :: STYLISTIC_SET_17;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_18                 :: STYLISTIC_SET_18;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_19                 :: STYLISTIC_SET_19;
-    DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_20                 :: STYLISTIC_SET_20;
-    DWRITE_FONT_FEATURE_TAG_SUBSCRIPT                        :: SUBSCRIPT;
-    DWRITE_FONT_FEATURE_TAG_SUPERSCRIPT                      :: SUPERSCRIPT;
-    DWRITE_FONT_FEATURE_TAG_SWASH                            :: SWASH;
-    DWRITE_FONT_FEATURE_TAG_TITLING                          :: TITLING;
-    DWRITE_FONT_FEATURE_TAG_TRADITIONAL_NAME_FORMS           :: TRADITIONAL_NAME_FORMS;
-    DWRITE_FONT_FEATURE_TAG_TABULAR_FIGURES                  :: TABULAR_FIGURES;
-    DWRITE_FONT_FEATURE_TAG_TRADITIONAL_FORMS                :: TRADITIONAL_FORMS;
-    DWRITE_FONT_FEATURE_TAG_THIRD_WIDTHS                     :: THIRD_WIDTHS;
-    DWRITE_FONT_FEATURE_TAG_UNICASE                          :: UNICASE;
-    DWRITE_FONT_FEATURE_TAG_VERTICAL_WRITING                 :: VERTICAL_WRITING;
-    DWRITE_FONT_FEATURE_TAG_VERTICAL_ALTERNATES_AND_ROTATION :: VERTICAL_ALTERNATES_AND_ROTATION;
-    DWRITE_FONT_FEATURE_TAG_SLASHED_ZERO                     :: SLASHED_ZERO;
+	ALTERNATIVE_FRACTIONS            :: 1668441697;
+	PETITE_CAPITALS_FROM_CAPITALS    :: 1668297315;
+	SMALL_CAPITALS_FROM_CAPITALS     :: 1668493923;
+	CONTEXTUAL_ALTERNATES            :: 1953259875;
+	CASE_SENSITIVE_FORMS             :: 1702060387;
+	GLYPH_COMPOSITION_DECOMPOSITION  :: 1886217059;
+	CONTEXTUAL_LIGATURES             :: 1734962275;
+	CAPITAL_SPACING                  :: 1886613603;
+	CONTEXTUAL_SWASH                 :: 1752658787;
+	CURSIVE_POSITIONING              :: 1936880995;
+	DEFAULT                          :: 1953261156;
+	DISCRETIONARY_LIGATURES          :: 1734962276;
+	EXPERT_FORMS                     :: 1953527909;
+	FRACTIONS                        :: 1667330662;
+	FULL_WIDTH                       :: 1684633446;
+	HALF_FORMS                       :: 1718378856;
+	HALANT_FORMS                     :: 1852596584;
+	ALTERNATE_HALF_WIDTH             :: 1953259880;
+	HISTORICAL_FORMS                 :: 1953720680;
+	HORIZONTAL_KANA_ALTERNATES       :: 1634626408;
+	HISTORICAL_LIGATURES             :: 1734962280;
+	HALF_WIDTH                       :: 1684633448;
+	HOJO_KANJI_FORMS                 :: 1869246312;
+	JIS04_FORMS                      :: 875589738;
+	JIS78_FORMS                      :: 943157354;
+	JIS83_FORMS                      :: 859336810;
+	JIS90_FORMS                      :: 809070698;
+	KERNING                          :: 1852990827;
+	STANDARD_LIGATURES               :: 1634167148;
+	LINING_FIGURES                   :: 1836412524;
+	LOCALIZED_FORMS                  :: 1818455916;
+	MARK_POSITIONING                 :: 1802658157;
+	MATHEMATICAL_GREEK               :: 1802659693;
+	MARK_TO_MARK_POSITIONING         :: 1802333037;
+	ALTERNATE_ANNOTATION_FORMS       :: 1953259886;
+	NLC_KANJI_FORMS                  :: 1801677934;
+	OLD_STYLE_FIGURES                :: 1836412527;
+	ORDINALS                         :: 1852076655;
+	PROPORTIONAL_ALTERNATE_WIDTH     :: 1953259888;
+	PETITE_CAPITALS                  :: 1885430640;
+	PROPORTIONAL_FIGURES             :: 1836412528;
+	PROPORTIONAL_WIDTHS              :: 1684633456;
+	QUARTER_WIDTHS                   :: 1684633457;
+	REQUIRED_LIGATURES               :: 1734962290;
+	RUBY_NOTATION_FORMS              :: 2036495730;
+	STYLISTIC_ALTERNATES             :: 1953259891;
+	SCIENTIFIC_INFERIORS             :: 1718511987;
+	SMALL_CAPITALS                   :: 1885564275;
+	SIMPLIFIED_FORMS                 :: 1819307379;
+	STYLISTIC_SET_1                  :: 825258867;
+	STYLISTIC_SET_2                  :: 842036083;
+	STYLISTIC_SET_3                  :: 858813299;
+	STYLISTIC_SET_4                  :: 875590515;
+	STYLISTIC_SET_5                  :: 892367731;
+	STYLISTIC_SET_6                  :: 909144947;
+	STYLISTIC_SET_7                  :: 925922163;
+	STYLISTIC_SET_8                  :: 942699379;
+	STYLISTIC_SET_9                  :: 959476595;
+	STYLISTIC_SET_10                 :: 808547187;
+	STYLISTIC_SET_11                 :: 825324403;
+	STYLISTIC_SET_12                 :: 842101619;
+	STYLISTIC_SET_13                 :: 858878835;
+	STYLISTIC_SET_14                 :: 875656051;
+	STYLISTIC_SET_15                 :: 892433267;
+	STYLISTIC_SET_16                 :: 909210483;
+	STYLISTIC_SET_17                 :: 925987699;
+	STYLISTIC_SET_18                 :: 942764915;
+	STYLISTIC_SET_19                 :: 959542131;
+	STYLISTIC_SET_20                 :: 808612723;
+	SUBSCRIPT                        :: 1935832435;
+	SUPERSCRIPT                      :: 1936749939;
+	SWASH                            :: 1752397683;
+	TITLING                          :: 1819568500;
+	TRADITIONAL_NAME_FORMS           :: 1835101812;
+	TABULAR_FIGURES                  :: 1836412532;
+	TRADITIONAL_FORMS                :: 1684107892;
+	THIRD_WIDTHS                     :: 1684633460;
+	UNICASE                          :: 1667853941;
+	VERTICAL_WRITING                 :: 1953654134;
+	VERTICAL_ALTERNATES_AND_ROTATION :: 846492278;
+	SLASHED_ZERO                     :: 1869768058;
+	
+	DWRITE_FONT_FEATURE_TAG_ALTERNATIVE_FRACTIONS            :: ALTERNATIVE_FRACTIONS;
+	DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS_FROM_CAPITALS    :: PETITE_CAPITALS_FROM_CAPITALS;
+	DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS_FROM_CAPITALS     :: SMALL_CAPITALS_FROM_CAPITALS;
+	DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_ALTERNATES            :: CONTEXTUAL_ALTERNATES;
+	DWRITE_FONT_FEATURE_TAG_CASE_SENSITIVE_FORMS             :: CASE_SENSITIVE_FORMS;
+	DWRITE_FONT_FEATURE_TAG_GLYPH_COMPOSITION_DECOMPOSITION  :: GLYPH_COMPOSITION_DECOMPOSITION;
+	DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_LIGATURES             :: CONTEXTUAL_LIGATURES;
+	DWRITE_FONT_FEATURE_TAG_CAPITAL_SPACING                  :: CAPITAL_SPACING;
+	DWRITE_FONT_FEATURE_TAG_CONTEXTUAL_SWASH                 :: CONTEXTUAL_SWASH;
+	DWRITE_FONT_FEATURE_TAG_CURSIVE_POSITIONING              :: CURSIVE_POSITIONING;
+	DWRITE_FONT_FEATURE_TAG_DEFAULT                          :: DEFAULT;
+	DWRITE_FONT_FEATURE_TAG_DISCRETIONARY_LIGATURES          :: DISCRETIONARY_LIGATURES;
+	DWRITE_FONT_FEATURE_TAG_EXPERT_FORMS                     :: EXPERT_FORMS;
+	DWRITE_FONT_FEATURE_TAG_FRACTIONS                        :: FRACTIONS;
+	DWRITE_FONT_FEATURE_TAG_FULL_WIDTH                       :: FULL_WIDTH;
+	DWRITE_FONT_FEATURE_TAG_HALF_FORMS                       :: HALF_FORMS;
+	DWRITE_FONT_FEATURE_TAG_HALANT_FORMS                     :: HALANT_FORMS;
+	DWRITE_FONT_FEATURE_TAG_ALTERNATE_HALF_WIDTH             :: ALTERNATE_HALF_WIDTH;
+	DWRITE_FONT_FEATURE_TAG_HISTORICAL_FORMS                 :: HISTORICAL_FORMS;
+	DWRITE_FONT_FEATURE_TAG_HORIZONTAL_KANA_ALTERNATES       :: HORIZONTAL_KANA_ALTERNATES;
+	DWRITE_FONT_FEATURE_TAG_HISTORICAL_LIGATURES             :: HISTORICAL_LIGATURES;
+	DWRITE_FONT_FEATURE_TAG_HALF_WIDTH                       :: HALF_WIDTH;
+	DWRITE_FONT_FEATURE_TAG_HOJO_KANJI_FORMS                 :: HOJO_KANJI_FORMS;
+	DWRITE_FONT_FEATURE_TAG_JIS04_FORMS                      :: JIS04_FORMS;
+	DWRITE_FONT_FEATURE_TAG_JIS78_FORMS                      :: JIS78_FORMS;
+	DWRITE_FONT_FEATURE_TAG_JIS83_FORMS                      :: JIS83_FORMS;
+	DWRITE_FONT_FEATURE_TAG_JIS90_FORMS                      :: JIS90_FORMS;
+	DWRITE_FONT_FEATURE_TAG_KERNING                          :: KERNING;
+	DWRITE_FONT_FEATURE_TAG_STANDARD_LIGATURES               :: STANDARD_LIGATURES;
+	DWRITE_FONT_FEATURE_TAG_LINING_FIGURES                   :: LINING_FIGURES;
+	DWRITE_FONT_FEATURE_TAG_LOCALIZED_FORMS                  :: LOCALIZED_FORMS;
+	DWRITE_FONT_FEATURE_TAG_MARK_POSITIONING                 :: MARK_POSITIONING;
+	DWRITE_FONT_FEATURE_TAG_MATHEMATICAL_GREEK               :: MATHEMATICAL_GREEK;
+	DWRITE_FONT_FEATURE_TAG_MARK_TO_MARK_POSITIONING         :: MARK_TO_MARK_POSITIONING;
+	DWRITE_FONT_FEATURE_TAG_ALTERNATE_ANNOTATION_FORMS       :: ALTERNATE_ANNOTATION_FORMS;
+	DWRITE_FONT_FEATURE_TAG_NLC_KANJI_FORMS                  :: NLC_KANJI_FORMS;
+	DWRITE_FONT_FEATURE_TAG_OLD_STYLE_FIGURES                :: OLD_STYLE_FIGURES;
+	DWRITE_FONT_FEATURE_TAG_ORDINALS                         :: ORDINALS;
+	DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_ALTERNATE_WIDTH     :: PROPORTIONAL_ALTERNATE_WIDTH;
+	DWRITE_FONT_FEATURE_TAG_PETITE_CAPITALS                  :: PETITE_CAPITALS;
+	DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_FIGURES             :: PROPORTIONAL_FIGURES;
+	DWRITE_FONT_FEATURE_TAG_PROPORTIONAL_WIDTHS              :: PROPORTIONAL_WIDTHS;
+	DWRITE_FONT_FEATURE_TAG_QUARTER_WIDTHS                   :: QUARTER_WIDTHS;
+	DWRITE_FONT_FEATURE_TAG_REQUIRED_LIGATURES               :: REQUIRED_LIGATURES;
+	DWRITE_FONT_FEATURE_TAG_RUBY_NOTATION_FORMS              :: RUBY_NOTATION_FORMS;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_ALTERNATES             :: STYLISTIC_ALTERNATES;
+	DWRITE_FONT_FEATURE_TAG_SCIENTIFIC_INFERIORS             :: SCIENTIFIC_INFERIORS;
+	DWRITE_FONT_FEATURE_TAG_SMALL_CAPITALS                   :: SMALL_CAPITALS;
+	DWRITE_FONT_FEATURE_TAG_SIMPLIFIED_FORMS                 :: SIMPLIFIED_FORMS;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_1                  :: STYLISTIC_SET_1;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_2                  :: STYLISTIC_SET_2;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_3                  :: STYLISTIC_SET_3;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_4                  :: STYLISTIC_SET_4;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_5                  :: STYLISTIC_SET_5;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_6                  :: STYLISTIC_SET_6;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_7                  :: STYLISTIC_SET_7;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_8                  :: STYLISTIC_SET_8;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_9                  :: STYLISTIC_SET_9;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_10                 :: STYLISTIC_SET_10;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_11                 :: STYLISTIC_SET_11;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_12                 :: STYLISTIC_SET_12;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_13                 :: STYLISTIC_SET_13;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_14                 :: STYLISTIC_SET_14;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_15                 :: STYLISTIC_SET_15;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_16                 :: STYLISTIC_SET_16;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_17                 :: STYLISTIC_SET_17;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_18                 :: STYLISTIC_SET_18;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_19                 :: STYLISTIC_SET_19;
+	DWRITE_FONT_FEATURE_TAG_STYLISTIC_SET_20                 :: STYLISTIC_SET_20;
+	DWRITE_FONT_FEATURE_TAG_SUBSCRIPT                        :: SUBSCRIPT;
+	DWRITE_FONT_FEATURE_TAG_SUPERSCRIPT                      :: SUPERSCRIPT;
+	DWRITE_FONT_FEATURE_TAG_SWASH                            :: SWASH;
+	DWRITE_FONT_FEATURE_TAG_TITLING                          :: TITLING;
+	DWRITE_FONT_FEATURE_TAG_TRADITIONAL_NAME_FORMS           :: TRADITIONAL_NAME_FORMS;
+	DWRITE_FONT_FEATURE_TAG_TABULAR_FIGURES                  :: TABULAR_FIGURES;
+	DWRITE_FONT_FEATURE_TAG_TRADITIONAL_FORMS                :: TRADITIONAL_FORMS;
+	DWRITE_FONT_FEATURE_TAG_THIRD_WIDTHS                     :: THIRD_WIDTHS;
+	DWRITE_FONT_FEATURE_TAG_UNICASE                          :: UNICASE;
+	DWRITE_FONT_FEATURE_TAG_VERTICAL_WRITING                 :: VERTICAL_WRITING;
+	DWRITE_FONT_FEATURE_TAG_VERTICAL_ALTERNATES_AND_ROTATION :: VERTICAL_ALTERNATES_AND_ROTATION;
+	DWRITE_FONT_FEATURE_TAG_SLASHED_ZERO                     :: SLASHED_ZERO;
 }
 
 DWRITE_TEXT_RANGE :: struct {
-    startPosition: u32;
-
-    length:        u32;
+	startPosition: u32;
+	
+	length:        u32;
 }
 
 DWRITE_FONT_FEATURE :: struct {
-    nameTag:   DWRITE_FONT_FEATURE_TAG;
-
-    parameter: u32;
+	nameTag:   DWRITE_FONT_FEATURE_TAG;
+	
+	parameter: u32;
 }
 
 DWRITE_TYPOGRAPHIC_FEATURES :: struct {
-    features:     *DWRITE_FONT_FEATURE;
-
-    featureCount: u32;
+	features:     *DWRITE_FONT_FEATURE;
+	
+	featureCount: u32;
 }
 
 DWRITE_TRIMMING :: struct {
-    granularity:    DWRITE_TRIMMING_GRANULARITY;
-
-    delimiter:      u32;
-
-    delimiterCount: u32;
+	granularity:    DWRITE_TRIMMING_GRANULARITY;
+	
+	delimiter:      u32;
+	
+	delimiterCount: u32;
 }
 
 IDWriteTextFormat :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritetextformat_vtable: *IDWriteTextFormat_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritetextformat_vtable: *IDWriteTextFormat_VTable;
 }
 IDWriteTextFormat_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    SetTextAlignment: (this: *IDWriteTextFormat, textAlignment: DWRITE_TEXT_ALIGNMENT) -> HRESULT #cpp_method;
-    SetParagraphAlignment: (this: *IDWriteTextFormat, paragraphAlignment: DWRITE_PARAGRAPH_ALIGNMENT) -> HRESULT #cpp_method;
-    SetWordWrapping: (this: *IDWriteTextFormat, wordWrapping: DWRITE_WORD_WRAPPING) -> HRESULT #cpp_method;
-    SetReadingDirection: (this: *IDWriteTextFormat, readingDirection: DWRITE_READING_DIRECTION) -> HRESULT #cpp_method;
-    SetFlowDirection: (this: *IDWriteTextFormat, flowDirection: DWRITE_FLOW_DIRECTION) -> HRESULT #cpp_method;
-    SetIncrementalTabStop: (this: *IDWriteTextFormat, incrementalTabStop: float) -> HRESULT #cpp_method;
-    SetTrimming: (this: *IDWriteTextFormat, trimmingOptions: *DWRITE_TRIMMING, trimmingSign: *IDWriteInlineObject) -> HRESULT #cpp_method;
-    SetLineSpacing: (this: *IDWriteTextFormat, lineSpacingMethod: DWRITE_LINE_SPACING_METHOD, lineSpacing: float, baseline: float) -> HRESULT #cpp_method;
-    GetTextAlignment: (this: *IDWriteTextFormat) -> DWRITE_TEXT_ALIGNMENT #cpp_method;
-    GetParagraphAlignment: (this: *IDWriteTextFormat) -> DWRITE_PARAGRAPH_ALIGNMENT #cpp_method;
-    GetWordWrapping: (this: *IDWriteTextFormat) -> DWRITE_WORD_WRAPPING #cpp_method;
-    GetReadingDirection: (this: *IDWriteTextFormat) -> DWRITE_READING_DIRECTION #cpp_method;
-    GetFlowDirection: (this: *IDWriteTextFormat) -> DWRITE_FLOW_DIRECTION #cpp_method;
-    GetIncrementalTabStop: (this: *IDWriteTextFormat) -> float #cpp_method;
-    GetTrimming: (this: *IDWriteTextFormat, trimmingOptions: *DWRITE_TRIMMING, trimmingSign: **IDWriteInlineObject) -> HRESULT #cpp_method;
-    GetLineSpacing: (this: *IDWriteTextFormat, lineSpacingMethod: *DWRITE_LINE_SPACING_METHOD, lineSpacing: *float, baseline: *float) -> HRESULT #cpp_method;
-    GetFontCollection: (this: *IDWriteTextFormat, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
-    GetFontFamilyNameLength: (this: *IDWriteTextFormat) -> u32 #cpp_method;
-    GetFontFamilyName: (this: *IDWriteTextFormat, fontFamilyName: *s16, nameSize: u32) -> HRESULT #cpp_method;
-    GetFontWeight: (this: *IDWriteTextFormat) -> DWRITE_FONT_WEIGHT #cpp_method;
-    GetFontStyle: (this: *IDWriteTextFormat) -> DWRITE_FONT_STYLE #cpp_method;
-    GetFontStretch: (this: *IDWriteTextFormat) -> DWRITE_FONT_STRETCH #cpp_method;
-    GetFontSize: (this: *IDWriteTextFormat) -> float #cpp_method;
-    GetLocaleNameLength: (this: *IDWriteTextFormat) -> u32 #cpp_method;
-    GetLocaleName: (this: *IDWriteTextFormat, localeName: *s16, nameSize: u32) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	SetTextAlignment: (this: *IDWriteTextFormat, textAlignment: DWRITE_TEXT_ALIGNMENT) -> HRESULT #cpp_method;
+	SetParagraphAlignment: (this: *IDWriteTextFormat, paragraphAlignment: DWRITE_PARAGRAPH_ALIGNMENT) -> HRESULT #cpp_method;
+	SetWordWrapping: (this: *IDWriteTextFormat, wordWrapping: DWRITE_WORD_WRAPPING) -> HRESULT #cpp_method;
+	SetReadingDirection: (this: *IDWriteTextFormat, readingDirection: DWRITE_READING_DIRECTION) -> HRESULT #cpp_method;
+	SetFlowDirection: (this: *IDWriteTextFormat, flowDirection: DWRITE_FLOW_DIRECTION) -> HRESULT #cpp_method;
+	SetIncrementalTabStop: (this: *IDWriteTextFormat, incrementalTabStop: float) -> HRESULT #cpp_method;
+	SetTrimming: (this: *IDWriteTextFormat, trimmingOptions: *DWRITE_TRIMMING, trimmingSign: *IDWriteInlineObject) -> HRESULT #cpp_method;
+	SetLineSpacing: (this: *IDWriteTextFormat, lineSpacingMethod: DWRITE_LINE_SPACING_METHOD, lineSpacing: float, baseline: float) -> HRESULT #cpp_method;
+	GetTextAlignment: (this: *IDWriteTextFormat) -> DWRITE_TEXT_ALIGNMENT #cpp_method;
+	GetParagraphAlignment: (this: *IDWriteTextFormat) -> DWRITE_PARAGRAPH_ALIGNMENT #cpp_method;
+	GetWordWrapping: (this: *IDWriteTextFormat) -> DWRITE_WORD_WRAPPING #cpp_method;
+	GetReadingDirection: (this: *IDWriteTextFormat) -> DWRITE_READING_DIRECTION #cpp_method;
+	GetFlowDirection: (this: *IDWriteTextFormat) -> DWRITE_FLOW_DIRECTION #cpp_method;
+	GetIncrementalTabStop: (this: *IDWriteTextFormat) -> float #cpp_method;
+	GetTrimming: (this: *IDWriteTextFormat, trimmingOptions: *DWRITE_TRIMMING, trimmingSign: **IDWriteInlineObject) -> HRESULT #cpp_method;
+	GetLineSpacing: (this: *IDWriteTextFormat, lineSpacingMethod: *DWRITE_LINE_SPACING_METHOD, lineSpacing: *float, baseline: *float) -> HRESULT #cpp_method;
+	GetFontCollection: (this: *IDWriteTextFormat, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
+	GetFontFamilyNameLength: (this: *IDWriteTextFormat) -> u32 #cpp_method;
+	GetFontFamilyName: (this: *IDWriteTextFormat, fontFamilyName: *s16, nameSize: u32) -> HRESULT #cpp_method;
+	GetFontWeight: (this: *IDWriteTextFormat) -> DWRITE_FONT_WEIGHT #cpp_method;
+	GetFontStyle: (this: *IDWriteTextFormat) -> DWRITE_FONT_STYLE #cpp_method;
+	GetFontStretch: (this: *IDWriteTextFormat) -> DWRITE_FONT_STRETCH #cpp_method;
+	GetFontSize: (this: *IDWriteTextFormat) -> float #cpp_method;
+	GetLocaleNameLength: (this: *IDWriteTextFormat) -> u32 #cpp_method;
+	GetLocaleName: (this: *IDWriteTextFormat, localeName: *s16, nameSize: u32) -> HRESULT #cpp_method;
 }
 IDWriteTextFormat_SetTextAlignment :: inline (this: *IDWriteTextFormat, textAlignment: DWRITE_TEXT_ALIGNMENT) -> HRESULT { return this.idwritetextformat_vtable.SetTextAlignment(this, textAlignment); }
 IDWriteTextFormat_SetParagraphAlignment :: inline (this: *IDWriteTextFormat, paragraphAlignment: DWRITE_PARAGRAPH_ALIGNMENT) -> HRESULT { return this.idwritetextformat_vtable.SetParagraphAlignment(this, paragraphAlignment); }
@@ -1344,14 +1344,14 @@ vtable :: (obj: *IDWriteTextFormat) -> *IDWriteTextFormat_VTable { return obj.id
 
 
 IDWriteTypography :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritetypography_vtable: *IDWriteTypography_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritetypography_vtable: *IDWriteTypography_VTable;
 }
 IDWriteTypography_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    AddFontFeature: (this: *IDWriteTypography, fontFeature: DWRITE_FONT_FEATURE) -> HRESULT #cpp_method;
-    GetFontFeatureCount: (this: *IDWriteTypography) -> u32 #cpp_method;
-    GetFontFeature: (this: *IDWriteTypography, fontFeatureIndex: u32, fontFeature: *DWRITE_FONT_FEATURE) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	AddFontFeature: (this: *IDWriteTypography, fontFeature: DWRITE_FONT_FEATURE) -> HRESULT #cpp_method;
+	GetFontFeatureCount: (this: *IDWriteTypography) -> u32 #cpp_method;
+	GetFontFeature: (this: *IDWriteTypography, fontFeatureIndex: u32, fontFeature: *DWRITE_FONT_FEATURE) -> HRESULT #cpp_method;
 }
 IDWriteTypography_AddFontFeature :: inline (this: *IDWriteTypography, fontFeature: DWRITE_FONT_FEATURE) -> HRESULT { return this.idwritetypography_vtable.AddFontFeature(this, fontFeature); }
 IDWriteTypography_GetFontFeatureCount :: inline (this: *IDWriteTypography) -> u32 { return this.idwritetypography_vtable.GetFontFeatureCount(this); }
@@ -1361,108 +1361,108 @@ vtable :: (obj: *IDWriteTypography) -> *IDWriteTypography_VTable { return obj.id
 
 
 DWRITE_SCRIPT_SHAPES :: enum s32 {
-    DEFAULT   :: 0;
-
-    NO_VISUAL :: 1;
-
-    DWRITE_SCRIPT_SHAPES_DEFAULT   :: DEFAULT;
-
-    DWRITE_SCRIPT_SHAPES_NO_VISUAL :: NO_VISUAL;
+	DEFAULT   :: 0;
+	
+	NO_VISUAL :: 1;
+	
+	DWRITE_SCRIPT_SHAPES_DEFAULT   :: DEFAULT;
+	
+	DWRITE_SCRIPT_SHAPES_NO_VISUAL :: NO_VISUAL;
 }
 
 DWRITE_SCRIPT_ANALYSIS :: struct {
-    script: u16;
-
-    shapes: DWRITE_SCRIPT_SHAPES;
+	script: u16;
+	
+	shapes: DWRITE_SCRIPT_SHAPES;
 }
 
 DWRITE_BREAK_CONDITION :: enum s32 {
-    NEUTRAL       :: 0;
-
-    CAN_BREAK     :: 1;
-
-    MAY_NOT_BREAK :: 2;
-
-    MUST_BREAK    :: 3;
-
-    DWRITE_BREAK_CONDITION_NEUTRAL       :: NEUTRAL;
-
-    DWRITE_BREAK_CONDITION_CAN_BREAK     :: CAN_BREAK;
-
-    DWRITE_BREAK_CONDITION_MAY_NOT_BREAK :: MAY_NOT_BREAK;
-
-    DWRITE_BREAK_CONDITION_MUST_BREAK    :: MUST_BREAK;
+	NEUTRAL       :: 0;
+	
+	CAN_BREAK     :: 1;
+	
+	MAY_NOT_BREAK :: 2;
+	
+	MUST_BREAK    :: 3;
+	
+	DWRITE_BREAK_CONDITION_NEUTRAL       :: NEUTRAL;
+	
+	DWRITE_BREAK_CONDITION_CAN_BREAK     :: CAN_BREAK;
+	
+	DWRITE_BREAK_CONDITION_MAY_NOT_BREAK :: MAY_NOT_BREAK;
+	
+	DWRITE_BREAK_CONDITION_MUST_BREAK    :: MUST_BREAK;
 }
 
 DWRITE_LINE_BREAKPOINT :: struct {
-    __bitfield: u8;
-    /* 
-        breakConditionBefore: u8; /* 2 bits */
-        breakConditionAfter: u8; /* 2 bits */
-        isWhitespace: u8; /* 1 bits */
-        isSoftHyphen: u8; /* 1 bits */
-        padding: u8; /* 2 bits */;
-    */
+	__bitfield: u8;
+	/* 
+			breakConditionBefore: u8; /* 2 bits */
+	breakConditionAfter: u8; /* 2 bits */
+	isWhitespace: u8; /* 1 bits */
+	isSoftHyphen: u8; /* 1 bits */
+	padding: u8; /* 2 bits */;
+	*/
 }
 
 DWRITE_NUMBER_SUBSTITUTION_METHOD :: enum s32 {
-    FROM_CULTURE :: 0;
-
-    CONTEXTUAL   :: 1;
-
-    NONE         :: 2;
-
-    NATIONAL     :: 3;
-
-    TRADITIONAL  :: 4;
-
-    DWRITE_NUMBER_SUBSTITUTION_METHOD_FROM_CULTURE :: FROM_CULTURE;
-
-    DWRITE_NUMBER_SUBSTITUTION_METHOD_CONTEXTUAL   :: CONTEXTUAL;
-
-    DWRITE_NUMBER_SUBSTITUTION_METHOD_NONE         :: NONE;
-
-    DWRITE_NUMBER_SUBSTITUTION_METHOD_NATIONAL     :: NATIONAL;
-
-    DWRITE_NUMBER_SUBSTITUTION_METHOD_TRADITIONAL  :: TRADITIONAL;
+	FROM_CULTURE :: 0;
+	
+	CONTEXTUAL   :: 1;
+	
+	NONE         :: 2;
+	
+	NATIONAL     :: 3;
+	
+	TRADITIONAL  :: 4;
+	
+	DWRITE_NUMBER_SUBSTITUTION_METHOD_FROM_CULTURE :: FROM_CULTURE;
+	
+	DWRITE_NUMBER_SUBSTITUTION_METHOD_CONTEXTUAL   :: CONTEXTUAL;
+	
+	DWRITE_NUMBER_SUBSTITUTION_METHOD_NONE         :: NONE;
+	
+	DWRITE_NUMBER_SUBSTITUTION_METHOD_NATIONAL     :: NATIONAL;
+	
+	DWRITE_NUMBER_SUBSTITUTION_METHOD_TRADITIONAL  :: TRADITIONAL;
 }
 
 IDWriteNumberSubstitution :: struct {
-    #as using iunknown: IUnknown;
+#as using iunknown: IUnknown;
 }
 
 DWRITE_SHAPING_TEXT_PROPERTIES :: struct {
-    __bitfield: u16;
-    /* 
-        isShapedAlone: u16; /* 1 bits */
-        reserved1: u16; /* 1 bits */
-        canBreakShapingAfter: u16; /* 1 bits */
-        reserved: u16; /* 13 bits */;
-    */
+	__bitfield: u16;
+	/* 
+			isShapedAlone: u16; /* 1 bits */
+	reserved1: u16; /* 1 bits */
+	canBreakShapingAfter: u16; /* 1 bits */
+	reserved: u16; /* 13 bits */;
+	*/
 }
 
 DWRITE_SHAPING_GLYPH_PROPERTIES :: struct {
-    __bitfield: u16;
-    /* 
-        justification: u16; /* 4 bits */
-        isClusterStart: u16; /* 1 bits */
-        isDiacritic: u16; /* 1 bits */
-        isZeroWidthSpace: u16; /* 1 bits */
-        reserved: u16; /* 9 bits */;
-    */
+	__bitfield: u16;
+	/* 
+			justification: u16; /* 4 bits */
+	isClusterStart: u16; /* 1 bits */
+	isDiacritic: u16; /* 1 bits */
+	isZeroWidthSpace: u16; /* 1 bits */
+	reserved: u16; /* 9 bits */;
+	*/
 }
 
 IDWriteTextAnalysisSource :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritetextanalysissource_vtable: *IDWriteTextAnalysisSource_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritetextanalysissource_vtable: *IDWriteTextAnalysisSource_VTable;
 }
 IDWriteTextAnalysisSource_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetTextAtPosition: (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT #cpp_method;
-    GetTextBeforePosition: (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT #cpp_method;
-    GetParagraphReadingDirection: (this: *IDWriteTextAnalysisSource) -> DWRITE_READING_DIRECTION #cpp_method;
-    GetLocaleName: (this: *IDWriteTextAnalysisSource, textPosition: u32, textLength: *u32, localeName: **s16) -> HRESULT #cpp_method;
-    GetNumberSubstitution: (this: *IDWriteTextAnalysisSource, textPosition: u32, textLength: *u32, numberSubstitution: **IDWriteNumberSubstitution) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetTextAtPosition: (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT #cpp_method;
+	GetTextBeforePosition: (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT #cpp_method;
+	GetParagraphReadingDirection: (this: *IDWriteTextAnalysisSource) -> DWRITE_READING_DIRECTION #cpp_method;
+	GetLocaleName: (this: *IDWriteTextAnalysisSource, textPosition: u32, textLength: *u32, localeName: **s16) -> HRESULT #cpp_method;
+	GetNumberSubstitution: (this: *IDWriteTextAnalysisSource, textPosition: u32, textLength: *u32, numberSubstitution: **IDWriteNumberSubstitution) -> HRESULT #cpp_method;
 }
 IDWriteTextAnalysisSource_GetTextAtPosition :: inline (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT { return this.idwritetextanalysissource_vtable.GetTextAtPosition(this, textPosition, textString, textLength); }
 IDWriteTextAnalysisSource_GetTextBeforePosition :: inline (this: *IDWriteTextAnalysisSource, textPosition: u32, textString: **s16, textLength: *u32) -> HRESULT { return this.idwritetextanalysissource_vtable.GetTextBeforePosition(this, textPosition, textString, textLength); }
@@ -1474,15 +1474,15 @@ vtable :: (obj: *IDWriteTextAnalysisSource) -> *IDWriteTextAnalysisSource_VTable
 
 
 IDWriteTextAnalysisSink :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritetextanalysissink_vtable: *IDWriteTextAnalysisSink_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritetextanalysissink_vtable: *IDWriteTextAnalysisSink_VTable;
 }
 IDWriteTextAnalysisSink_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    SetScriptAnalysis: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS) -> HRESULT #cpp_method;
-    SetLineBreakpoints: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, lineBreakpoints: *DWRITE_LINE_BREAKPOINT) -> HRESULT #cpp_method;
-    SetBidiLevel: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, explicitLevel: u8, resolvedLevel: u8) -> HRESULT #cpp_method;
-    SetNumberSubstitution: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, numberSubstitution: *IDWriteNumberSubstitution) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	SetScriptAnalysis: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS) -> HRESULT #cpp_method;
+	SetLineBreakpoints: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, lineBreakpoints: *DWRITE_LINE_BREAKPOINT) -> HRESULT #cpp_method;
+	SetBidiLevel: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, explicitLevel: u8, resolvedLevel: u8) -> HRESULT #cpp_method;
+	SetNumberSubstitution: (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, numberSubstitution: *IDWriteNumberSubstitution) -> HRESULT #cpp_method;
 }
 IDWriteTextAnalysisSink_SetScriptAnalysis :: inline (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS) -> HRESULT { return this.idwritetextanalysissink_vtable.SetScriptAnalysis(this, textPosition, textLength, scriptAnalysis); }
 IDWriteTextAnalysisSink_SetLineBreakpoints :: inline (this: *IDWriteTextAnalysisSink, textPosition: u32, textLength: u32, lineBreakpoints: *DWRITE_LINE_BREAKPOINT) -> HRESULT { return this.idwritetextanalysissink_vtable.SetLineBreakpoints(this, textPosition, textLength, lineBreakpoints); }
@@ -1493,18 +1493,18 @@ vtable :: (obj: *IDWriteTextAnalysisSink) -> *IDWriteTextAnalysisSink_VTable { r
 
 
 IDWriteTextAnalyzer :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritetextanalyzer_vtable: *IDWriteTextAnalyzer_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritetextanalyzer_vtable: *IDWriteTextAnalyzer_VTable;
 }
 IDWriteTextAnalyzer_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    AnalyzeScript: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
-    AnalyzeBidi: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
-    AnalyzeNumberSubstitution: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
-    AnalyzeLineBreakpoints: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
-    GetGlyphs: (this: *IDWriteTextAnalyzer, textString: *s16, textLength: u32, fontFace: *IDWriteFontFace, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, numberSubstitution: *IDWriteNumberSubstitution, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, maxGlyphCount: u32, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, actualGlyphCount: *u32) -> HRESULT #cpp_method;
-    GetGlyphPlacements: (this: *IDWriteTextAnalyzer, textString: *s16, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, textLength: u32, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, glyphCount: u32, fontFace: *IDWriteFontFace, fontEmSize: float, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
-    GetGdiCompatibleGlyphPlacements: (this: *IDWriteTextAnalyzer, textString: *s16, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, textLength: u32, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, glyphCount: u32, fontFace: *IDWriteFontFace, fontEmSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	AnalyzeScript: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
+	AnalyzeBidi: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
+	AnalyzeNumberSubstitution: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
+	AnalyzeLineBreakpoints: (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT #cpp_method;
+	GetGlyphs: (this: *IDWriteTextAnalyzer, textString: *s16, textLength: u32, fontFace: *IDWriteFontFace, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, numberSubstitution: *IDWriteNumberSubstitution, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, maxGlyphCount: u32, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, actualGlyphCount: *u32) -> HRESULT #cpp_method;
+	GetGlyphPlacements: (this: *IDWriteTextAnalyzer, textString: *s16, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, textLength: u32, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, glyphCount: u32, fontFace: *IDWriteFontFace, fontEmSize: float, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
+	GetGdiCompatibleGlyphPlacements: (this: *IDWriteTextAnalyzer, textString: *s16, clusterMap: *u16, textProps: *DWRITE_SHAPING_TEXT_PROPERTIES, textLength: u32, glyphIndices: *u16, glyphProps: *DWRITE_SHAPING_GLYPH_PROPERTIES, glyphCount: u32, fontFace: *IDWriteFontFace, fontEmSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, isSideways: BOOL, isRightToLeft: BOOL, scriptAnalysis: *DWRITE_SCRIPT_ANALYSIS, localeName: *s16, features: **DWRITE_TYPOGRAPHIC_FEATURES, featureRangeLengths: *u32, featureRanges: u32, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
 }
 IDWriteTextAnalyzer_AnalyzeScript :: inline (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT { return this.idwritetextanalyzer_vtable.AnalyzeScript(this, analysisSource, textPosition, textLength, analysisSink); }
 IDWriteTextAnalyzer_AnalyzeBidi :: inline (this: *IDWriteTextAnalyzer, analysisSource: *IDWriteTextAnalysisSource, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink) -> HRESULT { return this.idwritetextanalyzer_vtable.AnalyzeBidi(this, analysisSource, textPosition, textLength, analysisSink); }
@@ -1518,169 +1518,169 @@ vtable :: (obj: *IDWriteTextAnalyzer) -> *IDWriteTextAnalyzer_VTable { return ob
 
 
 DWRITE_GLYPH_RUN :: struct {
-    fontFace:      *IDWriteFontFace;
-
-    fontEmSize:    float;
-
-    glyphCount:    u32;
-
-    glyphIndices:  *u16;
-
-    glyphAdvances: *float;
-
-    glyphOffsets:  *DWRITE_GLYPH_OFFSET;
-
-    isSideways:    BOOL;
-
-    bidiLevel:     u32;
+	fontFace:      *IDWriteFontFace;
+	
+	fontEmSize:    float;
+	
+	glyphCount:    u32;
+	
+	glyphIndices:  *u16;
+	
+	glyphAdvances: *float;
+	
+	glyphOffsets:  *DWRITE_GLYPH_OFFSET;
+	
+	isSideways:    BOOL;
+	
+	bidiLevel:     u32;
 }
 
 DWRITE_GLYPH_RUN_DESCRIPTION :: struct {
-    localeName:   *s16;
-
-    _string:      *s16;
-
-    stringLength: u32;
-
-    clusterMap:   *u16;
-
-    textPosition: u32;
+	localeName:   *s16;
+	
+	_string:      *s16;
+	
+	stringLength: u32;
+	
+	clusterMap:   *u16;
+	
+	textPosition: u32;
 }
 
 DWRITE_UNDERLINE :: struct {
-    width:            float;
-
-    thickness:        float;
-
-    offset:           float;
-
-    runHeight:        float;
-
-    readingDirection: DWRITE_READING_DIRECTION;
-
-    flowDirection:    DWRITE_FLOW_DIRECTION;
-
-    localeName:       *s16;
-
-    measuringMode:    DWRITE_MEASURING_MODE;
+	width:            float;
+	
+	thickness:        float;
+	
+	offset:           float;
+	
+	runHeight:        float;
+	
+	readingDirection: DWRITE_READING_DIRECTION;
+	
+	flowDirection:    DWRITE_FLOW_DIRECTION;
+	
+	localeName:       *s16;
+	
+	measuringMode:    DWRITE_MEASURING_MODE;
 }
 
 DWRITE_STRIKETHROUGH :: struct {
-    width:            float;
-
-    thickness:        float;
-
-    offset:           float;
-
-    readingDirection: DWRITE_READING_DIRECTION;
-
-    flowDirection:    DWRITE_FLOW_DIRECTION;
-
-    localeName:       *s16;
-
-    measuringMode:    DWRITE_MEASURING_MODE;
+	width:            float;
+	
+	thickness:        float;
+	
+	offset:           float;
+	
+	readingDirection: DWRITE_READING_DIRECTION;
+	
+	flowDirection:    DWRITE_FLOW_DIRECTION;
+	
+	localeName:       *s16;
+	
+	measuringMode:    DWRITE_MEASURING_MODE;
 }
 
 DWRITE_LINE_METRICS :: struct {
-    length:                   u32;
-
-    trailingWhitespaceLength: u32;
-
-    newlineLength:            u32;
-
-    height:                   float;
-
-    baseline:                 float;
-
-    isTrimmed:                BOOL;
+	length:                   u32;
+	
+	trailingWhitespaceLength: u32;
+	
+	newlineLength:            u32;
+	
+	height:                   float;
+	
+	baseline:                 float;
+	
+	isTrimmed:                BOOL;
 }
 
 DWRITE_CLUSTER_METRICS :: struct {
-    width:      float;
-
-    length:     u16;
-
-    __bitfield: u16;
-    /* 
-        canWrapLineAfter: u16; /* 1 bits */
-        isWhitespace: u16; /* 1 bits */
-        isNewline: u16; /* 1 bits */
-        isSoftHyphen: u16; /* 1 bits */
-        isRightToLeft: u16; /* 1 bits */
-        padding: u16; /* 11 bits */;
-    */
+	width:      float;
+	
+	length:     u16;
+	
+	__bitfield: u16;
+	/* 
+			canWrapLineAfter: u16; /* 1 bits */
+	isWhitespace: u16; /* 1 bits */
+	isNewline: u16; /* 1 bits */
+	isSoftHyphen: u16; /* 1 bits */
+	isRightToLeft: u16; /* 1 bits */
+	padding: u16; /* 11 bits */;
+	*/
 }
 
 DWRITE_TEXT_METRICS :: struct {
-    left:                             float;
-
-    top:                              float;
-
-    width:                            float;
-
-    widthIncludingTrailingWhitespace: float;
-
-    height:                           float;
-
-    layoutWidth:                      float;
-
-    layoutHeight:                     float;
-
-    maxBidiReorderingDepth:           u32;
-
-    lineCount:                        u32;
+	left:                             float;
+	
+	top:                              float;
+	
+	width:                            float;
+	
+	widthIncludingTrailingWhitespace: float;
+	
+	height:                           float;
+	
+	layoutWidth:                      float;
+	
+	layoutHeight:                     float;
+	
+	maxBidiReorderingDepth:           u32;
+	
+	lineCount:                        u32;
 }
 
 DWRITE_INLINE_OBJECT_METRICS :: struct {
-    width:            float;
-
-    height:           float;
-
-    baseline:         float;
-
-    supportsSideways: BOOL;
+	width:            float;
+	
+	height:           float;
+	
+	baseline:         float;
+	
+	supportsSideways: BOOL;
 }
 
 DWRITE_OVERHANG_METRICS :: struct {
-    left:   float;
-
-    top:    float;
-
-    right:  float;
-
-    bottom: float;
+	left:   float;
+	
+	top:    float;
+	
+	right:  float;
+	
+	bottom: float;
 }
 
 DWRITE_HIT_TEST_METRICS :: struct {
-    textPosition: u32;
-
-    length:       u32;
-
-    left:         float;
-
-    top:          float;
-
-    width:        float;
-
-    height:       float;
-
-    bidiLevel:    u32;
-
-    isText:       BOOL;
-
-    isTrimmed:    BOOL;
+	textPosition: u32;
+	
+	length:       u32;
+	
+	left:         float;
+	
+	top:          float;
+	
+	width:        float;
+	
+	height:       float;
+	
+	bidiLevel:    u32;
+	
+	isText:       BOOL;
+	
+	isTrimmed:    BOOL;
 }
 
 IDWriteInlineObject :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwriteinlineobject_vtable: *IDWriteInlineObject_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwriteinlineobject_vtable: *IDWriteInlineObject_VTable;
 }
 IDWriteInlineObject_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    Draw: (this: *IDWriteInlineObject, clientDrawingContext: *void, renderer: *IDWriteTextRenderer, originX: float, originY: float, isSideways: BOOL, isRightToLeft: BOOL, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
-    GetMetrics: (this: *IDWriteInlineObject, metrics: *DWRITE_INLINE_OBJECT_METRICS) -> HRESULT #cpp_method;
-    GetOverhangMetrics: (this: *IDWriteInlineObject, overhangs: *DWRITE_OVERHANG_METRICS) -> HRESULT #cpp_method;
-    GetBreakConditions: (this: *IDWriteInlineObject, breakConditionBefore: *DWRITE_BREAK_CONDITION, breakConditionAfter: *DWRITE_BREAK_CONDITION) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	Draw: (this: *IDWriteInlineObject, clientDrawingContext: *void, renderer: *IDWriteTextRenderer, originX: float, originY: float, isSideways: BOOL, isRightToLeft: BOOL, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
+	GetMetrics: (this: *IDWriteInlineObject, metrics: *DWRITE_INLINE_OBJECT_METRICS) -> HRESULT #cpp_method;
+	GetOverhangMetrics: (this: *IDWriteInlineObject, overhangs: *DWRITE_OVERHANG_METRICS) -> HRESULT #cpp_method;
+	GetBreakConditions: (this: *IDWriteInlineObject, breakConditionBefore: *DWRITE_BREAK_CONDITION, breakConditionAfter: *DWRITE_BREAK_CONDITION) -> HRESULT #cpp_method;
 }
 IDWriteInlineObject_Draw :: inline (this: *IDWriteInlineObject, clientDrawingContext: *void, renderer: *IDWriteTextRenderer, originX: float, originY: float, isSideways: BOOL, isRightToLeft: BOOL, clientDrawingEffect: *IUnknown) -> HRESULT { return this.idwriteinlineobject_vtable.Draw(this, clientDrawingContext, renderer, originX, originY, isSideways, isRightToLeft, clientDrawingEffect); }
 IDWriteInlineObject_GetMetrics :: inline (this: *IDWriteInlineObject, metrics: *DWRITE_INLINE_OBJECT_METRICS) -> HRESULT { return this.idwriteinlineobject_vtable.GetMetrics(this, metrics); }
@@ -1691,14 +1691,14 @@ vtable :: (obj: *IDWriteInlineObject) -> *IDWriteInlineObject_VTable { return ob
 
 
 IDWritePixelSnapping :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritepixelsnapping_vtable: *IDWritePixelSnapping_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritepixelsnapping_vtable: *IDWritePixelSnapping_VTable;
 }
 IDWritePixelSnapping_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    IsPixelSnappingDisabled: (this: *IDWritePixelSnapping, clientDrawingContext: *void, isDisabled: *BOOL) -> HRESULT #cpp_method;
-    GetCurrentTransform: (this: *IDWritePixelSnapping, clientDrawingContext: *void, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
-    GetPixelsPerDip: (this: *IDWritePixelSnapping, clientDrawingContext: *void, pixelsPerDip: *float) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	IsPixelSnappingDisabled: (this: *IDWritePixelSnapping, clientDrawingContext: *void, isDisabled: *BOOL) -> HRESULT #cpp_method;
+	GetCurrentTransform: (this: *IDWritePixelSnapping, clientDrawingContext: *void, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
+	GetPixelsPerDip: (this: *IDWritePixelSnapping, clientDrawingContext: *void, pixelsPerDip: *float) -> HRESULT #cpp_method;
 }
 IDWritePixelSnapping_IsPixelSnappingDisabled :: inline (this: *IDWritePixelSnapping, clientDrawingContext: *void, isDisabled: *BOOL) -> HRESULT { return this.idwritepixelsnapping_vtable.IsPixelSnappingDisabled(this, clientDrawingContext, isDisabled); }
 IDWritePixelSnapping_GetCurrentTransform :: inline (this: *IDWritePixelSnapping, clientDrawingContext: *void, transform: *DWRITE_MATRIX) -> HRESULT { return this.idwritepixelsnapping_vtable.GetCurrentTransform(this, clientDrawingContext, transform); }
@@ -1708,15 +1708,15 @@ vtable :: (obj: *IDWritePixelSnapping) -> *IDWritePixelSnapping_VTable { return 
 
 
 IDWriteTextRenderer :: struct {
-    #as using idwritepixelsnapping: IDWritePixelSnapping;
-    #place idwritepixelsnapping; idwritetextrenderer_vtable: *IDWriteTextRenderer_VTable;
+#as using idwritepixelsnapping: IDWritePixelSnapping;
+#place idwritepixelsnapping; idwritetextrenderer_vtable: *IDWriteTextRenderer_VTable;
 }
 IDWriteTextRenderer_VTable :: struct #type_info_none {
-    using idwritepixelsnapping: IDWritePixelSnapping_VTable;
-    DrawGlyphRun: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, glyphRunDescription: *DWRITE_GLYPH_RUN_DESCRIPTION, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
-    DrawUnderline: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, underline: *DWRITE_UNDERLINE, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
-    DrawStrikethrough: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, strikethrough: *DWRITE_STRIKETHROUGH, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
-    DrawInlineObject: (this: *IDWriteTextRenderer, clientDrawingContext: *void, originX: float, originY: float, inlineObject: *IDWriteInlineObject, isSideways: BOOL, isRightToLeft: BOOL, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
+	using idwritepixelsnapping: IDWritePixelSnapping_VTable;
+	DrawGlyphRun: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, glyphRunDescription: *DWRITE_GLYPH_RUN_DESCRIPTION, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
+	DrawUnderline: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, underline: *DWRITE_UNDERLINE, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
+	DrawStrikethrough: (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, strikethrough: *DWRITE_STRIKETHROUGH, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
+	DrawInlineObject: (this: *IDWriteTextRenderer, clientDrawingContext: *void, originX: float, originY: float, inlineObject: *IDWriteInlineObject, isSideways: BOOL, isRightToLeft: BOOL, clientDrawingEffect: *IUnknown) -> HRESULT #cpp_method;
 }
 IDWriteTextRenderer_DrawGlyphRun :: inline (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, glyphRunDescription: *DWRITE_GLYPH_RUN_DESCRIPTION, clientDrawingEffect: *IUnknown) -> HRESULT { return this.idwritetextrenderer_vtable.DrawGlyphRun(this, clientDrawingContext, baselineOriginX, baselineOriginY, measuringMode, glyphRun, glyphRunDescription, clientDrawingEffect); }
 IDWriteTextRenderer_DrawUnderline :: inline (this: *IDWriteTextRenderer, clientDrawingContext: *void, baselineOriginX: float, baselineOriginY: float, underline: *DWRITE_UNDERLINE, clientDrawingEffect: *IUnknown) -> HRESULT { return this.idwritetextrenderer_vtable.DrawUnderline(this, clientDrawingContext, baselineOriginX, baselineOriginY, underline, clientDrawingEffect); }
@@ -1727,50 +1727,50 @@ vtable :: (obj: *IDWriteTextRenderer) -> *IDWriteTextRenderer_VTable { return ob
 
 
 IDWriteTextLayout :: struct {
-    #as using idwritetextformat: IDWriteTextFormat;
-    #place idwritetextformat; idwritetextlayout_vtable: *IDWriteTextLayout_VTable;
+#as using idwritetextformat: IDWriteTextFormat;
+#place idwritetextformat; idwritetextlayout_vtable: *IDWriteTextLayout_VTable;
 }
 IDWriteTextLayout_VTable :: struct #type_info_none {
-    using idwritetextformat: IDWriteTextFormat_VTable;
-    SetMaxWidth: (this: *IDWriteTextLayout, maxWidth: float) -> HRESULT #cpp_method;
-    SetMaxHeight: (this: *IDWriteTextLayout, maxHeight: float) -> HRESULT #cpp_method;
-    SetFontCollection: (this: *IDWriteTextLayout, fontCollection: *IDWriteFontCollection, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetFontFamilyName: (this: *IDWriteTextLayout, fontFamilyName: *s16, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetFontWeight: (this: *IDWriteTextLayout, fontWeight: DWRITE_FONT_WEIGHT, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetFontStyle: (this: *IDWriteTextLayout, fontStyle: DWRITE_FONT_STYLE, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetFontStretch: (this: *IDWriteTextLayout, fontStretch: DWRITE_FONT_STRETCH, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetFontSize: (this: *IDWriteTextLayout, fontSize: float, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetUnderline: (this: *IDWriteTextLayout, hasUnderline: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetStrikethrough: (this: *IDWriteTextLayout, hasStrikethrough: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetDrawingEffect: (this: *IDWriteTextLayout, drawingEffect: *IUnknown, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetInlineObject: (this: *IDWriteTextLayout, inlineObject: *IDWriteInlineObject, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetTypography: (this: *IDWriteTextLayout, typography: *IDWriteTypography, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    SetLocaleName: (this: *IDWriteTextLayout, localeName: *s16, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
-    GetMaxWidth: (this: *IDWriteTextLayout) -> float #cpp_method;
-    GetMaxHeight: (this: *IDWriteTextLayout) -> float #cpp_method;
-    GetFontCollection_1: (this: *IDWriteTextLayout, currentPosition: u32, fontCollection: **IDWriteFontCollection, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontFamilyNameLength_1: (this: *IDWriteTextLayout, currentPosition: u32, nameLength: *u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontFamilyName_1: (this: *IDWriteTextLayout, currentPosition: u32, fontFamilyName: *s16, nameSize: u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontWeight_1: (this: *IDWriteTextLayout, currentPosition: u32, fontWeight: *DWRITE_FONT_WEIGHT, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontStyle_1: (this: *IDWriteTextLayout, currentPosition: u32, fontStyle: *DWRITE_FONT_STYLE, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontStretch_1: (this: *IDWriteTextLayout, currentPosition: u32, fontStretch: *DWRITE_FONT_STRETCH, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetFontSize_1: (this: *IDWriteTextLayout, currentPosition: u32, fontSize: *float, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetUnderline: (this: *IDWriteTextLayout, currentPosition: u32, hasUnderline: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetStrikethrough: (this: *IDWriteTextLayout, currentPosition: u32, hasStrikethrough: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetDrawingEffect: (this: *IDWriteTextLayout, currentPosition: u32, drawingEffect: **IUnknown, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetInlineObject: (this: *IDWriteTextLayout, currentPosition: u32, inlineObject: **IDWriteInlineObject, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetTypography: (this: *IDWriteTextLayout, currentPosition: u32, typography: **IDWriteTypography, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetLocaleNameLength_1: (this: *IDWriteTextLayout, currentPosition: u32, nameLength: *u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    GetLocaleName_1: (this: *IDWriteTextLayout, currentPosition: u32, localeName: *s16, nameSize: u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
-    Draw: (this: *IDWriteTextLayout, clientDrawingContext: *void, renderer: *IDWriteTextRenderer, originX: float, originY: float) -> HRESULT #cpp_method;
-    GetLineMetrics: (this: *IDWriteTextLayout, lineMetrics: *DWRITE_LINE_METRICS, maxLineCount: u32, actualLineCount: *u32) -> HRESULT #cpp_method;
-    GetMetrics: (this: *IDWriteTextLayout, textMetrics: *DWRITE_TEXT_METRICS) -> HRESULT #cpp_method;
-    GetOverhangMetrics: (this: *IDWriteTextLayout, overhangs: *DWRITE_OVERHANG_METRICS) -> HRESULT #cpp_method;
-    GetClusterMetrics: (this: *IDWriteTextLayout, clusterMetrics: *DWRITE_CLUSTER_METRICS, maxClusterCount: u32, actualClusterCount: *u32) -> HRESULT #cpp_method;
-    DetermineMinWidth: (this: *IDWriteTextLayout, minWidth: *float) -> HRESULT #cpp_method;
-    HitTestPoint: (this: *IDWriteTextLayout, pointX: float, pointY: float, isTrailingHit: *BOOL, isInside: *BOOL, hitTestMetrics: *DWRITE_HIT_TEST_METRICS) -> HRESULT #cpp_method;
-    HitTestTextPosition: (this: *IDWriteTextLayout, textPosition: u32, isTrailingHit: BOOL, pointX: *float, pointY: *float, hitTestMetrics: *DWRITE_HIT_TEST_METRICS) -> HRESULT #cpp_method;
-    HitTestTextRange: (this: *IDWriteTextLayout, textPosition: u32, textLength: u32, originX: float, originY: float, hitTestMetrics: *DWRITE_HIT_TEST_METRICS, maxHitTestMetricsCount: u32, actualHitTestMetricsCount: *u32) -> HRESULT #cpp_method;
+	using idwritetextformat: IDWriteTextFormat_VTable;
+	SetMaxWidth: (this: *IDWriteTextLayout, maxWidth: float) -> HRESULT #cpp_method;
+	SetMaxHeight: (this: *IDWriteTextLayout, maxHeight: float) -> HRESULT #cpp_method;
+	SetFontCollection: (this: *IDWriteTextLayout, fontCollection: *IDWriteFontCollection, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetFontFamilyName: (this: *IDWriteTextLayout, fontFamilyName: *s16, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetFontWeight: (this: *IDWriteTextLayout, fontWeight: DWRITE_FONT_WEIGHT, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetFontStyle: (this: *IDWriteTextLayout, fontStyle: DWRITE_FONT_STYLE, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetFontStretch: (this: *IDWriteTextLayout, fontStretch: DWRITE_FONT_STRETCH, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetFontSize: (this: *IDWriteTextLayout, fontSize: float, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetUnderline: (this: *IDWriteTextLayout, hasUnderline: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetStrikethrough: (this: *IDWriteTextLayout, hasStrikethrough: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetDrawingEffect: (this: *IDWriteTextLayout, drawingEffect: *IUnknown, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetInlineObject: (this: *IDWriteTextLayout, inlineObject: *IDWriteInlineObject, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetTypography: (this: *IDWriteTextLayout, typography: *IDWriteTypography, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	SetLocaleName: (this: *IDWriteTextLayout, localeName: *s16, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	GetMaxWidth: (this: *IDWriteTextLayout) -> float #cpp_method;
+	GetMaxHeight: (this: *IDWriteTextLayout) -> float #cpp_method;
+	GetFontCollection_1: (this: *IDWriteTextLayout, currentPosition: u32, fontCollection: **IDWriteFontCollection, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontFamilyNameLength_1: (this: *IDWriteTextLayout, currentPosition: u32, nameLength: *u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontFamilyName_1: (this: *IDWriteTextLayout, currentPosition: u32, fontFamilyName: *s16, nameSize: u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontWeight_1: (this: *IDWriteTextLayout, currentPosition: u32, fontWeight: *DWRITE_FONT_WEIGHT, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontStyle_1: (this: *IDWriteTextLayout, currentPosition: u32, fontStyle: *DWRITE_FONT_STYLE, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontStretch_1: (this: *IDWriteTextLayout, currentPosition: u32, fontStretch: *DWRITE_FONT_STRETCH, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetFontSize_1: (this: *IDWriteTextLayout, currentPosition: u32, fontSize: *float, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetUnderline: (this: *IDWriteTextLayout, currentPosition: u32, hasUnderline: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetStrikethrough: (this: *IDWriteTextLayout, currentPosition: u32, hasStrikethrough: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetDrawingEffect: (this: *IDWriteTextLayout, currentPosition: u32, drawingEffect: **IUnknown, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetInlineObject: (this: *IDWriteTextLayout, currentPosition: u32, inlineObject: **IDWriteInlineObject, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetTypography: (this: *IDWriteTextLayout, currentPosition: u32, typography: **IDWriteTypography, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetLocaleNameLength_1: (this: *IDWriteTextLayout, currentPosition: u32, nameLength: *u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	GetLocaleName_1: (this: *IDWriteTextLayout, currentPosition: u32, localeName: *s16, nameSize: u32, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	Draw: (this: *IDWriteTextLayout, clientDrawingContext: *void, renderer: *IDWriteTextRenderer, originX: float, originY: float) -> HRESULT #cpp_method;
+	GetLineMetrics: (this: *IDWriteTextLayout, lineMetrics: *DWRITE_LINE_METRICS, maxLineCount: u32, actualLineCount: *u32) -> HRESULT #cpp_method;
+	GetMetrics: (this: *IDWriteTextLayout, textMetrics: *DWRITE_TEXT_METRICS) -> HRESULT #cpp_method;
+	GetOverhangMetrics: (this: *IDWriteTextLayout, overhangs: *DWRITE_OVERHANG_METRICS) -> HRESULT #cpp_method;
+	GetClusterMetrics: (this: *IDWriteTextLayout, clusterMetrics: *DWRITE_CLUSTER_METRICS, maxClusterCount: u32, actualClusterCount: *u32) -> HRESULT #cpp_method;
+	DetermineMinWidth: (this: *IDWriteTextLayout, minWidth: *float) -> HRESULT #cpp_method;
+	HitTestPoint: (this: *IDWriteTextLayout, pointX: float, pointY: float, isTrailingHit: *BOOL, isInside: *BOOL, hitTestMetrics: *DWRITE_HIT_TEST_METRICS) -> HRESULT #cpp_method;
+	HitTestTextPosition: (this: *IDWriteTextLayout, textPosition: u32, isTrailingHit: BOOL, pointX: *float, pointY: *float, hitTestMetrics: *DWRITE_HIT_TEST_METRICS) -> HRESULT #cpp_method;
+	HitTestTextRange: (this: *IDWriteTextLayout, textPosition: u32, textLength: u32, originX: float, originY: float, hitTestMetrics: *DWRITE_HIT_TEST_METRICS, maxHitTestMetricsCount: u32, actualHitTestMetricsCount: *u32) -> HRESULT #cpp_method;
 }
 IDWriteTextLayout_SetMaxWidth :: inline (this: *IDWriteTextLayout, maxWidth: float) -> HRESULT { return this.idwritetextlayout_vtable.SetMaxWidth(this, maxWidth); }
 IDWriteTextLayout_SetMaxHeight :: inline (this: *IDWriteTextLayout, maxHeight: float) -> HRESULT { return this.idwritetextlayout_vtable.SetMaxHeight(this, maxHeight); }
@@ -1816,19 +1816,19 @@ vtable :: (obj: *IDWriteTextLayout) -> *IDWriteTextLayout_VTable { return obj.id
 
 
 IDWriteBitmapRenderTarget :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritebitmaprendertarget_vtable: *IDWriteBitmapRenderTarget_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritebitmaprendertarget_vtable: *IDWriteBitmapRenderTarget_VTable;
 }
 IDWriteBitmapRenderTarget_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    DrawGlyphRun: (this: *IDWriteBitmapRenderTarget, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, renderingParams: *IDWriteRenderingParams, textColor: COLORREF, blackBoxRect: *RECT = null) -> HRESULT #cpp_method;
-    GetMemoryDC: (this: *IDWriteBitmapRenderTarget) -> HDC #cpp_method;
-    GetPixelsPerDip: (this: *IDWriteBitmapRenderTarget) -> float #cpp_method;
-    SetPixelsPerDip: (this: *IDWriteBitmapRenderTarget, pixelsPerDip: float) -> HRESULT #cpp_method;
-    GetCurrentTransform: (this: *IDWriteBitmapRenderTarget, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
-    SetCurrentTransform: (this: *IDWriteBitmapRenderTarget, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
-    GetSize: (this: *IDWriteBitmapRenderTarget, size: *SIZE) -> HRESULT #cpp_method;
-    Resize: (this: *IDWriteBitmapRenderTarget, width: u32, height: u32) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	DrawGlyphRun: (this: *IDWriteBitmapRenderTarget, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, renderingParams: *IDWriteRenderingParams, textColor: COLORREF, blackBoxRect: *RECT = null) -> HRESULT #cpp_method;
+	GetMemoryDC: (this: *IDWriteBitmapRenderTarget) -> HDC #cpp_method;
+	GetPixelsPerDip: (this: *IDWriteBitmapRenderTarget) -> float #cpp_method;
+	SetPixelsPerDip: (this: *IDWriteBitmapRenderTarget, pixelsPerDip: float) -> HRESULT #cpp_method;
+	GetCurrentTransform: (this: *IDWriteBitmapRenderTarget, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
+	SetCurrentTransform: (this: *IDWriteBitmapRenderTarget, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
+	GetSize: (this: *IDWriteBitmapRenderTarget, size: *SIZE) -> HRESULT #cpp_method;
+	Resize: (this: *IDWriteBitmapRenderTarget, width: u32, height: u32) -> HRESULT #cpp_method;
 }
 IDWriteBitmapRenderTarget_DrawGlyphRun :: inline (this: *IDWriteBitmapRenderTarget, baselineOriginX: float, baselineOriginY: float, measuringMode: DWRITE_MEASURING_MODE, glyphRun: *DWRITE_GLYPH_RUN, renderingParams: *IDWriteRenderingParams, textColor: COLORREF, blackBoxRect: *RECT = null) -> HRESULT { return this.idwritebitmaprendertarget_vtable.DrawGlyphRun(this, baselineOriginX, baselineOriginY, measuringMode, glyphRun, renderingParams, textColor, blackBoxRect); }
 IDWriteBitmapRenderTarget_GetMemoryDC :: inline (this: *IDWriteBitmapRenderTarget) -> HDC { return this.idwritebitmaprendertarget_vtable.GetMemoryDC(this); }
@@ -1843,16 +1843,16 @@ vtable :: (obj: *IDWriteBitmapRenderTarget) -> *IDWriteBitmapRenderTarget_VTable
 
 
 IDWriteGdiInterop :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritegdiinterop_vtable: *IDWriteGdiInterop_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritegdiinterop_vtable: *IDWriteGdiInterop_VTable;
 }
 IDWriteGdiInterop_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    CreateFontFromLOGFONT: (this: *IDWriteGdiInterop, logFont: *LOGFONTW, font: **IDWriteFont) -> HRESULT #cpp_method;
-    ConvertFontToLOGFONT: (this: *IDWriteGdiInterop, font: *IDWriteFont, logFont: *LOGFONTW, isSystemFont: *BOOL) -> HRESULT #cpp_method;
-    ConvertFontFaceToLOGFONT: (this: *IDWriteGdiInterop, font: *IDWriteFontFace, logFont: *LOGFONTW) -> HRESULT #cpp_method;
-    CreateFontFaceFromHdc: (this: *IDWriteGdiInterop, hdc: HDC, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
-    CreateBitmapRenderTarget: (this: *IDWriteGdiInterop, hdc: HDC, width: u32, height: u32, renderTarget: **IDWriteBitmapRenderTarget) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	CreateFontFromLOGFONT: (this: *IDWriteGdiInterop, logFont: *LOGFONTW, font: **IDWriteFont) -> HRESULT #cpp_method;
+	ConvertFontToLOGFONT: (this: *IDWriteGdiInterop, font: *IDWriteFont, logFont: *LOGFONTW, isSystemFont: *BOOL) -> HRESULT #cpp_method;
+	ConvertFontFaceToLOGFONT: (this: *IDWriteGdiInterop, font: *IDWriteFontFace, logFont: *LOGFONTW) -> HRESULT #cpp_method;
+	CreateFontFaceFromHdc: (this: *IDWriteGdiInterop, hdc: HDC, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
+	CreateBitmapRenderTarget: (this: *IDWriteGdiInterop, hdc: HDC, width: u32, height: u32, renderTarget: **IDWriteBitmapRenderTarget) -> HRESULT #cpp_method;
 }
 IDWriteGdiInterop_CreateFontFromLOGFONT :: inline (this: *IDWriteGdiInterop, logFont: *LOGFONTW, font: **IDWriteFont) -> HRESULT { return this.idwritegdiinterop_vtable.CreateFontFromLOGFONT(this, logFont, font); }
 IDWriteGdiInterop_ConvertFontToLOGFONT :: inline (this: *IDWriteGdiInterop, font: *IDWriteFont, logFont: *LOGFONTW, isSystemFont: *BOOL) -> HRESULT { return this.idwritegdiinterop_vtable.ConvertFontToLOGFONT(this, font, logFont, isSystemFont); }
@@ -1864,24 +1864,24 @@ vtable :: (obj: *IDWriteGdiInterop) -> *IDWriteGdiInterop_VTable { return obj.id
 
 
 DWRITE_TEXTURE_TYPE :: enum s32 {
-    ALIASED_1x1   :: 0;
-
-    CLEARTYPE_3x1 :: 1;
-
-    DWRITE_TEXTURE_ALIASED_1x1   :: ALIASED_1x1;
-
-    DWRITE_TEXTURE_CLEARTYPE_3x1 :: CLEARTYPE_3x1;
+	ALIASED_1x1   :: 0;
+	
+	CLEARTYPE_3x1 :: 1;
+	
+	DWRITE_TEXTURE_ALIASED_1x1   :: ALIASED_1x1;
+	
+	DWRITE_TEXTURE_CLEARTYPE_3x1 :: CLEARTYPE_3x1;
 }
 
 IDWriteGlyphRunAnalysis :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwriteglyphrunanalysis_vtable: *IDWriteGlyphRunAnalysis_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwriteglyphrunanalysis_vtable: *IDWriteGlyphRunAnalysis_VTable;
 }
 IDWriteGlyphRunAnalysis_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetAlphaTextureBounds: (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT) -> HRESULT #cpp_method;
-    CreateAlphaTexture: (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT, alphaValues: *u8, bufferSize: u32) -> HRESULT #cpp_method;
-    GetAlphaBlendParams: (this: *IDWriteGlyphRunAnalysis, renderingParams: *IDWriteRenderingParams, blendGamma: *float, blendEnhancedContrast: *float, blendClearTypeLevel: *float) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetAlphaTextureBounds: (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT) -> HRESULT #cpp_method;
+	CreateAlphaTexture: (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT, alphaValues: *u8, bufferSize: u32) -> HRESULT #cpp_method;
+	GetAlphaBlendParams: (this: *IDWriteGlyphRunAnalysis, renderingParams: *IDWriteRenderingParams, blendGamma: *float, blendEnhancedContrast: *float, blendClearTypeLevel: *float) -> HRESULT #cpp_method;
 }
 IDWriteGlyphRunAnalysis_GetAlphaTextureBounds :: inline (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT) -> HRESULT { return this.idwriteglyphrunanalysis_vtable.GetAlphaTextureBounds(this, textureType, textureBounds); }
 IDWriteGlyphRunAnalysis_CreateAlphaTexture :: inline (this: *IDWriteGlyphRunAnalysis, textureType: DWRITE_TEXTURE_TYPE, textureBounds: *RECT, alphaValues: *u8, bufferSize: u32) -> HRESULT { return this.idwriteglyphrunanalysis_vtable.CreateAlphaTexture(this, textureType, textureBounds, alphaValues, bufferSize); }
@@ -1891,32 +1891,32 @@ vtable :: (obj: *IDWriteGlyphRunAnalysis) -> *IDWriteGlyphRunAnalysis_VTable { r
 
 
 IDWriteFactory :: struct {
-    #as using iunknown: IUnknown;
-    #place iunknown; idwritefactory_vtable: *IDWriteFactory_VTable;
+#as using iunknown: IUnknown;
+#place iunknown; idwritefactory_vtable: *IDWriteFactory_VTable;
 }
 IDWriteFactory_VTable :: struct #type_info_none {
-    using iunknown: IUnknown_VTable;
-    GetSystemFontCollection: (this: *IDWriteFactory, fontCollection: **IDWriteFontCollection, checkForUpdates: BOOL = 0) -> HRESULT #cpp_method;
-    CreateCustomFontCollection: (this: *IDWriteFactory, collectionLoader: *IDWriteFontCollectionLoader, collectionKey: *void, collectionKeySize: u32, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
-    RegisterFontCollectionLoader: (this: *IDWriteFactory, fontCollectionLoader: *IDWriteFontCollectionLoader) -> HRESULT #cpp_method;
-    UnregisterFontCollectionLoader: (this: *IDWriteFactory, fontCollectionLoader: *IDWriteFontCollectionLoader) -> HRESULT #cpp_method;
-    CreateFontFileReference: (this: *IDWriteFactory, filePath: *s16, lastWriteTime: *FILETIME, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
-    CreateCustomFontFileReference: (this: *IDWriteFactory, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, fontFileLoader: *IDWriteFontFileLoader, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
-    CreateFontFace: (this: *IDWriteFactory, fontFaceType: DWRITE_FONT_FACE_TYPE, numberOfFiles: u32, fontFiles: **IDWriteFontFile, faceIndex: u32, fontFaceSimulationFlags: DWRITE_FONT_SIMULATIONS, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
-    CreateRenderingParams: (this: *IDWriteFactory, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
-    CreateMonitorRenderingParams: (this: *IDWriteFactory, monitor: HMONITOR, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
-    CreateCustomRenderingParams: (this: *IDWriteFactory, gamma: float, enhancedContrast: float, clearTypeLevel: float, pixelGeometry: DWRITE_PIXEL_GEOMETRY, renderingMode: DWRITE_RENDERING_MODE, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
-    RegisterFontFileLoader: (this: *IDWriteFactory, fontFileLoader: *IDWriteFontFileLoader) -> HRESULT #cpp_method;
-    UnregisterFontFileLoader: (this: *IDWriteFactory, fontFileLoader: *IDWriteFontFileLoader) -> HRESULT #cpp_method;
-    CreateTextFormat: (this: *IDWriteFactory, fontFamilyName: *s16, fontCollection: *IDWriteFontCollection, fontWeight: DWRITE_FONT_WEIGHT, fontStyle: DWRITE_FONT_STYLE, fontStretch: DWRITE_FONT_STRETCH, fontSize: float, localeName: *s16, textFormat: **IDWriteTextFormat) -> HRESULT #cpp_method;
-    CreateTypography: (this: *IDWriteFactory, typography: **IDWriteTypography) -> HRESULT #cpp_method;
-    GetGdiInterop: (this: *IDWriteFactory, gdiInterop: **IDWriteGdiInterop) -> HRESULT #cpp_method;
-    CreateTextLayout: (this: *IDWriteFactory, _string: *s16, stringLength: u32, textFormat: *IDWriteTextFormat, maxWidth: float, maxHeight: float, textLayout: **IDWriteTextLayout) -> HRESULT #cpp_method;
-    CreateGdiCompatibleTextLayout: (this: *IDWriteFactory, _string: *s16, stringLength: u32, textFormat: *IDWriteTextFormat, layoutWidth: float, layoutHeight: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, textLayout: **IDWriteTextLayout) -> HRESULT #cpp_method;
-    CreateEllipsisTrimmingSign: (this: *IDWriteFactory, textFormat: *IDWriteTextFormat, trimmingSign: **IDWriteInlineObject) -> HRESULT #cpp_method;
-    CreateTextAnalyzer: (this: *IDWriteFactory, textAnalyzer: **IDWriteTextAnalyzer) -> HRESULT #cpp_method;
-    CreateNumberSubstitution: (this: *IDWriteFactory, substitutionMethod: DWRITE_NUMBER_SUBSTITUTION_METHOD, localeName: *s16, ignoreUserOverride: BOOL, numberSubstitution: **IDWriteNumberSubstitution) -> HRESULT #cpp_method;
-    CreateGlyphRunAnalysis: (this: *IDWriteFactory, glyphRun: *DWRITE_GLYPH_RUN, pixelsPerDip: float, transform: *DWRITE_MATRIX, renderingMode: DWRITE_RENDERING_MODE, measuringMode: DWRITE_MEASURING_MODE, baselineOriginX: float, baselineOriginY: float, glyphRunAnalysis: **IDWriteGlyphRunAnalysis) -> HRESULT #cpp_method;
+	using iunknown: IUnknown_VTable;
+	GetSystemFontCollection: (this: *IDWriteFactory, fontCollection: **IDWriteFontCollection, checkForUpdates: BOOL = 0) -> HRESULT #cpp_method;
+	CreateCustomFontCollection: (this: *IDWriteFactory, collectionLoader: *IDWriteFontCollectionLoader, collectionKey: *void, collectionKeySize: u32, fontCollection: **IDWriteFontCollection) -> HRESULT #cpp_method;
+	RegisterFontCollectionLoader: (this: *IDWriteFactory, fontCollectionLoader: *IDWriteFontCollectionLoader) -> HRESULT #cpp_method;
+	UnregisterFontCollectionLoader: (this: *IDWriteFactory, fontCollectionLoader: *IDWriteFontCollectionLoader) -> HRESULT #cpp_method;
+	CreateFontFileReference: (this: *IDWriteFactory, filePath: *s16, lastWriteTime: *FILETIME, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
+	CreateCustomFontFileReference: (this: *IDWriteFactory, fontFileReferenceKey: *void, fontFileReferenceKeySize: u32, fontFileLoader: *IDWriteFontFileLoader, fontFile: **IDWriteFontFile) -> HRESULT #cpp_method;
+	CreateFontFace: (this: *IDWriteFactory, fontFaceType: DWRITE_FONT_FACE_TYPE, numberOfFiles: u32, fontFiles: **IDWriteFontFile, faceIndex: u32, fontFaceSimulationFlags: DWRITE_FONT_SIMULATIONS, fontFace: **IDWriteFontFace) -> HRESULT #cpp_method;
+	CreateRenderingParams: (this: *IDWriteFactory, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
+	CreateMonitorRenderingParams: (this: *IDWriteFactory, monitor: HMONITOR, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
+	CreateCustomRenderingParams: (this: *IDWriteFactory, gamma: float, enhancedContrast: float, clearTypeLevel: float, pixelGeometry: DWRITE_PIXEL_GEOMETRY, renderingMode: DWRITE_RENDERING_MODE, renderingParams: **IDWriteRenderingParams) -> HRESULT #cpp_method;
+	RegisterFontFileLoader: (this: *IDWriteFactory, fontFileLoader: *IDWriteFontFileLoader) -> HRESULT #cpp_method;
+	UnregisterFontFileLoader: (this: *IDWriteFactory, fontFileLoader: *IDWriteFontFileLoader) -> HRESULT #cpp_method;
+	CreateTextFormat: (this: *IDWriteFactory, fontFamilyName: *s16, fontCollection: *IDWriteFontCollection, fontWeight: DWRITE_FONT_WEIGHT, fontStyle: DWRITE_FONT_STYLE, fontStretch: DWRITE_FONT_STRETCH, fontSize: float, localeName: *s16, textFormat: **IDWriteTextFormat) -> HRESULT #cpp_method;
+	CreateTypography: (this: *IDWriteFactory, typography: **IDWriteTypography) -> HRESULT #cpp_method;
+	GetGdiInterop: (this: *IDWriteFactory, gdiInterop: **IDWriteGdiInterop) -> HRESULT #cpp_method;
+	CreateTextLayout: (this: *IDWriteFactory, _string: *s16, stringLength: u32, textFormat: *IDWriteTextFormat, maxWidth: float, maxHeight: float, textLayout: **IDWriteTextLayout) -> HRESULT #cpp_method;
+	CreateGdiCompatibleTextLayout: (this: *IDWriteFactory, _string: *s16, stringLength: u32, textFormat: *IDWriteTextFormat, layoutWidth: float, layoutHeight: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, textLayout: **IDWriteTextLayout) -> HRESULT #cpp_method;
+	CreateEllipsisTrimmingSign: (this: *IDWriteFactory, textFormat: *IDWriteTextFormat, trimmingSign: **IDWriteInlineObject) -> HRESULT #cpp_method;
+	CreateTextAnalyzer: (this: *IDWriteFactory, textAnalyzer: **IDWriteTextAnalyzer) -> HRESULT #cpp_method;
+	CreateNumberSubstitution: (this: *IDWriteFactory, substitutionMethod: DWRITE_NUMBER_SUBSTITUTION_METHOD, localeName: *s16, ignoreUserOverride: BOOL, numberSubstitution: **IDWriteNumberSubstitution) -> HRESULT #cpp_method;
+	CreateGlyphRunAnalysis: (this: *IDWriteFactory, glyphRun: *DWRITE_GLYPH_RUN, pixelsPerDip: float, transform: *DWRITE_MATRIX, renderingMode: DWRITE_RENDERING_MODE, measuringMode: DWRITE_MEASURING_MODE, baselineOriginX: float, baselineOriginY: float, glyphRunAnalysis: **IDWriteGlyphRunAnalysis) -> HRESULT #cpp_method;
 }
 IDWriteFactory_GetSystemFontCollection :: inline (this: *IDWriteFactory, fontCollection: **IDWriteFontCollection, checkForUpdates: BOOL = 0) -> HRESULT { return this.idwritefactory_vtable.GetSystemFontCollection(this, fontCollection, checkForUpdates); }
 IDWriteFactory_CreateCustomFontCollection :: inline (this: *IDWriteFactory, collectionLoader: *IDWriteFontCollectionLoader, collectionKey: *void, collectionKeySize: u32, fontCollection: **IDWriteFontCollection) -> HRESULT { return this.idwritefactory_vtable.CreateCustomFontCollection(this, collectionLoader, collectionKey, collectionKeySize, fontCollection); }
@@ -1945,8 +1945,1077 @@ vtable :: (obj: *IDWriteFactory) -> *IDWriteFactory_VTable { return obj.idwritef
 
 DWriteCreateFactory :: (factoryType: DWRITE_FACTORY_TYPE, iid: *IID, factory: **IUnknown) -> HRESULT #foreign dwrite;
 DWriteCreateFactory :: (factoryType: DWRITE_FACTORY_TYPE, iid: IID, factory: **IUnknown) -> HRESULT #no_context {
-    return DWriteCreateFactory(factoryType, *iid, factory);
+	return DWriteCreateFactory(factoryType, *iid, factory);
 }
+
+DWRITE_PANOSE_FAMILY :: enum s32 {
+	ANY          :: 0;
+	NO_FIT       :: 1;
+	TEXT_DISPLAY :: 2;
+	SCRIPT       :: 3;
+	DECORATIVE   :: 4;
+	SYMBOL       :: 5;
+	PICTORIAL    :: 5;
+	
+	DWRITE_PANOSE_FAMILY_ANY          :: ANY;
+	DWRITE_PANOSE_FAMILY_NO_FIT       :: NO_FIT;
+	DWRITE_PANOSE_FAMILY_TEXT_DISPLAY :: TEXT_DISPLAY;
+	DWRITE_PANOSE_FAMILY_SCRIPT       :: SCRIPT;
+	DWRITE_PANOSE_FAMILY_DECORATIVE   :: DECORATIVE;
+	DWRITE_PANOSE_FAMILY_SYMBOL       :: SYMBOL;
+	DWRITE_PANOSE_FAMILY_PICTORIAL    :: PICTORIAL;
+}
+
+DWRITE_PANOSE_SERIF_STYLE :: enum s32 {
+	ANY                :: 0;
+	NO_FIT             :: 1;
+	COVE               :: 2;
+	OBTUSE_COVE        :: 3;
+	SQUARE_COVE        :: 4;
+	OBTUSE_SQUARE_COVE :: 5;
+	SQUARE             :: 6;
+	THIN               :: 7;
+	OVAL               :: 8;
+	EXAGGERATED        :: 9;
+	TRIANGLE           :: 10;
+	NORMAL_SANS        :: 11;
+	OBTUSE_SANS        :: 12;
+	PERPENDICULAR_SANS :: 13;
+	FLARED             :: 14;
+	ROUNDED            :: 15;
+	SCRIPT             :: 16;
+	PERP_SANS          :: 13;
+	BONE               :: 8;
+	
+	DWRITE_PANOSE_SERIF_STYLE_ANY                :: ANY;
+	DWRITE_PANOSE_SERIF_STYLE_NO_FIT             :: NO_FIT;
+	DWRITE_PANOSE_SERIF_STYLE_COVE               :: COVE;
+	DWRITE_PANOSE_SERIF_STYLE_OBTUSE_COVE        :: OBTUSE_COVE;
+	DWRITE_PANOSE_SERIF_STYLE_SQUARE_COVE        :: SQUARE_COVE;
+	DWRITE_PANOSE_SERIF_STYLE_OBTUSE_SQUARE_COVE :: OBTUSE_SQUARE_COVE;
+	DWRITE_PANOSE_SERIF_STYLE_SQUARE             :: SQUARE;
+	DWRITE_PANOSE_SERIF_STYLE_THIN               :: THIN;
+	DWRITE_PANOSE_SERIF_STYLE_OVAL               :: OVAL;
+	DWRITE_PANOSE_SERIF_STYLE_EXAGGERATED        :: EXAGGERATED;
+	DWRITE_PANOSE_SERIF_STYLE_TRIANGLE           :: TRIANGLE;
+	DWRITE_PANOSE_SERIF_STYLE_NORMAL_SANS        :: NORMAL_SANS;
+	DWRITE_PANOSE_SERIF_STYLE_OBTUSE_SANS        :: OBTUSE_SANS;
+	DWRITE_PANOSE_SERIF_STYLE_PERPENDICULAR_SANS :: PERPENDICULAR_SANS;
+	DWRITE_PANOSE_SERIF_STYLE_FLARED             :: FLARED;
+	DWRITE_PANOSE_SERIF_STYLE_ROUNDED            :: ROUNDED;
+	DWRITE_PANOSE_SERIF_STYLE_SCRIPT             :: SCRIPT;
+	DWRITE_PANOSE_SERIF_STYLE_PERP_SANS          :: PERP_SANS;
+	DWRITE_PANOSE_SERIF_STYLE_BONE               :: BONE;
+}
+
+DWRITE_PANOSE_WEIGHT :: enum s32 {
+	ANY         :: 0;
+	NO_FIT      :: 1;
+	VERY_LIGHT  :: 2;
+	LIGHT       :: 3;
+	THIN        :: 4;
+	BOOK        :: 5;
+	MEDIUM      :: 6;
+	DEMI        :: 7;
+	BOLD        :: 8;
+	HEAVY       :: 9;
+	BLACK       :: 10;
+	EXTRA_BLACK :: 11;
+	NORD        :: 11;
+	
+	DWRITE_PANOSE_WEIGHT_ANY         :: ANY;
+	DWRITE_PANOSE_WEIGHT_NO_FIT      :: NO_FIT;
+	DWRITE_PANOSE_WEIGHT_VERY_LIGHT  :: VERY_LIGHT;
+	DWRITE_PANOSE_WEIGHT_LIGHT       :: LIGHT;
+	DWRITE_PANOSE_WEIGHT_THIN        :: THIN;
+	DWRITE_PANOSE_WEIGHT_BOOK        :: BOOK;
+	DWRITE_PANOSE_WEIGHT_MEDIUM      :: MEDIUM;
+	DWRITE_PANOSE_WEIGHT_DEMI        :: DEMI;
+	DWRITE_PANOSE_WEIGHT_BOLD        :: BOLD;
+	DWRITE_PANOSE_WEIGHT_HEAVY       :: HEAVY;
+	DWRITE_PANOSE_WEIGHT_BLACK       :: BLACK;
+	DWRITE_PANOSE_WEIGHT_EXTRA_BLACK :: EXTRA_BLACK;
+	DWRITE_PANOSE_WEIGHT_NORD        :: NORD;
+}
+
+DWRITE_PANOSE_PROPORTION :: enum s32 {
+	ANY            :: 0;
+	NO_FIT         :: 1;
+	OLD_STYLE      :: 2;
+	MODERN         :: 3;
+	EVEN_WIDTH     :: 4;
+	EXPANDED       :: 5;
+	CONDENSED      :: 6;
+	VERY_EXPANDED  :: 7;
+	VERY_CONDENSED :: 8;
+	MONOSPACED     :: 9;
+	
+	DWRITE_PANOSE_PROPORTION_ANY            :: ANY;
+	DWRITE_PANOSE_PROPORTION_NO_FIT         :: NO_FIT;
+	DWRITE_PANOSE_PROPORTION_OLD_STYLE      :: OLD_STYLE;
+	DWRITE_PANOSE_PROPORTION_MODERN         :: MODERN;
+	DWRITE_PANOSE_PROPORTION_EVEN_WIDTH     :: EVEN_WIDTH;
+	DWRITE_PANOSE_PROPORTION_EXPANDED       :: EXPANDED;
+	DWRITE_PANOSE_PROPORTION_CONDENSED      :: CONDENSED;
+	DWRITE_PANOSE_PROPORTION_VERY_EXPANDED  :: VERY_EXPANDED;
+	DWRITE_PANOSE_PROPORTION_VERY_CONDENSED :: VERY_CONDENSED;
+	DWRITE_PANOSE_PROPORTION_MONOSPACED     :: MONOSPACED;
+}
+
+DWRITE_PANOSE_CONTRAST :: enum s32 {
+	ANY               :: 0;
+	NO_FIT            :: 1;
+	NONE              :: 2;
+	VERY_LOW          :: 3;
+	LOW               :: 4;
+	MEDIUM_LOW        :: 5;
+	MEDIUM            :: 6;
+	MEDIUM_HIGH       :: 7;
+	HIGH              :: 8;
+	VERY_HIGH         :: 9;
+	HORIZONTAL_LOW    :: 10;
+	HORIZONTAL_MEDIUM :: 11;
+	HORIZONTAL_HIGH   :: 12;
+	BROKEN            :: 13;
+	
+	DWRITE_PANOSE_CONTRAST_ANY               :: ANY;
+	DWRITE_PANOSE_CONTRAST_NO_FIT            :: NO_FIT;
+	DWRITE_PANOSE_CONTRAST_NONE              :: NONE;
+	DWRITE_PANOSE_CONTRAST_VERY_LOW          :: VERY_LOW;
+	DWRITE_PANOSE_CONTRAST_LOW               :: LOW;
+	DWRITE_PANOSE_CONTRAST_MEDIUM_LOW        :: MEDIUM_LOW;
+	DWRITE_PANOSE_CONTRAST_MEDIUM            :: MEDIUM;
+	DWRITE_PANOSE_CONTRAST_MEDIUM_HIGH       :: MEDIUM_HIGH;
+	DWRITE_PANOSE_CONTRAST_HIGH              :: HIGH;
+	DWRITE_PANOSE_CONTRAST_VERY_HIGH         :: VERY_HIGH;
+	DWRITE_PANOSE_CONTRAST_HORIZONTAL_LOW    :: HORIZONTAL_LOW;
+	DWRITE_PANOSE_CONTRAST_HORIZONTAL_MEDIUM :: HORIZONTAL_MEDIUM;
+	DWRITE_PANOSE_CONTRAST_HORIZONTAL_HIGH   :: HORIZONTAL_HIGH;
+	DWRITE_PANOSE_CONTRAST_BROKEN            :: BROKEN;
+}
+
+DWRITE_PANOSE_STROKE_VARIATION :: enum s32 {
+	ANY                  :: 0;
+	NO_FIT               :: 1;
+	NO_VARIATION         :: 2;
+	GRADUAL_DIAGONAL     :: 3;
+	GRADUAL_TRANSITIONAL :: 4;
+	GRADUAL_VERTICAL     :: 5;
+	GRADUAL_HORIZONTAL   :: 6;
+	RAPID_VERTICAL       :: 7;
+	RAPID_HORIZONTAL     :: 8;
+	INSTANT_VERTICAL     :: 9;
+	INSTANT_HORIZONTAL   :: 10;
+	
+	DWRITE_PANOSE_STROKE_VARIATION_ANY                  :: ANY;
+	DWRITE_PANOSE_STROKE_VARIATION_NO_FIT               :: NO_FIT;
+	DWRITE_PANOSE_STROKE_VARIATION_NO_VARIATION         :: NO_VARIATION;
+	DWRITE_PANOSE_STROKE_VARIATION_GRADUAL_DIAGONAL     :: GRADUAL_DIAGONAL;
+	DWRITE_PANOSE_STROKE_VARIATION_GRADUAL_TRANSITIONAL :: GRADUAL_TRANSITIONAL;
+	DWRITE_PANOSE_STROKE_VARIATION_GRADUAL_VERTICAL     :: GRADUAL_VERTICAL;
+	DWRITE_PANOSE_STROKE_VARIATION_GRADUAL_HORIZONTAL   :: GRADUAL_HORIZONTAL;
+	DWRITE_PANOSE_STROKE_VARIATION_RAPID_VERTICAL       :: RAPID_VERTICAL;
+	DWRITE_PANOSE_STROKE_VARIATION_RAPID_HORIZONTAL     :: RAPID_HORIZONTAL;
+	DWRITE_PANOSE_STROKE_VARIATION_INSTANT_VERTICAL     :: INSTANT_VERTICAL;
+	DWRITE_PANOSE_STROKE_VARIATION_INSTANT_HORIZONTAL   :: INSTANT_HORIZONTAL;
+}
+
+DWRITE_PANOSE_ARM_STYLE :: enum s32 {
+	ANY                           :: 0;
+	NO_FIT                        :: 1;
+	STRAIGHT_ARMS_HORIZONTAL      :: 2;
+	STRAIGHT_ARMS_WEDGE           :: 3;
+	STRAIGHT_ARMS_VERTICAL        :: 4;
+	STRAIGHT_ARMS_SINGLE_SERIF    :: 5;
+	STRAIGHT_ARMS_DOUBLE_SERIF    :: 6;
+	NONSTRAIGHT_ARMS_HORIZONTAL   :: 7;
+	NONSTRAIGHT_ARMS_WEDGE        :: 8;
+	NONSTRAIGHT_ARMS_VERTICAL     :: 9;
+	NONSTRAIGHT_ARMS_SINGLE_SERIF :: 10;
+	NONSTRAIGHT_ARMS_DOUBLE_SERIF :: 11;
+	STRAIGHT_ARMS_HORZ            :: 2;
+	STRAIGHT_ARMS_VERT            :: 4;
+	BENT_ARMS_HORZ                :: 7;
+	BENT_ARMS_WEDGE               :: 8;
+	BENT_ARMS_VERT                :: 9;
+	BENT_ARMS_SINGLE_SERIF        :: 10;
+	BENT_ARMS_DOUBLE_SERIF        :: 11;
+	
+	DWRITE_PANOSE_ARM_STYLE_ANY                           :: ANY;
+	DWRITE_PANOSE_ARM_STYLE_NO_FIT                        :: NO_FIT;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_HORIZONTAL      :: STRAIGHT_ARMS_HORIZONTAL;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_WEDGE           :: STRAIGHT_ARMS_WEDGE;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_VERTICAL        :: STRAIGHT_ARMS_VERTICAL;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_SINGLE_SERIF    :: STRAIGHT_ARMS_SINGLE_SERIF;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_DOUBLE_SERIF    :: STRAIGHT_ARMS_DOUBLE_SERIF;
+	DWRITE_PANOSE_ARM_STYLE_NONSTRAIGHT_ARMS_HORIZONTAL   :: NONSTRAIGHT_ARMS_HORIZONTAL;
+	DWRITE_PANOSE_ARM_STYLE_NONSTRAIGHT_ARMS_WEDGE        :: NONSTRAIGHT_ARMS_WEDGE;
+	DWRITE_PANOSE_ARM_STYLE_NONSTRAIGHT_ARMS_VERTICAL     :: NONSTRAIGHT_ARMS_VERTICAL;
+	DWRITE_PANOSE_ARM_STYLE_NONSTRAIGHT_ARMS_SINGLE_SERIF :: NONSTRAIGHT_ARMS_SINGLE_SERIF;
+	DWRITE_PANOSE_ARM_STYLE_NONSTRAIGHT_ARMS_DOUBLE_SERIF :: NONSTRAIGHT_ARMS_DOUBLE_SERIF;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_HORZ            :: STRAIGHT_ARMS_HORZ;
+	DWRITE_PANOSE_ARM_STYLE_STRAIGHT_ARMS_VERT            :: STRAIGHT_ARMS_VERT;
+	DWRITE_PANOSE_ARM_STYLE_BENT_ARMS_HORZ                :: BENT_ARMS_HORZ;
+	DWRITE_PANOSE_ARM_STYLE_BENT_ARMS_WEDGE               :: BENT_ARMS_WEDGE;
+	DWRITE_PANOSE_ARM_STYLE_BENT_ARMS_VERT                :: BENT_ARMS_VERT;
+	DWRITE_PANOSE_ARM_STYLE_BENT_ARMS_SINGLE_SERIF        :: BENT_ARMS_SINGLE_SERIF;
+	DWRITE_PANOSE_ARM_STYLE_BENT_ARMS_DOUBLE_SERIF        :: BENT_ARMS_DOUBLE_SERIF;
+}
+
+DWRITE_PANOSE_LETTERFORM :: enum s32 {
+	ANY                :: 0;
+	NO_FIT             :: 1;
+	NORMAL_CONTACT     :: 2;
+	NORMAL_WEIGHTED    :: 3;
+	NORMAL_BOXED       :: 4;
+	NORMAL_FLATTENED   :: 5;
+	NORMAL_ROUNDED     :: 6;
+	NORMAL_OFF_CENTER  :: 7;
+	NORMAL_SQUARE      :: 8;
+	OBLIQUE_CONTACT    :: 9;
+	OBLIQUE_WEIGHTED   :: 10;
+	OBLIQUE_BOXED      :: 11;
+	OBLIQUE_FLATTENED  :: 12;
+	OBLIQUE_ROUNDED    :: 13;
+	OBLIQUE_OFF_CENTER :: 14;
+	OBLIQUE_SQUARE     :: 15;
+	
+	DWRITE_PANOSE_LETTERFORM_ANY                :: ANY;
+	DWRITE_PANOSE_LETTERFORM_NO_FIT             :: NO_FIT;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_CONTACT     :: NORMAL_CONTACT;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_WEIGHTED    :: NORMAL_WEIGHTED;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_BOXED       :: NORMAL_BOXED;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_FLATTENED   :: NORMAL_FLATTENED;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_ROUNDED     :: NORMAL_ROUNDED;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_OFF_CENTER  :: NORMAL_OFF_CENTER;
+	DWRITE_PANOSE_LETTERFORM_NORMAL_SQUARE      :: NORMAL_SQUARE;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_CONTACT    :: OBLIQUE_CONTACT;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_WEIGHTED   :: OBLIQUE_WEIGHTED;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_BOXED      :: OBLIQUE_BOXED;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_FLATTENED  :: OBLIQUE_FLATTENED;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_ROUNDED    :: OBLIQUE_ROUNDED;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_OFF_CENTER :: OBLIQUE_OFF_CENTER;
+	DWRITE_PANOSE_LETTERFORM_OBLIQUE_SQUARE     :: OBLIQUE_SQUARE;
+}
+
+DWRITE_PANOSE_MIDLINE :: enum s32 {
+	ANY              :: 0;
+	NO_FIT           :: 1;
+	STANDARD_TRIMMED :: 2;
+	STANDARD_POINTED :: 3;
+	STANDARD_SERIFED :: 4;
+	HIGH_TRIMMED     :: 5;
+	HIGH_POINTED     :: 6;
+	HIGH_SERIFED     :: 7;
+	CONSTANT_TRIMMED :: 8;
+	CONSTANT_POINTED :: 9;
+	CONSTANT_SERIFED :: 10;
+	LOW_TRIMMED      :: 11;
+	LOW_POINTED      :: 12;
+	LOW_SERIFED      :: 13;
+	
+	DWRITE_PANOSE_MIDLINE_ANY              :: ANY;
+	DWRITE_PANOSE_MIDLINE_NO_FIT           :: NO_FIT;
+	DWRITE_PANOSE_MIDLINE_STANDARD_TRIMMED :: STANDARD_TRIMMED;
+	DWRITE_PANOSE_MIDLINE_STANDARD_POINTED :: STANDARD_POINTED;
+	DWRITE_PANOSE_MIDLINE_STANDARD_SERIFED :: STANDARD_SERIFED;
+	DWRITE_PANOSE_MIDLINE_HIGH_TRIMMED     :: HIGH_TRIMMED;
+	DWRITE_PANOSE_MIDLINE_HIGH_POINTED     :: HIGH_POINTED;
+	DWRITE_PANOSE_MIDLINE_HIGH_SERIFED     :: HIGH_SERIFED;
+	DWRITE_PANOSE_MIDLINE_CONSTANT_TRIMMED :: CONSTANT_TRIMMED;
+	DWRITE_PANOSE_MIDLINE_CONSTANT_POINTED :: CONSTANT_POINTED;
+	DWRITE_PANOSE_MIDLINE_CONSTANT_SERIFED :: CONSTANT_SERIFED;
+	DWRITE_PANOSE_MIDLINE_LOW_TRIMMED      :: LOW_TRIMMED;
+	DWRITE_PANOSE_MIDLINE_LOW_POINTED      :: LOW_POINTED;
+	DWRITE_PANOSE_MIDLINE_LOW_SERIFED      :: LOW_SERIFED;
+}
+
+DWRITE_PANOSE_XHEIGHT :: enum s32 {
+	ANY               :: 0;
+	NO_FIT            :: 1;
+	CONSTANT_SMALL    :: 2;
+	CONSTANT_STANDARD :: 3;
+	CONSTANT_LARGE    :: 4;
+	DUCKING_SMALL     :: 5;
+	DUCKING_STANDARD  :: 6;
+	DUCKING_LARGE     :: 7;
+	CONSTANT_STD      :: 3;
+	DUCKING_STD       :: 6;
+	
+	DWRITE_PANOSE_XHEIGHT_ANY               :: ANY;
+	DWRITE_PANOSE_XHEIGHT_NO_FIT            :: NO_FIT;
+	DWRITE_PANOSE_XHEIGHT_CONSTANT_SMALL    :: CONSTANT_SMALL;
+	DWRITE_PANOSE_XHEIGHT_CONSTANT_STANDARD :: CONSTANT_STANDARD;
+	DWRITE_PANOSE_XHEIGHT_CONSTANT_LARGE    :: CONSTANT_LARGE;
+	DWRITE_PANOSE_XHEIGHT_DUCKING_SMALL     :: DUCKING_SMALL;
+	DWRITE_PANOSE_XHEIGHT_DUCKING_STANDARD  :: DUCKING_STANDARD;
+	DWRITE_PANOSE_XHEIGHT_DUCKING_LARGE     :: DUCKING_LARGE;
+	DWRITE_PANOSE_XHEIGHT_CONSTANT_STD      :: CONSTANT_STD;
+	DWRITE_PANOSE_XHEIGHT_DUCKING_STD       :: DUCKING_STD;
+}
+
+DWRITE_PANOSE_TOOL_KIND :: enum s32 {
+	ANY                :: 0;
+	NO_FIT             :: 1;
+	FLAT_NIB           :: 2;
+	PRESSURE_POINT     :: 3;
+	ENGRAVED           :: 4;
+	BALL               :: 5;
+	BRUSH              :: 6;
+	ROUGH              :: 7;
+	FELT_PEN_BRUSH_TIP :: 8;
+	WILD_BRUSH         :: 9;
+	
+	DWRITE_PANOSE_TOOL_KIND_ANY                :: ANY;
+	DWRITE_PANOSE_TOOL_KIND_NO_FIT             :: NO_FIT;
+	DWRITE_PANOSE_TOOL_KIND_FLAT_NIB           :: FLAT_NIB;
+	DWRITE_PANOSE_TOOL_KIND_PRESSURE_POINT     :: PRESSURE_POINT;
+	DWRITE_PANOSE_TOOL_KIND_ENGRAVED           :: ENGRAVED;
+	DWRITE_PANOSE_TOOL_KIND_BALL               :: BALL;
+	DWRITE_PANOSE_TOOL_KIND_BRUSH              :: BRUSH;
+	DWRITE_PANOSE_TOOL_KIND_ROUGH              :: ROUGH;
+	DWRITE_PANOSE_TOOL_KIND_FELT_PEN_BRUSH_TIP :: FELT_PEN_BRUSH_TIP;
+	DWRITE_PANOSE_TOOL_KIND_WILD_BRUSH         :: WILD_BRUSH;
+}
+
+DWRITE_PANOSE_SPACING :: enum s32 {
+	ANY                 :: 0;
+	NO_FIT              :: 1;
+	PROPORTIONAL_SPACED :: 2;
+	MONOSPACED          :: 3;
+	
+	DWRITE_PANOSE_SPACING_ANY                 :: ANY;
+	DWRITE_PANOSE_SPACING_NO_FIT              :: NO_FIT;
+	DWRITE_PANOSE_SPACING_PROPORTIONAL_SPACED :: PROPORTIONAL_SPACED;
+	DWRITE_PANOSE_SPACING_MONOSPACED          :: MONOSPACED;
+}
+
+DWRITE_PANOSE_ASPECT_RATIO :: enum s32 {
+	ANY            :: 0;
+	NO_FIT         :: 1;
+	VERY_CONDENSED :: 2;
+	CONDENSED      :: 3;
+	NORMAL         :: 4;
+	EXPANDED       :: 5;
+	VERY_EXPANDED  :: 6;
+	
+	DWRITE_PANOSE_ASPECT_RATIO_ANY            :: ANY;
+	DWRITE_PANOSE_ASPECT_RATIO_NO_FIT         :: NO_FIT;
+	DWRITE_PANOSE_ASPECT_RATIO_VERY_CONDENSED :: VERY_CONDENSED;
+	DWRITE_PANOSE_ASPECT_RATIO_CONDENSED      :: CONDENSED;
+	DWRITE_PANOSE_ASPECT_RATIO_NORMAL         :: NORMAL;
+	DWRITE_PANOSE_ASPECT_RATIO_EXPANDED       :: EXPANDED;
+	DWRITE_PANOSE_ASPECT_RATIO_VERY_EXPANDED  :: VERY_EXPANDED;
+}
+
+DWRITE_PANOSE_SCRIPT_TOPOLOGY :: enum s32 {
+	ANY                      :: 0;
+	NO_FIT                   :: 1;
+	ROMAN_DISCONNECTED       :: 2;
+	ROMAN_TRAILING           :: 3;
+	ROMAN_CONNECTED          :: 4;
+	CURSIVE_DISCONNECTED     :: 5;
+	CURSIVE_TRAILING         :: 6;
+	CURSIVE_CONNECTED        :: 7;
+	BLACKLETTER_DISCONNECTED :: 8;
+	BLACKLETTER_TRAILING     :: 9;
+	BLACKLETTER_CONNECTED    :: 10;
+	
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_ANY                      :: ANY;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_NO_FIT                   :: NO_FIT;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_ROMAN_DISCONNECTED       :: ROMAN_DISCONNECTED;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_ROMAN_TRAILING           :: ROMAN_TRAILING;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_ROMAN_CONNECTED          :: ROMAN_CONNECTED;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_CURSIVE_DISCONNECTED     :: CURSIVE_DISCONNECTED;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_CURSIVE_TRAILING         :: CURSIVE_TRAILING;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_CURSIVE_CONNECTED        :: CURSIVE_CONNECTED;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_BLACKLETTER_DISCONNECTED :: BLACKLETTER_DISCONNECTED;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_BLACKLETTER_TRAILING     :: BLACKLETTER_TRAILING;
+	DWRITE_PANOSE_SCRIPT_TOPOLOGY_BLACKLETTER_CONNECTED    :: BLACKLETTER_CONNECTED;
+}
+
+DWRITE_PANOSE_SCRIPT_FORM :: enum s32 {
+	ANY                          :: 0;
+	NO_FIT                       :: 1;
+	UPRIGHT_NO_WRAPPING          :: 2;
+	UPRIGHT_SOME_WRAPPING        :: 3;
+	UPRIGHT_MORE_WRAPPING        :: 4;
+	UPRIGHT_EXTREME_WRAPPING     :: 5;
+	OBLIQUE_NO_WRAPPING          :: 6;
+	OBLIQUE_SOME_WRAPPING        :: 7;
+	OBLIQUE_MORE_WRAPPING        :: 8;
+	OBLIQUE_EXTREME_WRAPPING     :: 9;
+	EXAGGERATED_NO_WRAPPING      :: 10;
+	EXAGGERATED_SOME_WRAPPING    :: 11;
+	EXAGGERATED_MORE_WRAPPING    :: 12;
+	EXAGGERATED_EXTREME_WRAPPING :: 13;
+	
+	DWRITE_PANOSE_SCRIPT_FORM_ANY                          :: ANY;
+	DWRITE_PANOSE_SCRIPT_FORM_NO_FIT                       :: NO_FIT;
+	DWRITE_PANOSE_SCRIPT_FORM_UPRIGHT_NO_WRAPPING          :: UPRIGHT_NO_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_UPRIGHT_SOME_WRAPPING        :: UPRIGHT_SOME_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_UPRIGHT_MORE_WRAPPING        :: UPRIGHT_MORE_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_UPRIGHT_EXTREME_WRAPPING     :: UPRIGHT_EXTREME_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_OBLIQUE_NO_WRAPPING          :: OBLIQUE_NO_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_OBLIQUE_SOME_WRAPPING        :: OBLIQUE_SOME_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_OBLIQUE_MORE_WRAPPING        :: OBLIQUE_MORE_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_OBLIQUE_EXTREME_WRAPPING     :: OBLIQUE_EXTREME_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_EXAGGERATED_NO_WRAPPING      :: EXAGGERATED_NO_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_EXAGGERATED_SOME_WRAPPING    :: EXAGGERATED_SOME_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_EXAGGERATED_MORE_WRAPPING    :: EXAGGERATED_MORE_WRAPPING;
+	DWRITE_PANOSE_SCRIPT_FORM_EXAGGERATED_EXTREME_WRAPPING :: EXAGGERATED_EXTREME_WRAPPING;
+}
+
+DWRITE_PANOSE_FINIALS :: enum s32 {
+	ANY                  :: 0;
+	NO_FIT               :: 1;
+	NONE_NO_LOOPS        :: 2;
+	NONE_CLOSED_LOOPS    :: 3;
+	NONE_OPEN_LOOPS      :: 4;
+	SHARP_NO_LOOPS       :: 5;
+	SHARP_CLOSED_LOOPS   :: 6;
+	SHARP_OPEN_LOOPS     :: 7;
+	TAPERED_NO_LOOPS     :: 8;
+	TAPERED_CLOSED_LOOPS :: 9;
+	TAPERED_OPEN_LOOPS   :: 10;
+	ROUND_NO_LOOPS       :: 11;
+	ROUND_CLOSED_LOOPS   :: 12;
+	ROUND_OPEN_LOOPS     :: 13;
+	
+	DWRITE_PANOSE_FINIALS_ANY                  :: ANY;
+	DWRITE_PANOSE_FINIALS_NO_FIT               :: NO_FIT;
+	DWRITE_PANOSE_FINIALS_NONE_NO_LOOPS        :: NONE_NO_LOOPS;
+	DWRITE_PANOSE_FINIALS_NONE_CLOSED_LOOPS    :: NONE_CLOSED_LOOPS;
+	DWRITE_PANOSE_FINIALS_NONE_OPEN_LOOPS      :: NONE_OPEN_LOOPS;
+	DWRITE_PANOSE_FINIALS_SHARP_NO_LOOPS       :: SHARP_NO_LOOPS;
+	DWRITE_PANOSE_FINIALS_SHARP_CLOSED_LOOPS   :: SHARP_CLOSED_LOOPS;
+	DWRITE_PANOSE_FINIALS_SHARP_OPEN_LOOPS     :: SHARP_OPEN_LOOPS;
+	DWRITE_PANOSE_FINIALS_TAPERED_NO_LOOPS     :: TAPERED_NO_LOOPS;
+	DWRITE_PANOSE_FINIALS_TAPERED_CLOSED_LOOPS :: TAPERED_CLOSED_LOOPS;
+	DWRITE_PANOSE_FINIALS_TAPERED_OPEN_LOOPS   :: TAPERED_OPEN_LOOPS;
+	DWRITE_PANOSE_FINIALS_ROUND_NO_LOOPS       :: ROUND_NO_LOOPS;
+	DWRITE_PANOSE_FINIALS_ROUND_CLOSED_LOOPS   :: ROUND_CLOSED_LOOPS;
+	DWRITE_PANOSE_FINIALS_ROUND_OPEN_LOOPS     :: ROUND_OPEN_LOOPS;
+}
+
+DWRITE_PANOSE_XASCENT :: enum s32 {
+	ANY       :: 0;
+	NO_FIT    :: 1;
+	VERY_LOW  :: 2;
+	LOW       :: 3;
+	MEDIUM    :: 4;
+	HIGH      :: 5;
+	VERY_HIGH :: 6;
+	
+	DWRITE_PANOSE_XASCENT_ANY       :: ANY;
+	DWRITE_PANOSE_XASCENT_NO_FIT    :: NO_FIT;
+	DWRITE_PANOSE_XASCENT_VERY_LOW  :: VERY_LOW;
+	DWRITE_PANOSE_XASCENT_LOW       :: LOW;
+	DWRITE_PANOSE_XASCENT_MEDIUM    :: MEDIUM;
+	DWRITE_PANOSE_XASCENT_HIGH      :: HIGH;
+	DWRITE_PANOSE_XASCENT_VERY_HIGH :: VERY_HIGH;
+}
+
+DWRITE_PANOSE_DECORATIVE_CLASS :: enum s32 {
+	ANY                  :: 0;
+	NO_FIT               :: 1;
+	DERIVATIVE           :: 2;
+	NONSTANDARD_TOPOLOGY :: 3;
+	NONSTANDARD_ELEMENTS :: 4;
+	NONSTANDARD_ASPECT   :: 5;
+	INITIALS             :: 6;
+	CARTOON              :: 7;
+	PICTURE_STEMS        :: 8;
+	ORNAMENTED           :: 9;
+	TEXT_AND_BACKGROUND  :: 10;
+	COLLAGE              :: 11;
+	MONTAGE              :: 12;
+	
+	DWRITE_PANOSE_DECORATIVE_CLASS_ANY                  :: ANY;
+	DWRITE_PANOSE_DECORATIVE_CLASS_NO_FIT               :: NO_FIT;
+	DWRITE_PANOSE_DECORATIVE_CLASS_DERIVATIVE           :: DERIVATIVE;
+	DWRITE_PANOSE_DECORATIVE_CLASS_NONSTANDARD_TOPOLOGY :: NONSTANDARD_TOPOLOGY;
+	DWRITE_PANOSE_DECORATIVE_CLASS_NONSTANDARD_ELEMENTS :: NONSTANDARD_ELEMENTS;
+	DWRITE_PANOSE_DECORATIVE_CLASS_NONSTANDARD_ASPECT   :: NONSTANDARD_ASPECT;
+	DWRITE_PANOSE_DECORATIVE_CLASS_INITIALS             :: INITIALS;
+	DWRITE_PANOSE_DECORATIVE_CLASS_CARTOON              :: CARTOON;
+	DWRITE_PANOSE_DECORATIVE_CLASS_PICTURE_STEMS        :: PICTURE_STEMS;
+	DWRITE_PANOSE_DECORATIVE_CLASS_ORNAMENTED           :: ORNAMENTED;
+	DWRITE_PANOSE_DECORATIVE_CLASS_TEXT_AND_BACKGROUND  :: TEXT_AND_BACKGROUND;
+	DWRITE_PANOSE_DECORATIVE_CLASS_COLLAGE              :: COLLAGE;
+	DWRITE_PANOSE_DECORATIVE_CLASS_MONTAGE              :: MONTAGE;
+}
+
+DWRITE_PANOSE_ASPECT :: enum s32 {
+	ANY             :: 0;
+	NO_FIT          :: 1;
+	SUPER_CONDENSED :: 2;
+	VERY_CONDENSED  :: 3;
+	CONDENSED       :: 4;
+	NORMAL          :: 5;
+	EXTENDED        :: 6;
+	VERY_EXTENDED   :: 7;
+	SUPER_EXTENDED  :: 8;
+	MONOSPACED      :: 9;
+	
+	DWRITE_PANOSE_ASPECT_ANY             :: ANY;
+	DWRITE_PANOSE_ASPECT_NO_FIT          :: NO_FIT;
+	DWRITE_PANOSE_ASPECT_SUPER_CONDENSED :: SUPER_CONDENSED;
+	DWRITE_PANOSE_ASPECT_VERY_CONDENSED  :: VERY_CONDENSED;
+	DWRITE_PANOSE_ASPECT_CONDENSED       :: CONDENSED;
+	DWRITE_PANOSE_ASPECT_NORMAL          :: NORMAL;
+	DWRITE_PANOSE_ASPECT_EXTENDED        :: EXTENDED;
+	DWRITE_PANOSE_ASPECT_VERY_EXTENDED   :: VERY_EXTENDED;
+	DWRITE_PANOSE_ASPECT_SUPER_EXTENDED  :: SUPER_EXTENDED;
+	DWRITE_PANOSE_ASPECT_MONOSPACED      :: MONOSPACED;
+}
+
+DWRITE_PANOSE_FILL :: enum s32 {
+	ANY                 :: 0;
+	NO_FIT              :: 1;
+	STANDARD_SOLID_FILL :: 2;
+	NO_FILL             :: 3;
+	PATTERNED_FILL      :: 4;
+	COMPLEX_FILL        :: 5;
+	SHAPED_FILL         :: 6;
+	DRAWN_DISTRESSED    :: 7;
+	
+	DWRITE_PANOSE_FILL_ANY                 :: ANY;
+	DWRITE_PANOSE_FILL_NO_FIT              :: NO_FIT;
+	DWRITE_PANOSE_FILL_STANDARD_SOLID_FILL :: STANDARD_SOLID_FILL;
+	DWRITE_PANOSE_FILL_NO_FILL             :: NO_FILL;
+	DWRITE_PANOSE_FILL_PATTERNED_FILL      :: PATTERNED_FILL;
+	DWRITE_PANOSE_FILL_COMPLEX_FILL        :: COMPLEX_FILL;
+	DWRITE_PANOSE_FILL_SHAPED_FILL         :: SHAPED_FILL;
+	DWRITE_PANOSE_FILL_DRAWN_DISTRESSED    :: DRAWN_DISTRESSED;
+}
+
+DWRITE_PANOSE_LINING :: enum s32 {
+	ANY      :: 0;
+	NO_FIT   :: 1;
+	NONE     :: 2;
+	INLINE   :: 3;
+	OUTLINE  :: 4;
+	ENGRAVED :: 5;
+	SHADOW   :: 6;
+	RELIEF   :: 7;
+	BACKDROP :: 8;
+	
+	DWRITE_PANOSE_LINING_ANY      :: ANY;
+	DWRITE_PANOSE_LINING_NO_FIT   :: NO_FIT;
+	DWRITE_PANOSE_LINING_NONE     :: NONE;
+	DWRITE_PANOSE_LINING_INLINE   :: INLINE;
+	DWRITE_PANOSE_LINING_OUTLINE  :: OUTLINE;
+	DWRITE_PANOSE_LINING_ENGRAVED :: ENGRAVED;
+	DWRITE_PANOSE_LINING_SHADOW   :: SHADOW;
+	DWRITE_PANOSE_LINING_RELIEF   :: RELIEF;
+	DWRITE_PANOSE_LINING_BACKDROP :: BACKDROP;
+}
+
+DWRITE_PANOSE_DECORATIVE_TOPOLOGY :: enum s32 {
+	ANY                      :: 0;
+	NO_FIT                   :: 1;
+	STANDARD                 :: 2;
+	SQUARE                   :: 3;
+	MULTIPLE_SEGMENT         :: 4;
+	ART_DECO                 :: 5;
+	UNEVEN_WEIGHTING         :: 6;
+	DIVERSE_ARMS             :: 7;
+	DIVERSE_FORMS            :: 8;
+	LOMBARDIC_FORMS          :: 9;
+	UPPER_CASE_IN_LOWER_CASE :: 10;
+	IMPLIED_TOPOLOGY         :: 11;
+	HORSESHOE_E_AND_A        :: 12;
+	CURSIVE                  :: 13;
+	BLACKLETTER              :: 14;
+	SWASH_VARIANCE           :: 15;
+	
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_ANY                      :: ANY;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_NO_FIT                   :: NO_FIT;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_STANDARD                 :: STANDARD;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_SQUARE                   :: SQUARE;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_MULTIPLE_SEGMENT         :: MULTIPLE_SEGMENT;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_ART_DECO                 :: ART_DECO;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_UNEVEN_WEIGHTING         :: UNEVEN_WEIGHTING;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_DIVERSE_ARMS             :: DIVERSE_ARMS;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_DIVERSE_FORMS            :: DIVERSE_FORMS;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_LOMBARDIC_FORMS          :: LOMBARDIC_FORMS;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_UPPER_CASE_IN_LOWER_CASE :: UPPER_CASE_IN_LOWER_CASE;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_IMPLIED_TOPOLOGY         :: IMPLIED_TOPOLOGY;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_HORSESHOE_E_AND_A        :: HORSESHOE_E_AND_A;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_CURSIVE                  :: CURSIVE;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_BLACKLETTER              :: BLACKLETTER;
+	DWRITE_PANOSE_DECORATIVE_TOPOLOGY_SWASH_VARIANCE           :: SWASH_VARIANCE;
+}
+
+DWRITE_PANOSE_CHARACTER_RANGES :: enum s32 {
+	ANY                 :: 0;
+	NO_FIT              :: 1;
+	EXTENDED_COLLECTION :: 2;
+	LITERALS            :: 3;
+	NO_LOWER_CASE       :: 4;
+	SMALL_CAPS          :: 5;
+	
+	DWRITE_PANOSE_CHARACTER_RANGES_ANY                 :: ANY;
+	DWRITE_PANOSE_CHARACTER_RANGES_NO_FIT              :: NO_FIT;
+	DWRITE_PANOSE_CHARACTER_RANGES_EXTENDED_COLLECTION :: EXTENDED_COLLECTION;
+	DWRITE_PANOSE_CHARACTER_RANGES_LITERALS            :: LITERALS;
+	DWRITE_PANOSE_CHARACTER_RANGES_NO_LOWER_CASE       :: NO_LOWER_CASE;
+	DWRITE_PANOSE_CHARACTER_RANGES_SMALL_CAPS          :: SMALL_CAPS;
+}
+
+DWRITE_PANOSE_SYMBOL_KIND :: enum s32 {
+	ANY               :: 0;
+	NO_FIT            :: 1;
+	MONTAGES          :: 2;
+	PICTURES          :: 3;
+	SHAPES            :: 4;
+	SCIENTIFIC        :: 5;
+	MUSIC             :: 6;
+	EXPERT            :: 7;
+	PATTERNS          :: 8;
+	BOARDERS          :: 9;
+	ICONS             :: 10;
+	LOGOS             :: 11;
+	INDUSTRY_SPECIFIC :: 12;
+	
+	DWRITE_PANOSE_SYMBOL_KIND_ANY               :: ANY;
+	DWRITE_PANOSE_SYMBOL_KIND_NO_FIT            :: NO_FIT;
+	DWRITE_PANOSE_SYMBOL_KIND_MONTAGES          :: MONTAGES;
+	DWRITE_PANOSE_SYMBOL_KIND_PICTURES          :: PICTURES;
+	DWRITE_PANOSE_SYMBOL_KIND_SHAPES            :: SHAPES;
+	DWRITE_PANOSE_SYMBOL_KIND_SCIENTIFIC        :: SCIENTIFIC;
+	DWRITE_PANOSE_SYMBOL_KIND_MUSIC             :: MUSIC;
+	DWRITE_PANOSE_SYMBOL_KIND_EXPERT            :: EXPERT;
+	DWRITE_PANOSE_SYMBOL_KIND_PATTERNS          :: PATTERNS;
+	DWRITE_PANOSE_SYMBOL_KIND_BOARDERS          :: BOARDERS;
+	DWRITE_PANOSE_SYMBOL_KIND_ICONS             :: ICONS;
+	DWRITE_PANOSE_SYMBOL_KIND_LOGOS             :: LOGOS;
+	DWRITE_PANOSE_SYMBOL_KIND_INDUSTRY_SPECIFIC :: INDUSTRY_SPECIFIC;
+}
+
+DWRITE_PANOSE_SYMBOL_ASPECT_RATIO :: enum s32 {
+	ANY                :: 0;
+	NO_FIT             :: 1;
+	NO_WIDTH           :: 2;
+	EXCEPTIONALLY_WIDE :: 3;
+	SUPER_WIDE         :: 4;
+	VERY_WIDE          :: 5;
+	WIDE               :: 6;
+	NORMAL             :: 7;
+	NARROW             :: 8;
+	VERY_NARROW        :: 9;
+	
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_ANY                :: ANY;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_NO_FIT             :: NO_FIT;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_NO_WIDTH           :: NO_WIDTH;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_EXCEPTIONALLY_WIDE :: EXCEPTIONALLY_WIDE;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_SUPER_WIDE         :: SUPER_WIDE;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_VERY_WIDE          :: VERY_WIDE;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_WIDE               :: WIDE;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_NORMAL             :: NORMAL;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_NARROW             :: NARROW;
+	DWRITE_PANOSE_SYMBOL_ASPECT_RATIO_VERY_NARROW        :: VERY_NARROW;
+}
+
+DWRITE_OUTLINE_THRESHOLD :: enum s32 {
+	ANTIALIASED :: 0;
+	ALIASED     :: 1;
+	
+	DWRITE_OUTLINE_THRESHOLD_ANTIALIASED :: ANTIALIASED;
+	DWRITE_OUTLINE_THRESHOLD_ALIASED     :: ALIASED;
+}
+
+DWRITE_BASELINE :: enum s32 {
+	DEFAULT            :: 0;
+	
+	ROMAN              :: 1;
+	
+	CENTRAL            :: 2;
+	
+	MATH               :: 3;
+	
+	HANGING            :: 4;
+	
+	IDEOGRAPHIC_BOTTOM :: 5;
+	
+	IDEOGRAPHIC_TOP    :: 6;
+	
+	MINIMUM            :: 7;
+	
+	MAXIMUM            :: 8;
+	
+	DWRITE_BASELINE_DEFAULT            :: DEFAULT;
+	
+	DWRITE_BASELINE_ROMAN              :: ROMAN;
+	
+	DWRITE_BASELINE_CENTRAL            :: CENTRAL;
+	
+	DWRITE_BASELINE_MATH               :: MATH;
+	
+	DWRITE_BASELINE_HANGING            :: HANGING;
+	
+	DWRITE_BASELINE_IDEOGRAPHIC_BOTTOM :: IDEOGRAPHIC_BOTTOM;
+	
+	DWRITE_BASELINE_IDEOGRAPHIC_TOP    :: IDEOGRAPHIC_TOP;
+	
+	DWRITE_BASELINE_MINIMUM            :: MINIMUM;
+	
+	DWRITE_BASELINE_MAXIMUM            :: MAXIMUM;
+}
+
+DWRITE_VERTICAL_GLYPH_ORIENTATION :: enum s32 {
+	DEFAULT :: 0;
+	
+	STACKED :: 1;
+	
+	DWRITE_VERTICAL_GLYPH_ORIENTATION_DEFAULT :: DEFAULT;
+	
+	DWRITE_VERTICAL_GLYPH_ORIENTATION_STACKED :: STACKED;
+}
+
+DWRITE_GLYPH_ORIENTATION_ANGLE :: enum s32 {
+	_0_DEGREES   :: 0;
+	
+	_90_DEGREES  :: 1;
+	
+	_180_DEGREES :: 2;
+	
+	_270_DEGREES :: 3;
+	
+	DWRITE_GLYPH_ORIENTATION_ANGLE_0_DEGREES   :: _0_DEGREES;
+	
+	DWRITE_GLYPH_ORIENTATION_ANGLE_90_DEGREES  :: _90_DEGREES;
+	
+	DWRITE_GLYPH_ORIENTATION_ANGLE_180_DEGREES :: _180_DEGREES;
+	
+	DWRITE_GLYPH_ORIENTATION_ANGLE_270_DEGREES :: _270_DEGREES;
+}
+
+DWRITE_FONT_METRICS1 :: struct {
+#as using dwrite_font_metrics: DWRITE_FONT_METRICS;
+	
+	glyphBoxLeft:          s16;
+	
+	glyphBoxTop:           s16;
+	
+	glyphBoxRight:         s16;
+	
+	glyphBoxBottom:        s16;
+	
+	subscriptPositionX:    s16;
+	
+	subscriptPositionY:    s16;
+	
+	subscriptSizeX:        s16;
+	
+	subscriptSizeY:        s16;
+	
+	superscriptPositionX:  s16;
+	
+	superscriptPositionY:  s16;
+	
+	superscriptSizeX:      s16;
+	
+	superscriptSizeY:      s16;
+	
+	hasTypographicMetrics: BOOL;
+}
+
+DWRITE_CARET_METRICS :: struct {
+	slopeRise: s16;
+	
+	slopeRun:  s16;
+	
+	offset:    s16;
+}
+
+DWRITE_PANOSE :: union {
+	values:     [10] u8;
+	
+	familyKind: u8;
+	
+	text:       struct {
+		familyKind:      u8;
+		serifStyle:      u8;
+		weight:          u8;
+		proportion:      u8;
+		contrast:        u8;
+		strokeVariation: u8;
+		armStyle:        u8;
+		letterform:      u8;
+		midline:         u8;
+		xHeight:         u8;
+	};
+	
+	script:     struct {
+		familyKind:     u8;
+		toolKind:       u8;
+		weight:         u8;
+		spacing:        u8;
+		aspectRatio:    u8;
+		contrast:       u8;
+		scriptTopology: u8;
+		scriptForm:     u8;
+		finials:        u8;
+		xAscent:        u8;
+	};
+	
+	decorative: struct {
+		familyKind:         u8;
+		decorativeClass:    u8;
+		weight:             u8;
+		aspect:             u8;
+		contrast:           u8;
+		serifVariant:       u8;
+		fill:               u8;
+		lining:             u8;
+		decorativeTopology: u8;
+		characterRange:     u8;
+	};
+	
+	symbol:     struct {
+		familyKind:             u8;
+		symbolKind:             u8;
+		weight:                 u8;
+		spacing:                u8;
+		aspectRatioAndContrast: u8;
+		aspectRatio94:          u8;
+		aspectRatio119:         u8;
+		aspectRatio157:         u8;
+		aspectRatio163:         u8;
+		aspectRatio211:         u8;
+	};
+}
+
+DWRITE_UNICODE_RANGE :: struct {
+	first: u32;
+	
+	last:  u32;
+}
+
+DWRITE_SCRIPT_PROPERTIES :: struct {
+	isoScriptCode:          u32;
+	
+	isoScriptNumber:        u32;
+	
+	clusterLookahead:       u32;
+	
+	justificationCharacter: u32;
+	
+	__bitfield:             u32;
+	/* 
+			restrictCaretToClusters: u32; /* 1 bits */
+	usesWordDividers: u32; /* 1 bits */
+	isDiscreteWriting: u32; /* 1 bits */
+	isBlockWriting: u32; /* 1 bits */
+	isDistributedWithinCluster: u32; /* 1 bits */
+	isConnectedWriting: u32; /* 1 bits */
+	isCursiveWriting: u32; /* 1 bits */
+	reserved: u32; /* 25 bits */;
+	*/
+}
+
+DWRITE_JUSTIFICATION_OPPORTUNITY :: struct {
+	expansionMinimum:   float;
+	
+	expansionMaximum:   float;
+	
+	compressionMaximum: float;
+	
+	__bitfield:         u32;
+	/* 
+			expansionPriority: u32; /* 8 bits */
+	compressionPriority: u32; /* 8 bits */
+	allowResidualExpansion: u32; /* 1 bits */
+	allowResidualCompression: u32; /* 1 bits */
+	applyToLeadingEdge: u32; /* 1 bits */
+	applyToTrailingEdge: u32; /* 1 bits */
+	reserved: u32; /* 12 bits */;
+	*/
+}
+
+IDWriteFactory1 :: struct {
+#as using idwritefactory: IDWriteFactory;
+#place idwritefactory; idwritefactory1_vtable: *IDWriteFactory1_VTable;
+}
+
+IDWriteFactory1_VTable :: struct #type_info_none {
+	using idwritefactory: IDWriteFactory_VTable;
+	GetEudcFontCollection: (this: *IDWriteFactory1, fontCollection: **IDWriteFontCollection, checkForUpdates: BOOL = 0) -> HRESULT #cpp_method;
+	CreateCustomRenderingParams_1: (this: *IDWriteFactory1, gamma: float, enhancedContrast: float, enhancedContrastGrayscale: float, clearTypeLevel: float, pixelGeometry: DWRITE_PIXEL_GEOMETRY, renderingMode: DWRITE_RENDERING_MODE, renderingParams: **IDWriteRenderingParams1) -> HRESULT #cpp_method;
+}
+IDWriteFactory1_GetEudcFontCollection :: inline (this: *IDWriteFactory1, fontCollection: **IDWriteFontCollection, checkForUpdates: BOOL = 0) -> HRESULT { return this.idwritefactory1_vtable.GetEudcFontCollection(this, fontCollection, checkForUpdates); }
+IDWriteFactory1_CreateCustomRenderingParams_1 :: inline (this: *IDWriteFactory1, gamma: float, enhancedContrast: float, enhancedContrastGrayscale: float, clearTypeLevel: float, pixelGeometry: DWRITE_PIXEL_GEOMETRY, renderingMode: DWRITE_RENDERING_MODE, renderingParams: **IDWriteRenderingParams1) -> HRESULT { return this.idwritefactory1_vtable.CreateCustomRenderingParams_1(this, gamma, enhancedContrast, enhancedContrastGrayscale, clearTypeLevel, pixelGeometry, renderingMode, renderingParams); }
+
+vtable :: (obj: *IDWriteFactory1) -> *IDWriteFactory1_VTable { return obj.idwritefactory1_vtable; }
+
+
+IDWriteFontFace1 :: struct {
+#as using idwritefontface: IDWriteFontFace;
+#place idwritefontface; idwritefontface1_vtable: *IDWriteFontFace1_VTable;
+}
+IDWriteFontFace1_VTable :: struct #type_info_none {
+	using idwritefontface: IDWriteFontFace_VTable;
+	GetMetrics_1: (this: *IDWriteFontFace1, fontMetrics: *DWRITE_FONT_METRICS1) -> void #cpp_method;
+	GetGdiCompatibleMetrics_1: (this: *IDWriteFontFace1, emSize: float, pixelsPerDip: float, transform: /*const*/ *DWRITE_MATRIX, fontMetrics: *DWRITE_FONT_METRICS1) -> HRESULT #cpp_method;
+	GetCaretMetrics: (this: *IDWriteFontFace1, caretMetrics: *DWRITE_CARET_METRICS) -> void #cpp_method;
+	GetUnicodeRanges: (this: *IDWriteFontFace1, maxRangeCount: u32, unicodeRanges: *DWRITE_UNICODE_RANGE, actualRangeCount: *u32) -> HRESULT #cpp_method;
+	IsMonospacedFont: (this: *IDWriteFontFace1) -> BOOL #cpp_method;
+	GetDesignGlyphAdvances: (this: *IDWriteFontFace1, glyphCount: u32, glyphIndices: *u16, glyphAdvances: *s32, isSideways: BOOL = 0) -> HRESULT #cpp_method;
+	GetGdiCompatibleGlyphAdvances: (this: *IDWriteFontFace1, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, isSideways: BOOL, glyphCount: u32, glyphIndices: *u16, glyphAdvances: *s32) -> HRESULT #cpp_method;
+	GetKerningPairAdjustments: (this: *IDWriteFontFace1, glyphCount: u32, glyphIndices: *u16, glyphAdvanceAdjustments: *s32) -> HRESULT #cpp_method;
+	HasKerningPairs: (this: *IDWriteFontFace1) -> BOOL #cpp_method;
+	GetRecommendedRenderingMode_1: (this: *IDWriteFontFace1, fontEmSize: float, dpiX: float, dpiY: float, transform: /*const*/ *DWRITE_MATRIX, isSideways: BOOL, outlineThreshold: DWRITE_OUTLINE_THRESHOLD, measuringMode: DWRITE_MEASURING_MODE, renderingMode: *DWRITE_RENDERING_MODE) -> HRESULT #cpp_method;
+	GetVerticalGlyphVariants: (this: *IDWriteFontFace1, glyphCount: u32, nominalGlyphIndices: *u16, verticalGlyphIndices: *u16) -> HRESULT #cpp_method;
+	HasVerticalGlyphVariants: (this: *IDWriteFontFace1) -> BOOL #cpp_method;
+}
+IDWriteFontFace1_GetMetrics_1 :: inline (this: *IDWriteFontFace1, fontMetrics: *DWRITE_FONT_METRICS1) { this.idwritefontface1_vtable.GetMetrics_1(this, fontMetrics); }
+IDWriteFontFace1_GetGdiCompatibleMetrics_1 :: inline (this: *IDWriteFontFace1, emSize: float, pixelsPerDip: float, transform: /*const*/ *DWRITE_MATRIX, fontMetrics: *DWRITE_FONT_METRICS1) -> HRESULT { return this.idwritefontface1_vtable.GetGdiCompatibleMetrics_1(this, emSize, pixelsPerDip, transform, fontMetrics); }
+IDWriteFontFace1_GetCaretMetrics :: inline (this: *IDWriteFontFace1, caretMetrics: *DWRITE_CARET_METRICS) { this.idwritefontface1_vtable.GetCaretMetrics(this, caretMetrics); }
+IDWriteFontFace1_GetUnicodeRanges :: inline (this: *IDWriteFontFace1, maxRangeCount: u32, unicodeRanges: *DWRITE_UNICODE_RANGE, actualRangeCount: *u32) -> HRESULT { return this.idwritefontface1_vtable.GetUnicodeRanges(this, maxRangeCount, unicodeRanges, actualRangeCount); }
+IDWriteFontFace1_IsMonospacedFont :: inline (this: *IDWriteFontFace1) -> BOOL { return this.idwritefontface1_vtable.IsMonospacedFont(this); }
+IDWriteFontFace1_GetDesignGlyphAdvances :: inline (this: *IDWriteFontFace1, glyphCount: u32, glyphIndices: *u16, glyphAdvances: *s32, isSideways: BOOL = 0) -> HRESULT { return this.idwritefontface1_vtable.GetDesignGlyphAdvances(this, glyphCount, glyphIndices, glyphAdvances, isSideways); }
+IDWriteFontFace1_GetGdiCompatibleGlyphAdvances :: inline (this: *IDWriteFontFace1, emSize: float, pixelsPerDip: float, transform: *DWRITE_MATRIX, useGdiNatural: BOOL, isSideways: BOOL, glyphCount: u32, glyphIndices: *u16, glyphAdvances: *s32) -> HRESULT { return this.idwritefontface1_vtable.GetGdiCompatibleGlyphAdvances(this, emSize, pixelsPerDip, transform, useGdiNatural, isSideways, glyphCount, glyphIndices, glyphAdvances); }
+IDWriteFontFace1_GetKerningPairAdjustments :: inline (this: *IDWriteFontFace1, glyphCount: u32, glyphIndices: *u16, glyphAdvanceAdjustments: *s32) -> HRESULT { return this.idwritefontface1_vtable.GetKerningPairAdjustments(this, glyphCount, glyphIndices, glyphAdvanceAdjustments); }
+IDWriteFontFace1_HasKerningPairs :: inline (this: *IDWriteFontFace1) -> BOOL { return this.idwritefontface1_vtable.HasKerningPairs(this); }
+IDWriteFontFace1_GetRecommendedRenderingMode_1 :: inline (this: *IDWriteFontFace1, fontEmSize: float, dpiX: float, dpiY: float, transform: /*const*/ *DWRITE_MATRIX, isSideways: BOOL, outlineThreshold: DWRITE_OUTLINE_THRESHOLD, measuringMode: DWRITE_MEASURING_MODE, renderingMode: *DWRITE_RENDERING_MODE) -> HRESULT { return this.idwritefontface1_vtable.GetRecommendedRenderingMode_1(this, fontEmSize, dpiX, dpiY, transform, isSideways, outlineThreshold, measuringMode, renderingMode); }
+IDWriteFontFace1_GetVerticalGlyphVariants :: inline (this: *IDWriteFontFace1, glyphCount: u32, nominalGlyphIndices: *u16, verticalGlyphIndices: *u16) -> HRESULT { return this.idwritefontface1_vtable.GetVerticalGlyphVariants(this, glyphCount, nominalGlyphIndices, verticalGlyphIndices); }
+IDWriteFontFace1_HasVerticalGlyphVariants :: inline (this: *IDWriteFontFace1) -> BOOL { return this.idwritefontface1_vtable.HasVerticalGlyphVariants(this); }
+
+vtable :: (obj: *IDWriteFontFace1) -> *IDWriteFontFace1_VTable { return obj.idwritefontface1_vtable; }
+
+
+IDWriteFont1 :: struct {
+#as using idwritefont: IDWriteFont;
+#place idwritefont; idwritefont1_vtable: *IDWriteFont1_VTable;
+}
+IDWriteFont1_VTable :: struct #type_info_none {
+	using idwritefont: IDWriteFont_VTable;
+	GetMetrics_1: (this: *IDWriteFont1, fontMetrics: *DWRITE_FONT_METRICS1) -> void #cpp_method;
+	GetPanose: (this: *IDWriteFont1, panose: *DWRITE_PANOSE) -> void #cpp_method;
+	GetUnicodeRanges: (this: *IDWriteFont1, maxRangeCount: u32, unicodeRanges: *DWRITE_UNICODE_RANGE, actualRangeCount: *u32) -> HRESULT #cpp_method;
+	IsMonospacedFont: (this: *IDWriteFont1) -> BOOL #cpp_method;
+}
+IDWriteFont1_GetMetrics_1 :: inline (this: *IDWriteFont1, fontMetrics: *DWRITE_FONT_METRICS1) { this.idwritefont1_vtable.GetMetrics_1(this, fontMetrics); }
+IDWriteFont1_GetPanose :: inline (this: *IDWriteFont1, panose: *DWRITE_PANOSE) { this.idwritefont1_vtable.GetPanose(this, panose); }
+IDWriteFont1_GetUnicodeRanges :: inline (this: *IDWriteFont1, maxRangeCount: u32, unicodeRanges: *DWRITE_UNICODE_RANGE, actualRangeCount: *u32) -> HRESULT { return this.idwritefont1_vtable.GetUnicodeRanges(this, maxRangeCount, unicodeRanges, actualRangeCount); }
+IDWriteFont1_IsMonospacedFont :: inline (this: *IDWriteFont1) -> BOOL { return this.idwritefont1_vtable.IsMonospacedFont(this); }
+
+vtable :: (obj: *IDWriteFont1) -> *IDWriteFont1_VTable { return obj.idwritefont1_vtable; }
+
+
+IDWriteRenderingParams1 :: struct {
+#as using idwriterenderingparams: IDWriteRenderingParams;
+#place idwriterenderingparams; idwriterenderingparams1_vtable: *IDWriteRenderingParams1_VTable;
+}
+IDWriteRenderingParams1_VTable :: struct #type_info_none {
+	using idwriterenderingparams: IDWriteRenderingParams_VTable;
+	GetGrayscaleEnhancedContrast: (this: *IDWriteRenderingParams1) -> float #cpp_method;
+}
+IDWriteRenderingParams1_GetGrayscaleEnhancedContrast :: inline (this: *IDWriteRenderingParams1) -> float { return this.idwriterenderingparams1_vtable.GetGrayscaleEnhancedContrast(this); }
+
+vtable :: (obj: *IDWriteRenderingParams1) -> *IDWriteRenderingParams1_VTable { return obj.idwriterenderingparams1_vtable; }
+
+
+IDWriteTextAnalyzer1 :: struct {
+#as using idwritetextanalyzer: IDWriteTextAnalyzer;
+#place idwritetextanalyzer; idwritetextanalyzer1_vtable: *IDWriteTextAnalyzer1_VTable;
+}
+IDWriteTextAnalyzer1_VTable :: struct #type_info_none {
+	using idwritetextanalyzer: IDWriteTextAnalyzer_VTable;
+	ApplyCharacterSpacing: (this: *IDWriteTextAnalyzer1, leadingSpacing: float, trailingSpacing: float, minimumAdvanceWidth: float, textLength: u32, glyphCount: u32, clusterMap: *u16, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, modifiedGlyphAdvances: *float, modifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
+	GetBaseline: (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, baseline: DWRITE_BASELINE, isVertical: BOOL, isSimulationAllowed: BOOL, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, localeName: *s16, baselineCoordinate: *s32, exists: *BOOL) -> HRESULT #cpp_method;
+	AnalyzeVerticalGlyphOrientation: (this: *IDWriteTextAnalyzer1, analysisSource: *IDWriteTextAnalysisSource1, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink1) -> HRESULT #cpp_method;
+	GetGlyphOrientationTransform: (this: *IDWriteTextAnalyzer1, glyphOrientationAngle: DWRITE_GLYPH_ORIENTATION_ANGLE, isSideways: BOOL, transform: *DWRITE_MATRIX) -> HRESULT #cpp_method;
+	GetScriptProperties: (this: *IDWriteTextAnalyzer1, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, scriptProperties: *DWRITE_SCRIPT_PROPERTIES) -> HRESULT #cpp_method;
+	GetTextComplexity: (this: *IDWriteTextAnalyzer1, textString: *s16, textLength: u32, fontFace: *IDWriteFontFace, isTextSimple: *BOOL, textLengthRead: *u32, glyphIndices: *u16) -> HRESULT #cpp_method;
+	GetJustificationOpportunities: (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, fontEmSize: float, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, textLength: u32, glyphCount: u32, textString: *s16, clusterMap: *u16, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, justificationOpportunities: *DWRITE_JUSTIFICATION_OPPORTUNITY) -> HRESULT #cpp_method;
+	JustifyGlyphAdvances: (this: *IDWriteTextAnalyzer1, lineWidth: float, glyphCount: u32, justificationOpportunities: *DWRITE_JUSTIFICATION_OPPORTUNITY, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, justifiedGlyphAdvances: *float, justifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
+	GetJustifiedGlyphs: (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, fontEmSize: float, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, textLength: u32, glyphCount: u32, maxGlyphCount: u32, clusterMap: *u16, glyphIndices: *u16, glyphAdvances: *float, justifiedGlyphAdvances: *float, justifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, actualGlyphCount: *u32, modifiedClusterMap: *u16, modifiedGlyphIndices: *u16, modifiedGlyphAdvances: *float, modifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT #cpp_method;
+}
+IDWriteTextAnalyzer1_ApplyCharacterSpacing :: inline (this: *IDWriteTextAnalyzer1, leadingSpacing: float, trailingSpacing: float, minimumAdvanceWidth: float, textLength: u32, glyphCount: u32, clusterMap: *u16, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, modifiedGlyphAdvances: *float, modifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT { return this.idwritetextanalyzer1_vtable.ApplyCharacterSpacing(this, leadingSpacing, trailingSpacing, minimumAdvanceWidth, textLength, glyphCount, clusterMap, glyphAdvances, glyphOffsets, glyphProperties, modifiedGlyphAdvances, modifiedGlyphOffsets); }
+IDWriteTextAnalyzer1_GetBaseline :: inline (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, baseline: DWRITE_BASELINE, isVertical: BOOL, isSimulationAllowed: BOOL, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, localeName: *s16, baselineCoordinate: *s32, exists: *BOOL) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetBaseline(this, fontFace, baseline, isVertical, isSimulationAllowed, scriptAnalysis, localeName, baselineCoordinate, exists); }
+IDWriteTextAnalyzer1_AnalyzeVerticalGlyphOrientation :: inline (this: *IDWriteTextAnalyzer1, analysisSource: *IDWriteTextAnalysisSource1, textPosition: u32, textLength: u32, analysisSink: *IDWriteTextAnalysisSink1) -> HRESULT { return this.idwritetextanalyzer1_vtable.AnalyzeVerticalGlyphOrientation(this, analysisSource, textPosition, textLength, analysisSink); }
+IDWriteTextAnalyzer1_GetGlyphOrientationTransform :: inline (this: *IDWriteTextAnalyzer1, glyphOrientationAngle: DWRITE_GLYPH_ORIENTATION_ANGLE, isSideways: BOOL, transform: *DWRITE_MATRIX) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetGlyphOrientationTransform(this, glyphOrientationAngle, isSideways, transform); }
+IDWriteTextAnalyzer1_GetScriptProperties :: inline (this: *IDWriteTextAnalyzer1, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, scriptProperties: *DWRITE_SCRIPT_PROPERTIES) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetScriptProperties(this, scriptAnalysis, scriptProperties); }
+IDWriteTextAnalyzer1_GetTextComplexity :: inline (this: *IDWriteTextAnalyzer1, textString: *s16, textLength: u32, fontFace: *IDWriteFontFace, isTextSimple: *BOOL, textLengthRead: *u32, glyphIndices: *u16) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetTextComplexity(this, textString, textLength, fontFace, isTextSimple, textLengthRead, glyphIndices); }
+IDWriteTextAnalyzer1_GetJustificationOpportunities :: inline (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, fontEmSize: float, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, textLength: u32, glyphCount: u32, textString: *s16, clusterMap: *u16, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, justificationOpportunities: *DWRITE_JUSTIFICATION_OPPORTUNITY) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetJustificationOpportunities(this, fontFace, fontEmSize, scriptAnalysis, textLength, glyphCount, textString, clusterMap, glyphProperties, justificationOpportunities); }
+IDWriteTextAnalyzer1_JustifyGlyphAdvances :: inline (this: *IDWriteTextAnalyzer1, lineWidth: float, glyphCount: u32, justificationOpportunities: *DWRITE_JUSTIFICATION_OPPORTUNITY, glyphAdvances: *float, glyphOffsets: *DWRITE_GLYPH_OFFSET, justifiedGlyphAdvances: *float, justifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT { return this.idwritetextanalyzer1_vtable.JustifyGlyphAdvances(this, lineWidth, glyphCount, justificationOpportunities, glyphAdvances, glyphOffsets, justifiedGlyphAdvances, justifiedGlyphOffsets); }
+IDWriteTextAnalyzer1_GetJustifiedGlyphs :: inline (this: *IDWriteTextAnalyzer1, fontFace: *IDWriteFontFace, fontEmSize: float, scriptAnalysis: DWRITE_SCRIPT_ANALYSIS, textLength: u32, glyphCount: u32, maxGlyphCount: u32, clusterMap: *u16, glyphIndices: *u16, glyphAdvances: *float, justifiedGlyphAdvances: *float, justifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET, glyphProperties: *DWRITE_SHAPING_GLYPH_PROPERTIES, actualGlyphCount: *u32, modifiedClusterMap: *u16, modifiedGlyphIndices: *u16, modifiedGlyphAdvances: *float, modifiedGlyphOffsets: *DWRITE_GLYPH_OFFSET) -> HRESULT { return this.idwritetextanalyzer1_vtable.GetJustifiedGlyphs(this, fontFace, fontEmSize, scriptAnalysis, textLength, glyphCount, maxGlyphCount, clusterMap, glyphIndices, glyphAdvances, justifiedGlyphAdvances, justifiedGlyphOffsets, glyphProperties, actualGlyphCount, modifiedClusterMap, modifiedGlyphIndices, modifiedGlyphAdvances, modifiedGlyphOffsets); }
+
+vtable :: (obj: *IDWriteTextAnalyzer1) -> *IDWriteTextAnalyzer1_VTable { return obj.idwritetextanalyzer1_vtable; }
+
+
+IDWriteTextAnalysisSource1 :: struct {
+#as using idwritetextanalysissource: IDWriteTextAnalysisSource;
+#place idwritetextanalysissource; idwritetextanalysissource1_vtable: *IDWriteTextAnalysisSource1_VTable;
+}
+IDWriteTextAnalysisSource1_VTable :: struct #type_info_none {
+	using idwritetextanalysissource: IDWriteTextAnalysisSource_VTable;
+	GetVerticalGlyphOrientation: (this: *IDWriteTextAnalysisSource1, textPosition: u32, textLength: *u32, glyphOrientation: *DWRITE_VERTICAL_GLYPH_ORIENTATION, bidiLevel: *u8) -> HRESULT #cpp_method;
+}
+IDWriteTextAnalysisSource1_GetVerticalGlyphOrientation :: inline (this: *IDWriteTextAnalysisSource1, textPosition: u32, textLength: *u32, glyphOrientation: *DWRITE_VERTICAL_GLYPH_ORIENTATION, bidiLevel: *u8) -> HRESULT { return this.idwritetextanalysissource1_vtable.GetVerticalGlyphOrientation(this, textPosition, textLength, glyphOrientation, bidiLevel); }
+
+vtable :: (obj: *IDWriteTextAnalysisSource1) -> *IDWriteTextAnalysisSource1_VTable { return obj.idwritetextanalysissource1_vtable; }
+
+
+IDWriteTextAnalysisSink1 :: struct {
+#as using idwritetextanalysissink: IDWriteTextAnalysisSink;
+#place idwritetextanalysissink; idwritetextanalysissink1_vtable: *IDWriteTextAnalysisSink1_VTable;
+}
+IDWriteTextAnalysisSink1_VTable :: struct #type_info_none {
+	using idwritetextanalysissink: IDWriteTextAnalysisSink_VTable;
+	SetGlyphOrientation: (this: *IDWriteTextAnalysisSink1, textPosition: u32, textLength: u32, glyphOrientationAngle: DWRITE_GLYPH_ORIENTATION_ANGLE, adjustedBidiLevel: u8, isSideways: BOOL, isRightToLeft: BOOL) -> HRESULT #cpp_method;
+}
+IDWriteTextAnalysisSink1_SetGlyphOrientation :: inline (this: *IDWriteTextAnalysisSink1, textPosition: u32, textLength: u32, glyphOrientationAngle: DWRITE_GLYPH_ORIENTATION_ANGLE, adjustedBidiLevel: u8, isSideways: BOOL, isRightToLeft: BOOL) -> HRESULT { return this.idwritetextanalysissink1_vtable.SetGlyphOrientation(this, textPosition, textLength, glyphOrientationAngle, adjustedBidiLevel, isSideways, isRightToLeft); }
+
+vtable :: (obj: *IDWriteTextAnalysisSink1) -> *IDWriteTextAnalysisSink1_VTable { return obj.idwritetextanalysissink1_vtable; }
+
+
+IDWriteTextLayout1 :: struct {
+#as using idwritetextlayout: IDWriteTextLayout;
+#place idwritetextlayout; idwritetextlayout1_vtable: *IDWriteTextLayout1_VTable;
+}
+IDWriteTextLayout1_VTable :: struct #type_info_none {
+	using idwritetextlayout: IDWriteTextLayout_VTable;
+	SetPairKerning: (this: *IDWriteTextLayout1, isPairKerningEnabled: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	GetPairKerning: (this: *IDWriteTextLayout1, currentPosition: u32, isPairKerningEnabled: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+	SetCharacterSpacing: (this: *IDWriteTextLayout1, leadingSpacing: float, trailingSpacing: float, minimumAdvanceWidth: float, textRange: DWRITE_TEXT_RANGE) -> HRESULT #cpp_method;
+	GetCharacterSpacing: (this: *IDWriteTextLayout1, currentPosition: u32, leadingSpacing: *float, trailingSpacing: *float, minimumAdvanceWidth: *float, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT #cpp_method;
+}
+IDWriteTextLayout1_SetPairKerning :: inline (this: *IDWriteTextLayout1, isPairKerningEnabled: BOOL, textRange: DWRITE_TEXT_RANGE) -> HRESULT { return this.idwritetextlayout1_vtable.SetPairKerning(this, isPairKerningEnabled, textRange); }
+IDWriteTextLayout1_GetPairKerning :: inline (this: *IDWriteTextLayout1, currentPosition: u32, isPairKerningEnabled: *BOOL, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT { return this.idwritetextlayout1_vtable.GetPairKerning(this, currentPosition, isPairKerningEnabled, textRange); }
+IDWriteTextLayout1_SetCharacterSpacing :: inline (this: *IDWriteTextLayout1, leadingSpacing: float, trailingSpacing: float, minimumAdvanceWidth: float, textRange: DWRITE_TEXT_RANGE) -> HRESULT { return this.idwritetextlayout1_vtable.SetCharacterSpacing(this, leadingSpacing, trailingSpacing, minimumAdvanceWidth, textRange); }
+IDWriteTextLayout1_GetCharacterSpacing :: inline (this: *IDWriteTextLayout1, currentPosition: u32, leadingSpacing: *float, trailingSpacing: *float, minimumAdvanceWidth: *float, textRange: *DWRITE_TEXT_RANGE = null) -> HRESULT { return this.idwritetextlayout1_vtable.GetCharacterSpacing(this, currentPosition, leadingSpacing, trailingSpacing, minimumAdvanceWidth, textRange); }
+
+vtable :: (obj: *IDWriteTextLayout1) -> *IDWriteTextLayout1_VTable { return obj.idwritetextlayout1_vtable; }
+
+
+DWRITE_TEXT_ANTIALIAS_MODE :: enum s32 {
+	CLEARTYPE :: 0;
+	
+	GRAYSCALE :: 1;
+	
+	DWRITE_TEXT_ANTIALIAS_MODE_CLEARTYPE :: CLEARTYPE;
+	
+	DWRITE_TEXT_ANTIALIAS_MODE_GRAYSCALE :: GRAYSCALE;
+}
+
+IDWriteBitmapRenderTarget1 :: struct {
+#as using idwritebitmaprendertarget: IDWriteBitmapRenderTarget;
+#place idwritebitmaprendertarget; idwritebitmaprendertarget1_vtable: *IDWriteBitmapRenderTarget1_VTable;
+}
+IDWriteBitmapRenderTarget1_VTable :: struct #type_info_none {
+	using idwritebitmaprendertarget: IDWriteBitmapRenderTarget_VTable;
+	GetTextAntialiasMode: (this: *IDWriteBitmapRenderTarget1) -> DWRITE_TEXT_ANTIALIAS_MODE #cpp_method;
+	SetTextAntialiasMode: (this: *IDWriteBitmapRenderTarget1, antialiasMode: DWRITE_TEXT_ANTIALIAS_MODE) -> HRESULT #cpp_method;
+}
+IDWriteBitmapRenderTarget1_GetTextAntialiasMode :: inline (this: *IDWriteBitmapRenderTarget1) -> DWRITE_TEXT_ANTIALIAS_MODE { return this.idwritebitmaprendertarget1_vtable.GetTextAntialiasMode(this); }
+IDWriteBitmapRenderTarget1_SetTextAntialiasMode :: inline (this: *IDWriteBitmapRenderTarget1, antialiasMode: DWRITE_TEXT_ANTIALIAS_MODE) -> HRESULT { return this.idwritebitmaprendertarget1_vtable.SetTextAntialiasMode(this, antialiasMode); }
+
+vtable :: (obj: *IDWriteBitmapRenderTarget1) -> *IDWriteBitmapRenderTarget1_VTable { return obj.idwritebitmaprendertarget1_vtable; }
+
 
 #scope_file
 

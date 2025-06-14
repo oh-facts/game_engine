@@ -75,10 +75,10 @@ void main()
 	R_Rect2 obj = rects[a_index];
 	vec4 tex_col = texture(sampler2D(obj.tex_id), a_uv);
 	
-	if (tex_col.a < 0.1)
+	if (tex_col.a < 0.01)
 	{
 		discard;
 	}
 	
-	out_color = obj.color * vec4(tex_col.xyz, 1);
+	out_color = tex_col;
 }
