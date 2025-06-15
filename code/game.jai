@@ -76,8 +76,18 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			
 			font_file : *IDWriteFontFile;
 			font_face : *IDWriteFontFace;
+			rendering_params : *IDWriteRenderingParams;
+			base_rendering_params : *IDWriteRenderingParams;
+			gdi_interop : *IDWriteGdiInterop;
 			
 			error := DWriteCreateFactory(.DWRITE_FACTORY_TYPE_SHARED, uid(IDWriteFactory_UUID), xx *dwrite_factory);
+			
+			error = IDWriteFactory_CreateRenderingParams(dwrite_factory, *base_rendering_params);
+			
+			error = IDWriteFactory_CreateCustomRenderingParams(dwrite_factory, 1, IDWriteRenderingParams_GetEnhancedContrast(base_rendering_params), 2., .DWRITE_PIXEL_GEOMETRY_FLAT, .DWRITE_RENDERING_MODE_NATURAL, *rendering_params);
+			
+			
+			error = IDWriteFactory_GetGdiInterop(dwrite_factory, *gdi_interop);
 			
 			utf16_fp, succ, fp_len := utf8_to_wide(font_path);
 			error = IDWriteFactory_CreateFontFileReference(dwrite_factory, xx utf16_fp, xx 0, *font_file);
@@ -120,43 +130,66 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				
 				analysis : *IDWriteGlyphRunAnalysis;
 				
-				error = IDWriteFactory_CreateGlyphRunAnalysis(dwrite_factory, *glyph_run, 1., xx 0, .DWRITE_RENDERING_MODE_CLEARTYPE_NATURAL, .DWRITE_MEASURING_MODE_NATURAL, 0., 0., *analysis);
+				error = IDWriteFactory_CreateGlyphRunAnalysis(dwrite_factory, *glyph_run, 1., xx 0, .DWRITE_RENDERING_MODE_GDI_NATURAL, .DWRITE_MEASURING_MODE_GDI_NATURAL, 0., 0., *analysis);
 				
 				bounds : RECT;
 				
-				error = IDWriteGlyphRunAnalysis_GetAlphaTextureBounds(analysis, .DWRITE_TEXTURE_CLEARTYPE_3x1, *bounds);
+				error = IDWriteGlyphRunAnalysis_GetAlphaTextureBounds(analysis, .CLEARTYPE_3x1, *bounds);
 				
 				width := bounds.right - bounds.left;
 				height := bounds.bottom - bounds.top;
-				size := width * height * 3;
-				size2 := width * height * 4;
+				
+				rt : *IDWriteBitmapRenderTarget;
+				IDWriteGdiInterop_CreateBitmapRenderTarget(gdi_interop, xx 0, xx width, xx height, *rt);
+				
+				dc : HDC;
+				{
+					dc = IDWriteBitmapRenderTarget_GetMemoryDC(rt);
+					original := SelectObject(dc, GetStockObject(DC_PEN));
+					SetDCPenColor(dc, 0x00FF0000);
+					SelectObject(dc, GetStockObject(DC_BRUSH));
+					SetDCBrushColor(dc, 0x00FF00FF);
+					Rectangle(dc, 0, 0, width, height);
+				}
+				
+				dib : DIBSECTION;
+				bitmap :HBITMAP= GetCurrentObject(dc, OBJ_BITMAP);
+				GetObjectA(bitmap, size_of(DIBSECTION), *dib);
+				
+				size := width * height * 4;
+				using game.font_metrics;
+				using game.glyph_metrics[it_index];
 				
 				buffer :*u8= xx tzpush_array(u8, size);
+				px_size := em_size / designUnitsPerEm;
 				
-				error = IDWriteGlyphRunAnalysis_CreateAlphaTexture(analysis, .DWRITE_TEXTURE_CLEARTYPE_3x1, *bounds, buffer, xx size);
+				bb : RECT;
+				baseline := font_metrics.ascent * px_size;
 				
-				buffer2 :*u8= xx tzpush_array(u8, size2);
+				error = IDWriteBitmapRenderTarget_DrawGlyphRun(rt, 0., baseline / 2, .DWRITE_MEASURING_MODE_GDI_NATURAL, *glyph_run, rendering_params, 0xFFFFFFFF, *bb);
 				
 				i := 0;
 				j := 0;
 				
 				while i != size
 				{
-					r,g,b : u8;
-					r = buffer[i];
-					g = buffer[i + 1];
-					b = buffer[i + 2];
+					a := (cast(*u8)dib.dsBm.bmBits)[i + 1];
 					
-					buffer2[j + 0] = r;
-					buffer2[j + 1] = g;
-					buffer2[j + 2] = b;
-					buffer2[j + 3] = r;
+					if a
+					{
+						ew : int;
+					}
 					
-					i += 3;
+					buffer[j + 0] = 255;
+					buffer[j + 1] = 255;
+					buffer[j + 2] = 255;
+					buffer[j + 3] = a;
+					
+					i += 4;
 					j += 4;
 				}
 				
-				glyph_tex[it_index] = r_image_create(width, height, 4, buffer2, .Nearest, .Nearest, .Clamp_To_Edge);
+				glyph_tex[it_index] = r_image_create(width, height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
 				
 				jeff : int;
 			}

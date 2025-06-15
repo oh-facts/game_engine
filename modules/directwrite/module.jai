@@ -30,6 +30,28 @@ tagLOGFONTW :: struct{
 
 LOGFONTW :: tagLOGFONTW;
 
+tagDIBSECTION :: struct 
+{
+	dsBm : BITMAP;
+  dsBmih : BITMAPINFOHEADER;
+  dsBitfields : [3]DWORD;
+  dshSection : HANDLE;
+  dsOffset : DWORD;
+};
+
+DIBSECTION :: tagDIBSECTION;
+
+OBJ_BITMAP :: 7;
+DC_BRUSH :: 18;
+DC_PEN :: 19;
+
+GetDCPenColor :: (hdc : HDC) -> COLORREF #foreign gdi;
+SetDCPenColor :: (hdc : HDC, color : COLORREF) -> COLORREF #foreign gdi;
+SetDCBrushColor :: (hdc : HDC, color : COLORREF) -> COLORREF #foreign gdi;
+Rectangle :: (hdc : HDC, left : int, top : int, right : int, bottom : int) -> BOOL #foreign gdi;;
+GetCurrentObject :: (hdc : HDC, type : u32) -> HGDIOBJ #foreign gdi;
+
 #scope_file
 
 dwrite :: #library,system "Dwrite";
+gdi :: #library,system "Gdi32";

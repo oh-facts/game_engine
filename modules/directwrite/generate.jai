@@ -18,7 +18,7 @@ build :: ()
 		array_add(*libnames,      "Dwrite.dll");
 		array_add(*source_files,  "dwrite.h");
 		array_add(*extra_clang_arguments, "-x", "c++", "-DWIN32_LEAN_AND_MEAN", "-DUNICODE");
-		array_add(*path_fragments_to_treat_as_non_system_paths, "dwrite.h", "dcommon.h", "gdi32");
+		array_add(*path_fragments_to_treat_as_non_system_paths, "dwrite.h", "dcommon.h");
 		mimic_spacing_flags &= ~Mimic_Spacing_Flags.VTABLE;
 		log_stripped_declarations = false;
 	}
