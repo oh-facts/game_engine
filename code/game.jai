@@ -26,14 +26,8 @@ Game :: struct
 	entities : []Entity;
 }
 
-cps :: string.[
-							 "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-							 "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
-							 "u", "v", "w", "x", "y", "z",
-							 "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
-							 "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
-							 "U", "V", "W", "X", "Y", "Z", "{", "}"
-							 ];
+cps :: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}";
+//cps :: "summer";
 
 em_size :: 96 / 72. * 64;
 
@@ -96,18 +90,17 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			{
 				cp := it;
 				
-				ch, count, _ := character_utf8_to_utf32(cp.data, cp.count);
-				
+				ch, count, _ := character_utf8_to_utf32(*cp, 1);
 				
 				glyph_index : *u16 = tpush_array(u16, count);
 				error = IDWriteFontFace_GetGlyphIndicesW(font_face, *ch, xx count, glyph_index);
 				
-				glyph_indices : *u16 = tpush_array(u16, count * 2);
-				glyph_indices[0] = 80;
-				glyph_indices[1] = 72;
-				
+				//glyph_indices : *u16 = tpush_array(u16, count * 2);
+				//glyph_indices[0] = glyph_index[0];
+				//glyph_indices[1] = glyph_index[0];
+				//
 				//poo : *s32 = tpush_array(s32, count * 2);
-				
+				//
 				//bo : *IDWriteFontFace1;
 				//bo = xx font_face;
 				//error = IDWriteFontFace1_GetKerningPairAdjustments(xx font_face, xx (count * 2), glyph_indices, poo);
@@ -163,7 +156,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 					j += 4;
 				}
 				
-				glyph_tex[it_index] = r_image_create(width, height, 4, buffer2, .Linear, .Linear, .Clamp_To_Edge);
+				glyph_tex[it_index] = r_image_create(width, height, 4, buffer2, .Nearest, .Nearest, .Clamp_To_Edge);
 				
 				jeff : int;
 			}
@@ -188,7 +181,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	pb.viewport = win_size;
 	
-	x := -1920.;
+	x := -400.;
 	y : float;
 	
 	// counter * PI / 180. * 45;

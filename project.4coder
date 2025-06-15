@@ -48,6 +48,14 @@ commands =
 		.save_dirty_files = true,
 		.cursor_at_end = false,
 	},
+	.dwrite =
+	{
+		.win = "jai modules/directwrite/generate.jai",
+		.out = "*compilation*",
+		.footer_panel = true,
+		.save_dirty_files = true,
+		.cursor_at_end = false,
+	},
 	.cloc = 
 	{
 		.win = "build cloc",
@@ -61,5 +69,6 @@ fkey_command =
 {
 	.F1 = "build",
 	.F3 = "run",
-	.F4 = "clean",	
+	.F4 = "clean",
+	.F5 = "dwrite"
 };
