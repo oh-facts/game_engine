@@ -340,14 +340,10 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 	}
 	
-	text :[]string= .["boyohboy", "erere", "re"];
-	t := text[(cast(int)counter) % 3];
-	
 	font_begin();
 	
 	push_sprite(pb, .{0, 0}, .{128, 128}, 0, COLOR_RED, get_white_square());
-	push_text(pb, "hi", .{0, 6}, .Delius, 6, COLOR_WHITE);
-	push_text(pb, t, .{0, 32}, .Delius, 32, COLOR_WHITE);
+	push_text(pb, "please enjoy each triangle equally", .{0, 64}, .Delius, 64, COLOR_WHITE);
 	
 	// counter * PI / 180. * 45;
 	/*
