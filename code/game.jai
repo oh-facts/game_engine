@@ -1,4 +1,3 @@
-
 Entity :: struct
 {
 	kf_index : [256]Key_Frame_Index;
@@ -6,12 +5,213 @@ Entity :: struct
 	pos : Vector3;
 }
 
-Glyph_Metrics :: struct
+Font_Kind :: enum
 {
+	Delius;
+	Akasha;
+	Count;
+}
+
+/*
+ Make it immediate mode!
+If it can't find the glyph. It makes a call to ft to find the glyph.
+Every "frame" 
+*/
+
+Glyph_Key :: struct
+{
+	cp : u32;
+	kind : Font_Kind;
+	size : int;
+};
+
+Glyph :: struct
+{
+	next : *Glyph;
+	
 	advance_x : float;
 	advance_y : float;
 	offset_x : float;
 	offset_y : float;
+	ascent : float;
+	tex : Handle;
+	
+	// No need for font cache. Fixed # of fonts. ~10 fonts at best.
+	// All will be preloaded at startup for now
+	// So I am stuffing that stuff here.
+	pt_size : int;
+	font_ascent : int;
+	kind : Font_Kind;
+	//ft_library : FT_Library;
+	
+	key : string;
+}
+
+Glyph_Slot :: struct
+{
+	first : *Glyph;
+	last : *Glyph;
+}
+
+Font_State :: struct
+{
+	arena : *Arena;
+	frame : *Arena;
+	slots : []Glyph_Slot;
+	
+	libraries : [Font_Kind.Count]FT_Library;
+	faces: [Font_Kind.Count]FT_Face;
+}
+
+font_state : Font_State;
+
+font_begin :: ()
+{
+	using font_state;
+	frame.used = ARENA_HEADER_SIZE;
+}
+
+font_state_init :: ()
+{
+	using font_state;
+	
+	arena = arena_init();
+	frame = arena_init();
+	
+	slots.count = 256;
+	slots.data = push_array(arena, Glyph_Slot, xx slots.count);
+	
+	paths :[2]string = .["delius.ttf", "akasha.ttf"];
+	
+	for 0 .. 1
+	{
+		font_path := tprint("%/%", fonts_folder, paths[it]);
+		font_data := read_entire_file(font_path);
+		
+		FT_Init_FreeType(*libraries[it]);
+		FT_New_Memory_Face(libraries[it], font_data.data, xx font_data.count, 0, *faces[it]);
+	}
+	
+}
+
+glyph_from_key :: (key : Glyph_Key) -> *Glyph
+{
+	using font_state;
+	
+	out : *Glyph;
+	
+	data_size := size_of(type_of(key));
+	
+	str_key : string;
+	str_key.data = push_array(frame, u8, xx data_size);
+	str_key.count = data_size;
+	memcpy(str_key.data, *key, data_size);
+	
+	hash := hash_string(str_key);
+	
+	slot_idx := xx hash.U64[0] % slots.count;
+	slot := *slots[slot_idx];
+	
+	// check if node already exists
+	{
+		cur := slot.first;
+		while cur {
+			defer cur = cur.next;
+			
+			if cur.key == str_key {
+				out = cur;
+				break;
+			}
+		}
+	}
+	
+	// if not, allocate
+	if !out
+	{
+		
+		// allocate glyph node
+		{
+			out = push_struct(arena, Glyph);
+			
+			if !slot.first
+			{
+				slot.first = out;
+				slot.last = out;
+			}
+			else
+			{
+				slot.last.next = out;
+				slot.last = out;
+			}
+		}
+		
+		// init with key stuff
+		{
+			out.key = str_key;
+			out.pt_size = key.size;
+			out.kind = key.kind;
+		}
+		
+		// init with freetype stuff
+		{
+			library := libraries[xx key.kind];
+			face := faces[xx key.kind];
+			
+			FT_Set_Char_Size(face, 0, xx (key.size * 64), 0, 96);
+			
+			out.ascent = xx face.ascender >> 6;
+			
+			ch, count, _ := character_utf8_to_utf32(xx *key.cp, 1);
+			
+			index := FT_Get_Char_Index(face, ch);
+			
+			FT_Load_Glyph(face, index, FT_LOAD_DEFAULT | FT_LOAD_RENDER);
+			
+			{
+				out.advance_x = xx face.glyph.advance.x >> 6;
+				out.advance_y = xx face.glyph.advance.y >> 6;
+				out.offset_x = xx face.glyph.bitmap_left;
+				out.offset_y = xx face.glyph.bitmap_top;
+			}
+			
+			width := face.glyph.bitmap.width;
+			height := face.glyph.bitmap.rows;
+			bytes := face.glyph.bitmap.buffer;
+			
+			in_size := width * height;
+			out_size := width * height * 4;
+			
+			buffer :*u8= xx tzpush_array(u8, out_size);
+			
+			i := 0;
+			j := 0;
+			
+			while i != in_size
+			{
+				a := (cast(*u8)bytes)[i];
+				
+				if a
+				{
+					ew : int;
+				}
+				
+				buffer[j + 0] = 255;
+				buffer[j + 1] = 255;
+				buffer[j + 2] = 255;
+				buffer[j + 3] = a;
+				
+				i += 1;
+				j += 4;
+			}
+			
+			out.tex = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
+		}
+		
+		
+	}
+	
+	return out;
+	//print("% %\n", hash, i);
 }
 
 Game :: struct
@@ -23,11 +223,7 @@ Game :: struct
 	
 	ui_camera : Camera;
 	
-	glyph_metrics : [cps.count]Glyph_Metrics;
-	glyph_tex : [cps.count]Handle;
-	
-	ascent : int;
-	
+	ascent : float;
 	cow : *Entity;
 	cow2 : *Entity;
 	butterfly : *Entity;
@@ -36,7 +232,6 @@ Game :: struct
 }
 
 //cps :: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}";
-cps :: "Summerg";
 
 entity_store_init :: (using game : *Game)
 {
@@ -76,73 +271,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		cow2 = entity_alloc(game);
 		butterfly = entity_alloc(game);
 		
-		{
-			font_path := tprint("%/delius.ttf", fonts_folder);
-			
-			font_data := read_entire_file(font_path);
-			
-			library : FT_Library;
-			FT_Init_FreeType(*library);
-			
-			face : FT_Face;
-			FT_New_Memory_Face(library, font_data.data, xx font_data.count, 0, *face);
-			game.ascent = xx face.ascender;
-			
-			FT_Set_Char_Size(face, 0, 64 * 64, 0, 96);
-			
-			for cps
-			{
-				cp := it;
-				
-				ch, count, _ := character_utf8_to_utf32(*cp, 1);
-				
-				index := FT_Get_Char_Index(face, it);
-				FT_Load_Glyph(face, index, FT_LOAD_DEFAULT | FT_LOAD_RENDER);
-				
-				{
-					using game.glyph_metrics[it_index];
-					advance_x = xx face.glyph.advance.x >> 6;
-					advance_y = xx face.glyph.advance.y >> 6;
-					offset_x = xx face.glyph.bitmap_left;
-					offset_y = xx face.glyph.bitmap_top;
-				}
-				
-				width := face.glyph.bitmap.width;
-				height := face.glyph.bitmap.rows;
-				bytes := face.glyph.bitmap.buffer;
-				
-				in_size := width * height;
-				out_size := width * height * 4;
-				
-				buffer :*u8= xx tzpush_array(u8, out_size);
-				
-				i := 0;
-				j := 0;
-				
-				while i != in_size
-				{
-					a := (cast(*u8)bytes)[i];
-					
-					if a
-					{
-						ew : int;
-					}
-					
-					buffer[j + 0] = 255;
-					buffer[j + 1] = 255;
-					buffer[j + 2] = 255;
-					buffer[j + 3] = a;
-					
-					i += 1;
-					j += 4;
-				}
-				
-				glyph_tex[it_index] = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
-				
-				jeff : int;
-			}
-			
-		}
+		font_state_init();
 		
 		jeff : int;
 	}
@@ -163,10 +292,31 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	pb.viewport = win_size;
 	
 	x := -400.;
-	y : float;
+	y := 220;
+	
+	{
+		text := "hi";
+		
+		font_begin();
+		
+		for text
+		{
+			glyph := glyph_from_key(.{it, .Delius, 32});
+			
+			using glyph;
+			
+			baseline := ascent;
+			size := tex_size_from_handle(tex);
+			pos_y := baseline + offset_y - size.y / 2;
+			
+			push_sprite(pb, .{x + size.x / 2 + (offset_x), y + pos_y}, size, 0, COLOR_WHITE, tex);
+			
+			x += advance_x;
+		}
+	}
 	
 	// counter * PI / 180. * 45;
-	
+	/*
 	for cps
 	{
 		using game.glyph_metrics[it_index];
@@ -181,6 +331,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 		x += advance_x;
 	}
+	*/
 	
 	anim, jaunt, asset := animation_data_from_key("cow.glb.walk");
 	
