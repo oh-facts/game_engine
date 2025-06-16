@@ -87,7 +87,7 @@ r_init :: ()
 	glBindVertexArray(stupid_fucking_opengl);
 	
 	compile_shaders();
-	glEnable(GL_FRAMEBUFFER_SRGB);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 	
 	for 0 .. Instance_Buffers.Count - 1 
 	{
@@ -272,7 +272,7 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : GLint
 	glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, min_filter);
 	glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, mag_filter);
 	
-	glTextureStorage2D(id, 1, GL_SRGB8_ALPHA8, xx w, xx h);
+	glTextureStorage2D(id, 1, GL_RGBA32F, xx w, xx h);
 	
 	if bytes 
 	{

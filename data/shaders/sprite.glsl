@@ -75,6 +75,9 @@ void main()
 	R_Rect2 obj = rects[a_index];
 	vec4 tex_col = texture(sampler2D(obj.tex_id), a_uv);
 	
+	//if (tex_col.a < 0.01) discard;
+	
+	//vec3 color = pow(tex_col.xyz, vec3(1.0 / 2.2));
+	//out_color  = vec4(color, tex_col.a);
 	out_color = tex_col;
-	//out_color = vec4(.xyz, 1);
 }

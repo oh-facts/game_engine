@@ -16,10 +16,10 @@
 #import "GL" (ENABLE_ALL_EXTENSIONS = true);
 #import "Windows_Utf8";
 #import "Unicode";
+#import "freetype-2.12.1";
 
 // NOTE(mizu): local modules
 #import "jai_cgltf";
-#import "directwrite";
 
 // NOTE(mizu): src code
 #load "base.jai";

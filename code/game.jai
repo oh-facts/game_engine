@@ -6,6 +6,14 @@ Entity :: struct
 	pos : Vector3;
 }
 
+Glyph_Metrics :: struct
+{
+	advance_x : float;
+	advance_y : float;
+	offset_x : float;
+	offset_y : float;
+}
+
 Game :: struct
 {
 	initialized : bool;
@@ -15,9 +23,10 @@ Game :: struct
 	
 	ui_camera : Camera;
 	
+	glyph_metrics : [cps.count]Glyph_Metrics;
 	glyph_tex : [cps.count]Handle;
-	glyph_metrics : [cps.count]DWRITE_GLYPH_METRICS;
-	font_metrics : DWRITE_FONT_METRICS;
+	
+	ascent : int;
 	
 	cow : *Entity;
 	cow2 : *Entity;
@@ -26,10 +35,8 @@ Game :: struct
 	entities : []Entity;
 }
 
-cps :: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}";
-//cps :: "summer";
-
-em_size :: 96 / 72. * 64;
+//cps :: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}";
+cps :: "Summerg";
 
 entity_store_init :: (using game : *Game)
 {
@@ -72,29 +79,16 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		{
 			font_path := tprint("%/delius.ttf", fonts_folder);
 			
-			dwrite_factory : *IDWriteFactory;
+			font_data := read_entire_file(font_path);
 			
-			font_file : *IDWriteFontFile;
-			font_face : *IDWriteFontFace;
-			rendering_params : *IDWriteRenderingParams;
-			base_rendering_params : *IDWriteRenderingParams;
-			gdi_interop : *IDWriteGdiInterop;
+			library : FT_Library;
+			FT_Init_FreeType(*library);
 			
-			error := DWriteCreateFactory(.DWRITE_FACTORY_TYPE_SHARED, uid(IDWriteFactory_UUID), xx *dwrite_factory);
+			face : FT_Face;
+			FT_New_Memory_Face(library, font_data.data, xx font_data.count, 0, *face);
+			game.ascent = xx face.ascender;
 			
-			error = IDWriteFactory_CreateRenderingParams(dwrite_factory, *base_rendering_params);
-			
-			error = IDWriteFactory_CreateCustomRenderingParams(dwrite_factory, 1, IDWriteRenderingParams_GetEnhancedContrast(base_rendering_params), 2., .DWRITE_PIXEL_GEOMETRY_FLAT, .DWRITE_RENDERING_MODE_NATURAL, *rendering_params);
-			
-			
-			error = IDWriteFactory_GetGdiInterop(dwrite_factory, *gdi_interop);
-			
-			utf16_fp, succ, fp_len := utf8_to_wide(font_path);
-			error = IDWriteFactory_CreateFontFileReference(dwrite_factory, xx utf16_fp, xx 0, *font_file);
-			
-			error = IDWriteFactory_CreateFontFace(dwrite_factory, .DWRITE_FONT_FACE_TYPE_TRUETYPE, 1, *font_file, 0, .DWRITE_FONT_SIMULATIONS_NONE, *font_face);
-			
-			IDWriteFontFace_GetMetrics(font_face, *font_metrics);
+			FT_Set_Char_Size(face, 0, 64 * 64, 0, 96);
 			
 			for cps
 			{
@@ -102,78 +96,32 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				
 				ch, count, _ := character_utf8_to_utf32(*cp, 1);
 				
-				glyph_index : *u16 = tpush_array(u16, count);
-				error = IDWriteFontFace_GetGlyphIndicesW(font_face, *ch, xx count, glyph_index);
+				index := FT_Get_Char_Index(face, it);
+				FT_Load_Glyph(face, index, FT_LOAD_DEFAULT | FT_LOAD_RENDER);
 				
-				//glyph_indices : *u16 = tpush_array(u16, count * 2);
-				//glyph_indices[0] = glyph_index[0];
-				//glyph_indices[1] = glyph_index[0];
-				//
-				//poo : *s32 = tpush_array(s32, count * 2);
-				//
-				//bo : *IDWriteFontFace1;
-				//bo = xx font_face;
-				//error = IDWriteFontFace1_GetKerningPairAdjustments(xx font_face, xx (count * 2), glyph_indices, poo);
-				
-				IDWriteFontFace_GetDesignGlyphMetrics(font_face, glyph_index, 1, *glyph_metrics[it_index]);
-				
-				jeffy : int;
-				
-				glyph_run : DWRITE_GLYPH_RUN;
 				{
-					using glyph_run;
-					fontFace = font_face;
-					fontEmSize = em_size;
-					glyphCount = xx count;
-					glyphIndices = glyph_index;
+					using game.glyph_metrics[it_index];
+					advance_x = xx face.glyph.advance.x >> 6;
+					advance_y = xx face.glyph.advance.y >> 6;
+					offset_x = xx face.glyph.bitmap_left;
+					offset_y = xx face.glyph.bitmap_top;
 				}
 				
-				analysis : *IDWriteGlyphRunAnalysis;
+				width := face.glyph.bitmap.width;
+				height := face.glyph.bitmap.rows;
+				bytes := face.glyph.bitmap.buffer;
 				
-				error = IDWriteFactory_CreateGlyphRunAnalysis(dwrite_factory, *glyph_run, 1., xx 0, .DWRITE_RENDERING_MODE_GDI_NATURAL, .DWRITE_MEASURING_MODE_GDI_NATURAL, 0., 0., *analysis);
+				in_size := width * height;
+				out_size := width * height * 4;
 				
-				bounds : RECT;
-				
-				error = IDWriteGlyphRunAnalysis_GetAlphaTextureBounds(analysis, .CLEARTYPE_3x1, *bounds);
-				
-				width := bounds.right - bounds.left;
-				height := bounds.bottom - bounds.top;
-				
-				rt : *IDWriteBitmapRenderTarget;
-				IDWriteGdiInterop_CreateBitmapRenderTarget(gdi_interop, xx 0, xx width, xx height, *rt);
-				
-				dc : HDC;
-				{
-					dc = IDWriteBitmapRenderTarget_GetMemoryDC(rt);
-					original := SelectObject(dc, GetStockObject(DC_PEN));
-					SetDCPenColor(dc, 0x00FF0000);
-					SelectObject(dc, GetStockObject(DC_BRUSH));
-					SetDCBrushColor(dc, 0x00FF00FF);
-					Rectangle(dc, 0, 0, width, height);
-				}
-				
-				dib : DIBSECTION;
-				bitmap :HBITMAP= GetCurrentObject(dc, OBJ_BITMAP);
-				GetObjectA(bitmap, size_of(DIBSECTION), *dib);
-				
-				size := width * height * 4;
-				using game.font_metrics;
-				using game.glyph_metrics[it_index];
-				
-				buffer :*u8= xx tzpush_array(u8, size);
-				px_size := em_size / designUnitsPerEm;
-				
-				bb : RECT;
-				baseline := font_metrics.ascent * px_size;
-				
-				error = IDWriteBitmapRenderTarget_DrawGlyphRun(rt, 0., baseline / 2, .DWRITE_MEASURING_MODE_GDI_NATURAL, *glyph_run, rendering_params, 0xFFFFFFFF, *bb);
+				buffer :*u8= xx tzpush_array(u8, out_size);
 				
 				i := 0;
 				j := 0;
 				
-				while i != size
+				while i != in_size
 				{
-					a := (cast(*u8)dib.dsBm.bmBits)[i + 1];
+					a := (cast(*u8)bytes)[i];
 					
 					if a
 					{
@@ -185,11 +133,11 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 					buffer[j + 2] = 255;
 					buffer[j + 3] = a;
 					
-					i += 4;
+					i += 1;
 					j += 4;
 				}
 				
-				glyph_tex[it_index] = r_image_create(width, height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
+				glyph_tex[it_index] = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
 				
 				jeff : int;
 			}
@@ -221,21 +169,17 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	for cps
 	{
-		using game.font_metrics;
 		using game.glyph_metrics[it_index];
 		
-		px_size := em_size / designUnitsPerEm;
-		
-		baseline := ascent * px_size;
+		baseline := game.ascent >> 6;
 		
 		size := tex_size_from_handle(game.glyph_tex[it_index]);
 		
-		pos_y := (baseline + (bottomSideBearing)* px_size) + size.y / 2;
+		pos_y := baseline + offset_y - size.y / 2;
 		
+		push_sprite(pb, .{x + size.x / 2 + (offset_x), xx pos_y}, size, 0, COLOR_WHITE, game.glyph_tex[it_index]);
 		
-		push_sprite(pb, .{x + (leftSideBearing * px_size) + size.x / 2, pos_y}, size, 0, COLOR_WHITE, game.glyph_tex[it_index]);
-		
-		x += advanceWidth * px_size;
+		x += advance_x;
 	}
 	
 	anim, jaunt, asset := animation_data_from_key("cow.glb.walk");
