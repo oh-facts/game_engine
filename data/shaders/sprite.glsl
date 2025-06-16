@@ -79,5 +79,5 @@ void main()
 	
 	//vec3 color = pow(tex_col.xyz, vec3(1.0 / 2.2));
 	//out_color  = vec4(color, tex_col.a);
-	out_color = tex_col;
+	out_color = tex_col * obj.color;
 }

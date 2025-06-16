@@ -144,7 +144,7 @@ push_sprite :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float,
 	
 	model = rotate(model, roll);
 	
-	model = scale(model, .{size.x, -size.y, 0});
+	model = scale(model, .{size.x, size.y, 0});
 	
 	sprite.model = model;
 	sprite.color = color;

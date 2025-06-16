@@ -77,16 +77,19 @@ operator - :: (a : Vector3i, b : Vector3i) -> Vector3i {
 	return out;
 }
 
-u128 :: struct {
+u128 :: union 
+{
 	U64 : [2]u64;
 };
 
-RectF32 :: struct {
+RectF32 :: struct 
+{
 	min : Vector2;
 	max : Vector2;
 };
 
-RectS32 :: struct {
+RectS32 :: struct 
+{
 	min : Vector2i;
 	max : Vector2i;
 };

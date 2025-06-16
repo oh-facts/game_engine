@@ -81,7 +81,7 @@ get_ortho_proj_and_view_matrix :: (camera : Camera) -> Matrix4, Matrix4
 {
 	aspect_ratio := (camera.viewport.x * 1.) / camera.viewport.y;
 	
-	proj := orthographic_projection_matrix(-camera.viewport.x / 2, camera.viewport.x / 2, -camera.viewport.y / 2, camera.viewport.y / 2, 0, 1);
+	proj := orthographic_projection_matrix(0, camera.viewport.x, camera.viewport.y, 0, 0, 1);
 	view := make_look_at_matrix(camera.position, camera.position + .{0, 0, -1}, .{0, 1, 0}, false);
 	
 	return proj, view;

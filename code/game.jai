@@ -34,8 +34,9 @@ Glyph :: struct
 	offset_x : float;
 	offset_y : float;
 	ascent : float;
+	descent : float;
 	tex : Handle;
-	
+	height : float;
 	// No need for font cache. Fixed # of fonts. ~10 fonts at best.
 	// All will be preloaded at startup for now
 	// So I am stuffing that stuff here.
@@ -109,7 +110,7 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 	
 	hash := hash_string(str_key);
 	
-	slot_idx := xx hash.U64[0] % slots.count;
+	slot_idx := hash.U64[0] % cast(u64)slots.count;
 	slot := *slots[slot_idx];
 	
 	// check if node already exists
@@ -160,6 +161,7 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 			FT_Set_Char_Size(face, 0, xx (key.size * 64), 0, 96);
 			
 			out.ascent = xx face.ascender >> 6;
+			out.descent = xx face.descender >> 6;
 			
 			ch, count, _ := character_utf8_to_utf32(xx *key.cp, 1);
 			
@@ -172,6 +174,7 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 				out.advance_y = xx face.glyph.advance.y >> 6;
 				out.offset_x = xx face.glyph.bitmap_left;
 				out.offset_y = xx face.glyph.bitmap_top;
+				out.height = xx face.size.metrics.height >> 6;
 			}
 			
 			width := face.glyph.bitmap.width;
@@ -291,29 +294,60 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	pb.viewport = win_size;
 	
-	x := -400.;
-	y := 220;
-	
+	push_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
 	{
-		text := "hi";
+		max_height : float;
 		
-		font_begin();
-		
-		for text
+		/*
 		{
-			glyph := glyph_from_key(.{it, .Delius, 32});
+			x := pos.x;
+			y := pos.y;
 			
-			using glyph;
-			
-			baseline := ascent;
-			size := tex_size_from_handle(tex);
-			pos_y := baseline + offset_y - size.y / 2;
-			
-			push_sprite(pb, .{x + size.x / 2 + (offset_x), y + pos_y}, size, 0, COLOR_WHITE, tex);
-			
-			x += advance_x;
+			for text
+			{
+				glyph := glyph_from_key(.{it, font_kind, font_size});
+				
+				using glyph;
+				baseline := ascent;
+				
+				size := tex_size_from_handle(tex);
+				
+				max_height = max(max_height, size.y);
+				x += advance_x;
+			}
 		}
+		*/
+		
+		{
+			x := pos.x;
+			y := pos.y;
+			
+			for text
+			{
+				glyph := glyph_from_key(.{it, font_kind, font_size});
+				
+				using glyph;
+				size := tex_size_from_handle(tex);
+				
+				pos_y := offset_y - size.y / 2;
+				
+				dp := Vector2.{x + size.x / 2 + offset_x, y - pos_y};
+				push_sprite(pb, dp, size, 0, COLOR_WHITE, tex);
+				
+				x += advance_x;
+			}
+		}
+		
 	}
+	
+	text :[]string= .["boyohboy", "erere", "re"];
+	t := text[(cast(int)counter) % 3];
+	
+	font_begin();
+	
+	push_sprite(pb, .{0, 0}, .{128, 128}, 0, COLOR_RED, get_white_square());
+	push_text(pb, "hi", .{0, 6}, .Delius, 6, COLOR_WHITE);
+	push_text(pb, t, .{0, 32}, .Delius, 32, COLOR_WHITE);
 	
 	// counter * PI / 180. * 45;
 	/*

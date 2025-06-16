@@ -106,11 +106,9 @@ r_submit :: (pb : R_Push_Buffer)
 	glViewport(0, 0, xx pb.viewport.x, xx pb.viewport.y);
 	
 	glClearColor(0.2, 0.2, 0.3, 1.0);
-	glEnable(GL_BLEND);
-	
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	//glEnable(GL_CULL_FACE);
@@ -118,6 +116,7 @@ r_submit :: (pb : R_Push_Buffer)
 	
 	if pb.mesh_batches.count 
 	{
+		glEnable(GL_DEPTH_TEST);
 		shader := r_gl_state.vf_shaders[VF_Shaders.Mesh];
 		glUseProgram(shader);
 		
@@ -187,6 +186,7 @@ r_submit :: (pb : R_Push_Buffer)
 		// ui batches
 		if pb.sprite_batches.count 
 		{
+			glDisable(GL_DEPTH_TEST);
 			buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
 			shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
 			
