@@ -133,13 +133,13 @@ push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
 	return out;
 }
 
-push_sprite :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float, color : Vector4, tex_id : Handle)
+push_ui_quad :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float, color : Vector4, tex_id : Handle)
 {
 	sprite :*R_Sprite = xx push_batch(*pb.sprite_batches, size_of(R_Sprite), xx MB(1));
 	
 	model := Matrix4_Identity;
 	
-	model = translate(model, .{pos.x, pos.y, 0});
+	model = translate(model, .{pos.x + size.x / 2, pos.y + size.y / 2, 0});
 	
 	roll : Quaternion;
 	set_from_axis_and_angle (*roll, 0, 0, 1, rot);

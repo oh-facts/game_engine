@@ -43,20 +43,9 @@ void main()
     { 1.0, -1.0}
 	};
 	
-	/*
-
-	vec2 vertices[] =
-	{
-    {0.0, 0.0},
-    {0.0, 1.0},
-    {1.0, 0.0},
-		
-    {0.0, 1.0},
-    {1.0, 1.0},
-    {1.0, 0.0}
-	};
-	
-*/
+	vec2 vertex = vertices[gl_VertexID];
+	vertex.x /= 2;
+	vertex.y /= 2;
 	
 	vec2 base_uv[] = 
 	{
@@ -70,10 +59,6 @@ void main()
 	};
 	
 	a_uv = base_uv[gl_VertexID];
-	
-	vec2 vertex = vertices[gl_VertexID];
-	vertex.x /= 2;
-	vertex.y /= 2;
 	
 	gl_Position = u_proj * u_view * obj.model * vec4(vertex, 0, 1);
 	a_index = gl_InstanceID;

@@ -329,10 +329,10 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				using glyph;
 				size := tex_size_from_handle(tex);
 				
-				pos_y := offset_y - size.y / 2;
+				pos_y := offset_y;
 				
-				dp := Vector2.{x + size.x / 2 + offset_x, y - pos_y};
-				push_sprite(pb, dp, size, 0, COLOR_WHITE, tex);
+				dp := Vector2.{x + offset_x, y - pos_y};
+				push_ui_quad(pb, dp, size, 0, COLOR_WHITE, tex);
 				
 				x += advance_x;
 			}
@@ -342,7 +342,10 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	font_begin();
 	
-	pos := Vector2.{640 + 330 - 40, 790};
+	text_pos := Vector2.{600, 800};
+	
+	pos := text_pos;
+	pos.y -= 32;
 	size := Vector2.{670, 80};
 	
 	color := COLOR_RED;
@@ -350,9 +353,9 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	//print("% %\n", x, y);
 	
-	if x > xx (pos.x - size.x / 2) && x < xx (pos.x + size.x/2)
+	if x > xx (pos.x) && x < xx (pos.x + size.x)
 	{
-		if y > xx (pos.y - size.y / 2) && y < xx (pos.y + size.y/2)
+		if y > xx (pos.y) && y < xx (pos.y + size.y)
 		{
 			color = COLOR_GREEN;
 			
@@ -360,8 +363,8 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		}
 	}
 	
-	push_sprite(pb, pos, size, 0, color, get_white_square());
-	push_text(pb, "please enjoy each triangle equally", .{600, 800}, .Delius, 32, COLOR_WHITE);
+	push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
+	push_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
 	
 	// counter * PI / 180. * 45;
 	/*
