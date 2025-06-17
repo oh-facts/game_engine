@@ -97,6 +97,8 @@ R_Push_Buffer :: struct
 	ui_proj : Matrix4;
 	ui_view : Matrix4;
 	viewport : Vector2;
+	
+	hacker_draw : bool;
 }
 
 push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8 

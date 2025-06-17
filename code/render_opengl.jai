@@ -112,7 +112,15 @@ r_submit :: (pb : R_Push_Buffer)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	glEnable(GL_CULL_FACE);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+	if pb.hacker_draw
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 	
 	if pb.mesh_batches.count 
 	{
@@ -129,9 +137,11 @@ r_submit :: (pb : R_Push_Buffer)
 		color_map_loc := glGetUniformLocation(shader, "u_color_map");
 		flags_loc := glGetUniformLocation(shader, "u_flags");
 		base_xform_loc := glGetUniformLocation(shader, "u_base_xform_index");
+		debug_loc := glGetUniformLocation(shader, "u_debug");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		glUniform1i(debug_loc, xx pb.hacker_draw);
 		
 		if pb.skinning_xforms.count
 		{

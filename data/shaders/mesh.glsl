@@ -8,6 +8,7 @@ uniform vec4 u_color;
 uniform uvec2 u_color_map;
 uniform uint u_flags;
 uniform uint u_base_xform_index;
+uniform const bool u_debug = false;
 
 #define Animated (1 << 0)
 
@@ -79,5 +80,6 @@ void main()
 	
 	vec3 nice_normal = normalize(a_normal) * 0.5 + 0.5;
 	//out_color = vec4(nice_normal, 1);
-	//out_color = vec4(0, 1, 0, 1);
+	
+	if (u_debug) out_color = vec4(0, 1, 0, 1);
 }

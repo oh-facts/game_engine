@@ -342,8 +342,26 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	font_begin();
 	
-	push_sprite(pb, .{0, 0}, .{128, 128}, 0, COLOR_RED, get_white_square());
-	push_text(pb, "please enjoy each triangle equally", .{0, 64}, .Delius, 64, COLOR_WHITE);
+	pos := Vector2.{640 + 330 - 40, 790};
+	size := Vector2.{670, 80};
+	
+	color := COLOR_RED;
+	x,y := get_mouse_pointer_position(the_window, false);
+	
+	//print("% %\n", x, y);
+	
+	if x > xx (pos.x - size.x / 2) && x < xx (pos.x + size.x/2)
+	{
+		if y > xx (pos.y - size.y / 2) && y < xx (pos.y + size.y/2)
+		{
+			color = COLOR_GREEN;
+			
+			pb.hacker_draw = true;
+		}
+	}
+	
+	push_sprite(pb, pos, size, 0, color, get_white_square());
+	push_text(pb, "please enjoy each triangle equally", .{600, 800}, .Delius, 32, COLOR_WHITE);
 	
 	// counter * PI / 180. * 45;
 	/*

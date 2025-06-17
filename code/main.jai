@@ -46,6 +46,9 @@ main :: ()
 	
 	the_window = create_window(960, 540, "The Sad Debugger");
 	
+	saved : Saved_Window_Info;
+	toggle_fullscreen(the_window, true, *saved);
+	
 	exe_folder = path_strip_filename(get_path_of_running_executable());
 	
 	// TODO(mizu): Make a sprint() that uses the perm arena
