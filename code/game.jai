@@ -1,8 +1,20 @@
+Entity_Flags :: enum_flags
+{
+	Animated;
+}
+
 Entity :: struct
 {
+	flags : Entity_Flags;
 	kf_index : [256]Key_Frame_Index;
 	counter : float;
 	pos : Vector3;
+	animation_hash : u128;
+	mesh_asset_hash : u128;
+	
+	// per frame artifacts
+	joints : *Matrix4;
+	an_batch : *Batch;
 }
 
 Font_Kind :: enum
@@ -129,7 +141,6 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 	// if not, allocate
 	if !out
 	{
-		
 		// allocate glyph node
 		{
 			out = push_struct(arena, Glyph);
@@ -270,9 +281,38 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 		entity_store_init(game);
 		
-		cow = entity_alloc(game);
-		cow2 = entity_alloc(game);
-		butterfly = entity_alloc(game);
+		{
+			cow = entity_alloc(game);
+			cow.animation_hash = hash_string("cow.walk");
+			cow.mesh_asset_hash = hash_string("cow");
+			cow.flags |= .Animated;
+		}
+		
+		{
+			cow2 = entity_alloc(game);
+			cow2.animation_hash = hash_string("cow.jump");
+			cow2.mesh_asset_hash = hash_string("cow");
+			cow2.pos = .{-3, 0, 0};
+			cow2.flags |= .Animated;
+		}
+		
+		{
+			butterfly = entity_alloc(game);
+			butterfly.animation_hash = hash_string("butterfly.fly");
+			butterfly.mesh_asset_hash = hash_string("butterfly");
+			butterfly.flags |= .Animated;
+		}
+		
+		{
+			downtown := entity_alloc(game);
+			downtown.mesh_asset_hash = hash_string("downtown");
+		}
+		
+		{
+			watermelon_stall := entity_alloc(game);
+			watermelon_stall.mesh_asset_hash = hash_string("watermelon_stall");
+			watermelon_stall.pos = .{0, 0, -25};
+		}
 		
 		font_state_init();
 		
@@ -293,52 +333,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	pb.ui_view = ui_view;
 	
 	pb.viewport = win_size;
-	
-	push_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
-	{
-		max_height : float;
-		
-		/*
-		{
-			x := pos.x;
-			y := pos.y;
-			
-			for text
-			{
-				glyph := glyph_from_key(.{it, font_kind, font_size});
-				
-				using glyph;
-				baseline := ascent;
-				
-				size := tex_size_from_handle(tex);
-				
-				max_height = max(max_height, size.y);
-				x += advance_x;
-			}
-		}
-		*/
-		
-		{
-			x := pos.x;
-			y := pos.y;
-			
-			for text
-			{
-				glyph := glyph_from_key(.{it, font_kind, font_size});
-				
-				using glyph;
-				size := tex_size_from_handle(tex);
-				
-				pos_y := offset_y;
-				
-				dp := Vector2.{x + offset_x, y - pos_y};
-				push_ui_quad(pb, dp, size, 0, COLOR_WHITE, tex);
-				
-				x += advance_x;
-			}
-		}
-		
-	}
 	
 	font_begin();
 	
@@ -366,63 +360,35 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
 	push_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
 	
-	// counter * PI / 180. * 45;
-	/*
-	for cps
-	{
-		using game.glyph_metrics[it_index];
-		
-		baseline := game.ascent >> 6;
-		
-		size := tex_size_from_handle(game.glyph_tex[it_index]);
-		
-		pos_y := baseline + offset_y - size.y / 2;
-		
-		push_sprite(pb, .{x + size.x / 2 + (offset_x), xx pos_y}, size, 0, COLOR_WHITE, game.glyph_tex[it_index]);
-		
-		x += advance_x;
-	}
-	*/
+	game.cow.pos.z -= delta;
 	
-	anim, jaunt, asset := animation_data_from_key("cow.glb.walk");
-	
-	if is_key_pressed(.SPACEBAR) || game.cow.counter >= asset.length
+	for *e : game.entities
 	{
-		for *e : game.entities
+		if e.flags & .Animated
 		{
-			for i : 0 .. 255
+			anim, jaunt, asset := animation_data_from_hash(e.animation_hash);
+			
+			if e.counter > asset.length
 			{
-				e.kf_index[i].pos = 0;
-				e.kf_index[i].rot = 0;
-				e.counter = 0;
+				for i : 0 .. 255
+				{
+					e.kf_index[i].pos = 0;
+					e.kf_index[i].rot = 0;
+					e.counter = 0;
+				}
 			}
+			
+			e.counter += delta;
+			
+			joints, an_batch := push_animation(pb, e.animation_hash, e.counter, e.kf_index);
+			e.joints = joints;
+			e.an_batch = an_batch;
 		}
 	}
 	
-	for *game.entities
+	for *e : game.entities
 	{
-		it.counter += delta;
+		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, e.joints, e.an_batch);
 	}
 	
-	game.cow.pos.z -= delta;
-	
-	{
-		an, an_batch := push_animation(pb, "cow.glb.walk", game.cow.counter, game.cow.kf_index);
-		push_mesh_asset(pb, translate(Matrix4_Identity, game.cow.pos), "cow.glb", an, an_batch);
-	}
-	
-	{
-		an, an_batch := push_animation(pb, "cow.glb.jump", game.cow2.counter, game.cow2.kf_index);
-		push_mesh_asset(pb, translate(Matrix4_Identity, .{-3, 0, 0}), "cow.glb", an, an_batch);
-	}
-	
-	{
-		an, an_batch := push_animation(pb, "butterfly.glb.fly", game.butterfly.counter, game.butterfly.kf_index);
-		push_mesh_asset(pb, Matrix4_Identity, "butterfly.glb", an, an_batch);
-	}
-	
-	{
-		push_mesh_asset(pb, Matrix4_Identity, "downtown.glb");
-		push_mesh_asset(pb, translate(Matrix4_Identity, .{0, 0, -25}), "watermelon_stall.glb");
-	}
 }

@@ -153,9 +153,55 @@ push_ui_quad :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float
 	sprite.tex_id = tex_id_from_handle(tex_id);
 }
 
-push_animation :: (pb : *R_Push_Buffer, key : string, counter : float, kf_index : []Key_Frame_Index) -> *Matrix4, *Batch
+push_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
 {
-	anim, jaunt := animation_data_from_key(key);
+	max_height : float;
+	
+	/*
+	{
+		x := pos.x;
+		y := pos.y;
+		
+		for text
+		{
+			glyph := glyph_from_key(.{it, font_kind, font_size});
+			
+			using glyph;
+			baseline := ascent;
+			
+			size := tex_size_from_handle(tex);
+			
+			max_height = max(max_height, size.y);
+			x += advance_x;
+		}
+	}
+	*/
+	
+	{
+		x := pos.x;
+		y := pos.y;
+		
+		for text
+		{
+			glyph := glyph_from_key(.{it, font_kind, font_size});
+			
+			using glyph;
+			size := tex_size_from_handle(tex);
+			
+			pos_y := offset_y;
+			
+			dp := Vector2.{x + offset_x, y - pos_y};
+			push_ui_quad(pb, dp, size, 0, COLOR_WHITE, tex);
+			
+			x += advance_x;
+		}
+	}
+	
+}
+
+push_animation :: (pb : *R_Push_Buffer, anim_hash : u128, counter : float, kf_index : []Key_Frame_Index) -> *Matrix4, *Batch
+{
+	anim, jaunt := animation_data_from_hash(anim_hash);
 	
 	jaunt_count := jaunt.count;
 	
@@ -231,9 +277,9 @@ push_animation :: (pb : *R_Push_Buffer, key : string, counter : float, kf_index 
 	return xforms, pb.skinning_xforms.last;
 }
 
-push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, key : string, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
+push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
 {
-	asset := meshes_from_key(key);
+	asset := meshes_from_hash(hash);
 	
 	for 0 .. asset.count - 1
 	{
@@ -251,7 +297,7 @@ push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, key : string, joints :
 			r_mesh.vertex_buffer = a_mesh.vertex_buffer;
 			r_mesh.index_buffer = a_mesh.index_buffer;
 			
-			color, color_map := material_data_from_key(a_prim.material);
+			color, color_map := material_data_from_hash(a_prim.material_hash);
 			
 			if color == .{}
 			{

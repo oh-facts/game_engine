@@ -3,8 +3,11 @@ Asset :: struct
 	next : *Asset;
 	
 	key : string;
+	hash : u128;
 	
 	map : string;
+	map_hash : u128;
+	
 	color : Vector4;
 	
 	id : Handle;
@@ -13,6 +16,7 @@ Asset :: struct
 	length : float;
 	
 	skin : string;
+	skin_hash : u128;
 	
 	joints : []Joint;
 	
@@ -68,6 +72,7 @@ add_material :: (color : Vector4, texture : string, name : string)
 	asset := asset_from_key(*asset_store.materials, name);
 	
 	asset.map = sprint("%", texture);
+	asset.map_hash = hash_string(asset.map);
 	asset.color = color;
 }
 
@@ -86,6 +91,7 @@ add_animation :: (count : u32, name : string, skin_name : string) -> []Animation
 	asset.anim.data = push_array(asset_store.arena, Animation, count);
 	asset.anim.count = count;
 	asset.skin = sprint("%", skin_name);
+	asset.skin_hash = hash_string(asset.skin);
 	
 	return asset.anim, asset;
 }
@@ -110,6 +116,15 @@ animation_data_from_key :: (key : string) -> []Animation, []Joint, *Asset
 	return anim.anim, joints.joints, anim;
 }
 
+animation_data_from_hash :: (hash : u128) -> []Animation, []Joint, *Asset
+{
+	using asset_store;
+	anim := asset_from_hash(*animations, hash);
+	joints := asset_from_hash(*skins, anim.skin_hash);
+	
+	return anim.anim, joints.joints, anim;
+}
+
 material_data_from_key :: (key : string) -> Vector4, Handle
 {
 	using asset_store;
@@ -124,6 +139,20 @@ material_data_from_key :: (key : string) -> Vector4, Handle
 	return color, map;
 }
 
+material_data_from_hash :: (hash : u128) -> Vector4, Handle
+{
+	using asset_store;
+	material_asset := asset_from_hash(*materials, hash);
+	
+	color := material_asset.color;
+	
+	map_asset := asset_from_hash(*textures, material_asset.map_hash);
+	
+	map := map_asset.id;
+	
+	return color, map;
+}
+
 meshes_from_key :: (key : string) -> []Mesh
 {
 	using asset_store;
@@ -132,12 +161,19 @@ meshes_from_key :: (key : string) -> []Mesh
 	return mesh_asset.meshes;
 }
 
-asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
+meshes_from_hash :: (hash : u128) -> []Mesh
+{
+	using asset_store;
+	mesh_asset := asset_from_hash(*meshes, hash);
+	
+	return mesh_asset.meshes;
+}
+
+asset_from_hash :: (slots : *[]Asset_Slot, hash : u128) -> *Asset
 {
 	using asset_store;
 	out : *Asset;
 	
-	hash := hash_string(key);
 	slot_index := hash.U64[0] % xx slots.count;
 	slot := slots.data + slot_index;
 	
@@ -147,7 +183,7 @@ asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
 		while cur {
 			defer cur = cur.next;
 			
-			if cur.key == key {
+			if cur.hash == hash {
 				out = cur;
 				break;
 			}
@@ -159,7 +195,7 @@ asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
 	{
 		out = push_struct(arena, Asset);
 		
-		out.key = sprint("%", key);
+		out.hash = hash;
 		if !slot.first
 		{
 			slot.first = out;
@@ -170,6 +206,20 @@ asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
 			slot.last.next = out;
 			slot.last = out;
 		}
+	}
+	
+	return out;
+}
+
+asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
+{
+	using asset_store;
+	hash := hash_string(key);
+	out := asset_from_hash(slots, hash);
+	
+	if !out
+	{
+		out.key = sprint("%", key);
 	}
 	
 	return out;
@@ -186,6 +236,7 @@ Material :: struct
 {
 	color : Vector4;
 	color_map : string;
+	color_map_hash : u128;
 }
 
 Primitive :: struct 
@@ -193,6 +244,7 @@ Primitive :: struct
 	start : u32;
 	count : u32;
 	material : string;
+	material_hash : u128;
 };
 
 Joint_Sample :: struct
@@ -278,7 +330,9 @@ gltf_loadMesh :: (arena : *Arena, _filename : string)
 	}
 	
 	gltf_it.data = data;
-	gltf_it.asset_name = _filename;
+	
+	found, stripped_filename, ext := split_from_left(_filename, #char ".");
+	gltf_it.asset_name = stripped_filename;
 	
 	// load textures
 	if data.textures_count 
@@ -536,7 +590,7 @@ gltf_loadMesh :: (arena : *Arena, _filename : string)
 	
 	// load meshes
 	
-	gltf_it.scene = add_meshes(xx data.meshes_count, _filename);;
+	gltf_it.scene = add_meshes(xx data.meshes_count, stripped_filename);;
 	gltf_it.arena = arena;
 	
 	for i : 0 .. data.scenes_count - 1 
@@ -727,7 +781,7 @@ gltf_traverseNode :: (it : *GLTF_It, node : *cgltf_node) {
 					//c := node_prim.material.pbr_metallic_roughness.base_color_texture.texture.uri_str
 					
 					p.material = sprint("%", simple_gltf_mat_key(it, node_prim.material));
-					
+					p.material_hash = hash_string(p.material);
 				}
 				
 			}
