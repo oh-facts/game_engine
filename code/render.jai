@@ -15,6 +15,12 @@ Vertex :: struct
 	weights : Vector4;
 };
 
+Debug_Vertex :: struct
+{
+	pos : Vector4;
+	color : Vector4;
+}
+
 Tex_Param :: enum 
 {
 	Nearest;
@@ -89,8 +95,11 @@ R_Mesh :: struct
 R_Push_Buffer :: struct 
 {
 	sprite_batches : Batch_List;
+	quad_batches : Batch_List;
 	mesh_batches : Batch_List;
 	skinning_xforms : Batch_List;
+	debug_lines : Batch_List;
+	debug_vertices : Batch_List;
 	
 	proj : Matrix4;
 	view : Matrix4;
@@ -133,27 +142,12 @@ push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
 	return out;
 }
 
-push_ui_quad :: (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float, color : Vector4, tex_id : Handle)
+push_ui_quad :: inline (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float, color : Vector4, tex_id : Handle)
 {
-	sprite :*R_Sprite = xx push_batch(*pb.sprite_batches, size_of(R_Sprite), xx MB(1));
-	
-	model := Matrix4_Identity;
-	
-	model = translate(model, .{pos.x + size.x / 2, pos.y + size.y / 2, 0});
-	
-	roll : Quaternion;
-	set_from_axis_and_angle (*roll, 0, 0, 1, rot);
-	
-	model = rotate(model, roll);
-	
-	model = scale(model, .{size.x, size.y, 0});
-	
-	sprite.model = model;
-	sprite.color = color;
-	sprite.tex_id = tex_id_from_handle(tex_id);
+	push_quad_impl(*pb.sprite_batches, .{pos.x + size.x / 2, pos.y + size.y / 2, 0}, size, .{0, 0, rot}, color, tex_id);
 }
 
-push_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
+push_ui_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
 {
 	max_height : float;
 	
@@ -191,12 +185,62 @@ push_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Fon
 			pos_y := offset_y;
 			
 			dp := Vector2.{x + offset_x, y - pos_y};
-			push_ui_quad(pb, dp, size, 0, COLOR_WHITE, tex);
+			push_ui_quad(pb, dp, .{size.x, size.y}, 0, color, tex);
 			
 			x += advance_x;
 		}
 	}
+}
+
+push_3d_text :: (pb : *R_Push_Buffer, text : string, pos : Vector3, rot : Vector3, font_kind : Font_Kind, font_size : int, color : Vector4)
+{
+	x := pos.x;
+	y := pos.y;
 	
+	for text
+	{
+		glyph := glyph_from_key(.{it, font_kind, font_size});
+		
+		using glyph;
+		size := tex_size_from_handle(tex);
+		size.y = -size.y;
+		pos_y := offset_y;
+		
+		dp := Vector3.{x + offset_x + size.x / 2, y + pos_y + size.y / 2, pos.z};
+		push_quad(pb, dp, .{size.x, size.y}, rot, color, tex);
+		x += advance_x;
+	}
+}
+
+push_quad :: inline (pb : *R_Push_Buffer, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
+{
+	push_quad_impl(*pb.quad_batches, pos, size, rot, color, tex_id);
+}
+
+push_quad_impl :: (batches : *Batch_List, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
+{
+	sprite :*R_Sprite = xx push_batch(batches, size_of(R_Sprite), xx MB(1));
+	
+	model := Matrix4_Identity;
+	
+	//model = translate(model, .{pos.x + size.x / 2, pos.y + size.y / 2, 0});
+	model = translate(model, pos);
+	
+	roll : Quaternion;
+	set_from_axis_and_angle (*roll, 0, 0, -1, rot.z);
+	pitch : Quaternion;
+	set_from_axis_and_angle (*roll, -1, 0, 0, rot.x);
+	yaw : Quaternion;
+	set_from_axis_and_angle (*roll, 0, -1, 0, rot.y);
+	rotation := roll * yaw * pitch;
+	
+	model = rotate(model, rotation);
+	
+	model = scale(model, .{size.x, size.y, 0});
+	
+	sprite.model = model;
+	sprite.color = color;
+	sprite.tex_id = tex_id_from_handle(tex_id);
 }
 
 push_animation :: (pb : *R_Push_Buffer, anim_hash : u128, counter : float, kf_index : []Key_Frame_Index) -> *Matrix4, *Batch
@@ -277,7 +321,26 @@ push_animation :: (pb : *R_Push_Buffer, anim_hash : u128, counter : float, kf_in
 	return xforms, pb.skinning_xforms.last;
 }
 
-push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
+push_debug_line :: (pb : *R_Push_Buffer, start : Vector3, end : Vector3, color : Vector4)
+{
+	vertices : *Debug_Vertex = xx push_batch(*pb.debug_lines, size_of(Debug_Vertex) * 2, xx MB(1));
+	
+	vertices[0].pos.xyz = start;
+	vertices[0].color = color;
+	
+	vertices[1].pos.xyz = end;
+	vertices[1].color = color;
+}
+
+push_debug_vertex :: (pb : *R_Push_Buffer, pos : Vector3, color : Vector4)
+{
+	vertices : *Debug_Vertex = xx push_batch(*pb.debug_vertices, size_of(Debug_Vertex), xx MB(1));
+	
+	vertices[0].pos.xyz = pos;
+	vertices[0].color = color;
+}
+
+push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_WHITE, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
 {
 	asset := meshes_from_hash(hash);
 	
@@ -307,6 +370,8 @@ push_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, joints : 
 			{
 				r_mesh.color = color;
 			}
+			
+			r_mesh.color *= tint;
 			
 			if color_map.U64[0]
 			{

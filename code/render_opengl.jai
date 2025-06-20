@@ -111,7 +111,7 @@ r_submit :: (pb : R_Push_Buffer)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	glEnable(GL_CULL_FACE);
+	//glPointSize(12.0);
 	
 	if pb.hacker_draw
 	{
@@ -122,9 +122,46 @@ r_submit :: (pb : R_Push_Buffer)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	
+	// 3d ui batches
+	if pb.quad_batches.count 
+	{
+		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+		glUseProgram(shader);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
+		batches := pb.quad_batches;
+		batch := batches.first;
+		
+		while batch
+		{
+			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			
+			memcpy(ssbo_data, batch.base, batch.size);
+			
+			glUnmapNamedBuffer(buffer);
+			
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+			
+			batch = batch.next;
+		}
+	}
+	
+	glEnable(GL_CULL_FACE);
+	
+	// mesh batches
 	if pb.mesh_batches.count 
 	{
-		glEnable(GL_DEPTH_TEST);
 		shader := r_gl_state.vf_shaders[VF_Shaders.Mesh];
 		glUseProgram(shader);
 		
@@ -192,24 +229,27 @@ r_submit :: (pb : R_Push_Buffer)
 			
 			batch = batch.next;
 		}
+	}
+	
+	// debug vertex / line batches
+	if pb.debug_lines.count || pb.debug_vertices.count 
+	{
+		buffer := r_gl_state.inst_buffers[Instance_Buffers.Debug_Vertex];
+		shader := r_gl_state.vf_shaders[VF_Shaders.Debug_Vertex];
 		
-		// ui batches
-		if pb.sprite_batches.count 
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+		glUseProgram(shader);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
+		// vertex batches
+		if pb.debug_vertices.count 
 		{
-			glDisable(GL_DEPTH_TEST);
-			buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
-			shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
-			
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-			glUseProgram(shader);
-			
-			proj_loc := glGetUniformLocation(shader, "u_proj");
-			view_loc := glGetUniformLocation(shader, "u_view");
-			
-			glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.ui_view.coef[0][0]);
-			glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.ui_proj.coef[0][0]);
-			
-			batches := pb.sprite_batches;
+			batches := pb.debug_vertices;
 			batch := batches.first;
 			
 			while batch
@@ -220,14 +260,66 @@ r_submit :: (pb : R_Push_Buffer)
 				
 				glUnmapNamedBuffer(buffer);
 				
-				glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+				glDrawArrays(GL_POINTS, 0, batch.count);
 				
 				batch = batch.next;
 			}
 		}
 		
+		// line batches
+		if pb.debug_lines.count
+		{
+			batches := pb.debug_lines;
+			batch := batches.first;
+			
+			while batch
+			{
+				ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+				
+				memcpy(ssbo_data, batch.base, batch.size);
+				
+				glUnmapNamedBuffer(buffer);
+				
+				// batch.count * 2 because each vertex pair is considered one "count"
+				glDrawArrays(GL_LINES, 0, batch.count * 2);
+				
+				batch = batch.next;
+			}
+		}
 	}
 	
+	// ui batches
+	if pb.sprite_batches.count 
+	{
+		glDisable(GL_DEPTH_TEST);
+		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+		glUseProgram(shader);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.ui_view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.ui_proj.coef[0][0]);
+		
+		batches := pb.sprite_batches;
+		batch := batches.first;
+		
+		while batch
+		{
+			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			
+			memcpy(ssbo_data, batch.base, batch.size);
+			
+			glUnmapNamedBuffer(buffer);
+			
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+			
+			batch = batch.next;
+		}
+	}
 }
 
 #scope_file;
@@ -236,12 +328,14 @@ VF_Shaders :: enum
 {
 	Sprite;
 	Mesh;
+	Debug_Vertex;
 	Count;
 }
 
 Instance_Buffers :: enum 
 {
 	Sprite;
+	Debug_Vertex;
 	Count;
 }
 
@@ -253,7 +347,7 @@ R_GL_Image :: struct
 	h : int;
 };
 
-vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh"];
+vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh", "debug_vertex"];
 
 R_GL_State :: struct 
 {

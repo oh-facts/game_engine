@@ -4,7 +4,7 @@
 uniform mat4 u_view;
 uniform mat4 u_proj;
 
-struct Line
+struct Debug_Vertex
 {
 	vec4 pos;
 	vec4 color;
@@ -12,31 +12,28 @@ struct Line
 
 layout (std430, row_major, binding = 0) buffer ssbo2 
 {
-	Line objs[];
+	Debug_Vertex objs[];
 };
 
 #define COMMON_SHADER_END
 
 flat out int a_index;
-out vec2 a_uv;
 
 void main()
 {
+	Debug_Vertex obj = objs[gl_VertexID];
 	
-	Line obj = objs[gl_InstanceID];
-	
-	gl_Position = u_proj * u_view * vec4(pos.xyz, 1);
-	a_index = gl_InstanceID;
+	gl_Position = u_proj * u_view * vec4(obj.pos.xyz, 1);
+	a_index = gl_VertexID;
 }
 
 #define VERTEX_SHADER_END
 
 layout (location=0) out vec4 out_color;
 flat in int a_index;
-in vec2 a_uv;
 
 void main()
 {
-	Line obj = objs[a_index];
-	out_color = tex_col * obj.color;
+	Debug_Vertex obj = objs[a_index];
+	out_color = obj.color;
 }

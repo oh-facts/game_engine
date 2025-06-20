@@ -304,11 +304,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		}
 		
 		{
-			downtown := entity_alloc(game);
-			downtown.mesh_asset_hash = hash_string("downtown");
-		}
-		
-		{
 			watermelon_stall := entity_alloc(game);
 			watermelon_stall.mesh_asset_hash = hash_string("watermelon_stall");
 			watermelon_stall.pos = .{0, 0, -25};
@@ -358,10 +353,13 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	}
 	
 	push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
-	push_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
+	//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
+	push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
+	push_quad(pb, .{}, .{1, 1}, .{}, COLOR_GREEN, get_white_square());
 	
 	game.cow.pos.z -= delta;
 	
+	// animate entities
 	for *e : game.entities
 	{
 		if e.flags & .Animated
@@ -386,9 +384,186 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		}
 	}
 	
-	for *e : game.entities
+	// draw entities
+	for e : game.entities
 	{
-		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, e.joints, e.an_batch);
+		color := COLOR_WHITE;
+		if *e == hot_entity
+		{
+			color = COLOR_YELLOW;
+		}
+		if *e == active_entity
+		{
+			color = COLOR_BLUE;
+		}
+		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, color, e.joints, e.an_batch);
 	}
 	
+	if active_entity
+	{
+		move_input : Vector3;
+		move_input.x = cast (float) is_key_down (xx #char "D")
+			- cast (float) is_key_down (xx #char "A");
+		move_input.y = cast (float) is_key_down (xx #char "E")
+			- cast (float) is_key_down (xx #char "Q");
+		move_input.z = cast (float) is_key_down (xx #char "S")
+			- cast (float) is_key_down (xx #char "W");
+		move_input = rotate (unit_vector (move_input), camera.rotation);
+		active_entity.pos += move_input * delta * 2;
+	}
+	
+	if is_key_down(xx #char "C")
+	{
+		active_entity = null;
+	}
+	
+	ray_nds : Vector2;
+	ray_nds.x = (x / win_size.x) * 2 - 1;
+	ray_nds.y = - ((y / win_size.y) * 2 - 1);
+	
+	//print("%\n", ray_nds);
+	
+	ray_clip : Vector4;
+	ray_clip.xy = ray_nds;
+	ray_clip.z = -1;
+	ray_clip.w = 1;
+	
+	ray_eye := inverse(proj) * ray_clip;
+	ray_eye.z = -1;
+	ray_eye.w = 0;
+	
+	ray_wor : Vector3 = (inverse(view) * ray_eye).xyz;
+	ray_wor = normalize(ray_wor);
+	
+	//if is_key_pressed(#char "P")
+	start : Vector3;
+	end : Vector3;
+	{
+		start = camera.position;
+		end = start + 1000 * ray_wor;
+	}
+	
+	//push_debug_line(pb, start, end, COLOR_WHITE);
+	
+	// draw aabbs
+	for *e : game.entities
+	{
+		meshes := meshes_from_hash(e.mesh_asset_hash);
+		
+		model := translate(Matrix4_Identity, e.pos);
+		
+		this_frame_hot : bool;
+		
+		for m : meshes
+		{
+			using m.aabb;
+			
+			aabb : AABB;
+			aabb.min = (model * m.xform * .{m.aabb.min.x, m.aabb.min.y, m.aabb.min.z, 1}).xyz;
+			aabb.max = (model * m.xform * .{m.aabb.max.x, m.aabb.max.y, m.aabb.max.z, 1}).xyz;
+			
+			_, __ := ray_aabb_intersection(.{start, ray_wor}, aabb);
+			
+			color := COLOR_WHITE;
+			
+			if __
+			{
+				color = COLOR_RED;
+				hot_entity = e;
+				this_frame_hot = true;
+				
+				if is_key_pressed(.MOUSE_BUTTON_LEFT)
+				{
+					active_entity = e;
+				}
+			}
+			
+			/*
+			points : [8]Vector3;
+			
+			xs : [2]float = .[min.x, max.x];
+			ys : [2]float = .[min.y, max.y];
+			zs : [2]float = .[min.z, max.z];
+			
+			for x : 0 .. 1
+			{
+				for y : 0 .. 1
+				{
+					for z : 0 .. 1
+					{
+						point := model * m.xform * .{xs[x], ys[y], zs[z], 1};
+						
+						points[x * 2 * 2 + y * 2 + z] = point.xyz;
+						push_debug_vertex(pb, point.xyz, COLOR_RED);
+					}
+				}
+			}
+				*/
+			
+			/*
+	// NOTE(prismo): 
+	a=['min.x', 'max.x']
+	a1=['min.y', 'max.y']
+	a2=['min.z', 'max.z']
+	l=[]
+	for i in a:
+		for j in a1:
+				for k in a2:
+						l1=[i,j,k]
+						l.append(l1)
+	r=[]
+	for i in l:
+		for j in l:
+				if [j,i] not in r:
+						if i[1]==j[1] and i[2]==j[2] and i!=j:
+								k=[i,j]
+								r.append(k)
+						elif i[0]==j[0] and i[2]==j[2] and i!=j:
+								k=[i,j]
+								r.append(k)
+						elif i[0]==j[0] and i[1]==j[1] and i!=j:
+								k=[i,j]
+								r.append(k)
+	count=0
+	for i in r:
+		count+=1
+		#print(count)
+		print(i)
+	*/
+			
+			edges : [12][2]Vector3;
+			
+			edges[0] = .[.{min.x, min.y, min.z}, .{min.x, min.y, max.z}];
+			edges[1] = .[.{min.x, min.y, min.z}, .{min.x, max.y, min.z}];
+			edges[2] = .[.{min.x, min.y, min.z}, .{max.x, min.y, min.z}];
+			edges[3] = .[.{min.x, min.y, max.z}, .{min.x, max.y, max.z}];
+			edges[4] = .[.{min.x, min.y, max.z}, .{max.x, min.y, max.z}];
+			edges[5] = .[.{min.x, max.y, min.z}, .{min.x, max.y, max.z}];
+			edges[6] = .[.{min.x, max.y, min.z}, .{max.x, max.y, min.z}];
+			edges[7] = .[.{min.x, max.y, max.z}, .{max.x, max.y, max.z}];
+			edges[8] = .[.{max.x, min.y, min.z}, .{max.x, min.y, max.z}];
+			edges[9] = .[.{max.x, min.y, min.z}, .{max.x, max.y, min.z}];
+			edges[10] = .[.{max.x, min.y, max.z}, .{max.x, max.y, max.z}];
+			edges[11] = .[.{max.x, max.y, min.z}, .{max.x, max.y, max.z}];
+			
+			// local space -> world space and drawing
+			for edge : edges
+			{
+				for *edge
+				{
+					<< it = (model * m.xform * .{it.x, it.y, it.z, 1}).xyz;
+				}
+				push_debug_line(pb, edge[0], edge[1], color);
+			}
+		}
+		
+		if !this_frame_hot
+		{
+			hot_entity = null;
+		}
+		
+	}
 }
+
+hot_entity : *Entity;
+active_entity : *Entity;

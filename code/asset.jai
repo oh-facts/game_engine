@@ -1,3 +1,47 @@
+AABB :: union
+{
+	using aaa : struct
+	{
+		min : Vector3;
+		max : Vector3;
+	}
+	component : [2]Vector3;
+}
+
+Ray :: struct
+{
+	o : Vector3;
+	dir : Vector3;
+}
+
+ray_aabb_intersection :: (ray : Ray, aabb : AABB) -> float, bool
+{
+	t1 := (aabb.min.x - ray.o.x) / ray.dir.x;
+	t2 := (aabb.max.x - ray.o.x) / ray.dir.x;
+	t3 := (aabb.min.y - ray.o.y) / ray.dir.y;
+	t4 := (aabb.max.y - ray.o.y) / ray.dir.y;
+	t5 := (aabb.min.z - ray.o.z) / ray.dir.z;
+	t6 := (aabb.max.z - ray.o.z) / ray.dir.z;
+	
+	tmin := max(Max(Min(t1, t2), Min(t3, t4)), Min(t5, t6));
+	tmax := min(Min(Max(t1, t2), Max(t3, t4)), Max(t5, t6));
+	
+	// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+	if (tmax < 0) {
+		return -1, false;
+	}
+	
+	// if tmin > tmax, ray doesn't intersect AABB
+	if (tmin > tmax) {
+		return -1, false;
+	}
+	
+	if (tmin < 0) {
+		return tmax, true;
+	}
+	return tmin, true;
+}
+
 Asset :: struct
 {
 	next : *Asset;
@@ -21,6 +65,7 @@ Asset :: struct
 	joints : []Joint;
 	
 	meshes : []Mesh;
+	aabb : AABB;
 }
 
 Asset_Slot :: struct
@@ -283,6 +328,8 @@ Mesh :: struct
 	index_buffer : u32;
 	
 	skin : string;
+	
+	aabb : AABB;
 	
 	// global xform
 	xform : Matrix4;
@@ -720,7 +767,6 @@ simple_gltf_anim_key :: (gltf_it : GLTF_It, tex : *cgltf_animation) -> string
 	return key;
 }
 
-
 GLTF_It :: struct 
 {
 	arena : *Arena;
@@ -759,6 +805,15 @@ gltf_traverseNode :: (it : *GLTF_It, node : *cgltf_node) {
 				if attrib.type == .cgltf_attribute_type_position {
 					vert_attrib := attrib.data;
 					mesh.num_vertices += vert_attrib.count;
+					
+					// for bounding boxes
+					mesh.aabb.min.x = vert_attrib.min[0];
+					mesh.aabb.min.y = vert_attrib.min[1];
+					mesh.aabb.min.z = vert_attrib.min[2];
+					
+					mesh.aabb.max.x = vert_attrib.max[0];
+					mesh.aabb.max.y = vert_attrib.max[1];
+					mesh.aabb.max.z = vert_attrib.max[2];
 				}
 			}
 		}
