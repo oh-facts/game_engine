@@ -9,6 +9,8 @@ Entity :: struct
 	kf_index : [256]Key_Frame_Index;
 	counter : float;
 	pos : Vector3;
+	size : Vector3;
+	rot : Vector3;
 	animation_hash : u128;
 	mesh_asset_hash : u128;
 	
@@ -255,6 +257,7 @@ entity_store_init :: (using game : *Game)
 entity_alloc :: (using game : *Game) -> *Entity
 {
 	out := entities.data + entities.count;
+	out.size = .{1,1,1};
 	entities.count += 1;
 	return out;
 }
@@ -398,12 +401,22 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				color = COLOR_BLUE;
 			}
 		}
-		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, color, e.joints, e.an_batch);
-	}
-	
-	if is_key_down(xx #char "C")
-	{
-		active_entity = null;
+		
+		model := translate(Matrix4_Identity, e.pos);
+		
+		
+		roll : Quaternion;
+		set_from_axis_and_angle (*roll, 0, 0, -1, e.rot.z);
+		pitch : Quaternion;
+		set_from_axis_and_angle (*pitch, -1, 0, 0, e.rot.x);
+		yaw : Quaternion;
+		set_from_axis_and_angle (*yaw, 0, -1, 0, e.rot.y);
+		rotation := roll * yaw * pitch;
+		
+		model = rotate(model, rotation);
+		model = scale(model, e.size);
+		
+		push_mesh_asset(pb, model, e.mesh_asset_hash, color, e.joints, e.an_batch);
 	}
 	
 	{
@@ -442,6 +455,26 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		if is_grabbing && !is_key_down(.MOUSE_BUTTON_LEFT)
 		{
 			is_grabbing = false;
+		}
+		
+		if is_key_pressed(#char "D")
+		{
+			active_entity.size = .{1,1,1};
+		}
+		
+		if is_key_pressed(#char "S")
+		{
+			current_mode = .Scale;
+		}
+		
+		else if is_key_pressed(#char "T")
+		{
+			current_mode = .Translate;
+		}
+		
+		else if is_key_pressed(#char "R")
+		{
+			current_mode = .Rotate;
 		}
 		
 		for 0 .. 2
@@ -512,12 +545,25 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				
 				movement := dot(hit_pos - hit_pos_last, axis);
 				
-				active_entity.pos += axis * movement * delta * 100;
-				
+				if current_mode == 
+				{
+					case .Translate;
+					active_entity.pos += axis * movement * delta * 100;
+					case .Scale;
+					active_entity.size += axis * movement * delta * 100;
+					case .Rotate;
+					active_entity.rot += axis * movement * delta * 100;
+				}
 				
 				//active_entity.pos.component[it] += hit_pos.component[it] - hit_pos_last.component[it];
 			}
 		}
+		
+		if is_key_down(xx #char "C")
+		{
+			active_entity = null;
+		}
+		
 	}
 	
 	// draw aabbs
@@ -526,6 +572,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		meshes := meshes_from_hash(e.mesh_asset_hash);
 		
 		model := translate(Matrix4_Identity, e.pos);
+		model = scale(model, e.size);
 		
 		this_frame_hot : bool;
 		
@@ -646,3 +693,11 @@ is_grabbing : bool;
 grab_index : int = -1;
 raycast_last_frame : Ray;
 raycast : Ray;
+current_mode : Gizmo_Mode;
+
+Gizmo_Mode :: enum
+{
+	Translate;
+	Scale;
+	Rotate;
+}
