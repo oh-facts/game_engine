@@ -434,6 +434,8 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	if active_entity
 	{
+		push_ui_text(pb, tprint("%", active_entity.pos), .{0,32}, .Delius, 32, COLOR_WHITE);
+		
 		gizmo_size : Vector2 = .{0.5, 2};
 		gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
 		
