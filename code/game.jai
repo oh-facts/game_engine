@@ -387,13 +387,16 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	for e : game.entities
 	{
 		color := COLOR_WHITE;
-		if *e == hot_entity
+		if 0
 		{
-			color = COLOR_YELLOW;
-		}
-		if *e == active_entity
-		{
-			color = COLOR_BLUE;
+			if *e == hot_entity
+			{
+				color = COLOR_YELLOW;
+			}
+			if *e == active_entity
+			{
+				color = COLOR_BLUE;
+			}
 		}
 		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, color, e.joints, e.an_batch);
 	}
@@ -403,29 +406,30 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		active_entity = null;
 	}
 	
-	ray_nds : Vector2;
-	ray_nds.x = (x / win_size.x) * 2 - 1;
-	ray_nds.y = - ((y / win_size.y) * 2 - 1);
-	
-	//print("%\n", ray_nds);
-	
-	ray_clip : Vector4;
-	ray_clip.xy = ray_nds;
-	ray_clip.z = -1;
-	ray_clip.w = 1;
-	
-	ray_eye := inverse(proj) * ray_clip;
-	ray_eye.z = -1;
-	ray_eye.w = 0;
-	
-	ray_wor : Vector3 = (inverse(view) * ray_eye).xyz;
-	ray_wor = normalize(ray_wor);
-	
-	start : Vector3;
-	end : Vector3;
 	{
-		start = camera.position;
-		end = start + 1000 * ray_wor;
+		ray_nds : Vector2;
+		ray_nds.x = (x / win_size.x) * 2 - 1;
+		ray_nds.y = - ((y / win_size.y) * 2 - 1);
+		
+		//print("%\n", ray_nds);
+		
+		ray_clip : Vector4;
+		ray_clip.xy = ray_nds;
+		ray_clip.z = -1;
+		ray_clip.w = 1;
+		
+		ray_eye := inverse(proj) * ray_clip;
+		ray_eye.z = -1;
+		ray_eye.w = 0;
+		
+		ray_wor : Vector3 = (inverse(view) * ray_eye).xyz;
+		ray_wor = normalize(ray_wor);
+		
+		start := camera.position;
+		//end := start + 1000 * ray_wor;
+		
+		raycast_last_frame = raycast;
+		raycast = .{start, ray_wor};
 	}
 	
 	if active_entity
@@ -433,40 +437,86 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		gizmo_size : Vector2 = .{0.5, 2};
 		gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
 		
-		push_quad(pb, active_entity.pos + .{y = gizmo_delta}, gizmo_size, .{}, COLOR_YELLOW, get_white_square());
-		push_quad(pb, active_entity.pos + .{x = gizmo_delta}, gizmo_size, .{z = deg_to_rad(90)}, COLOR_RED, get_white_square());
-		push_quad(pb, active_entity.pos +.{z = gizmo_delta}, gizmo_size, .{x = deg_to_rad(90)}, COLOR_BLUE, get_white_square());
+		if is_grabbing && !is_key_down(.MOUSE_BUTTON_LEFT)
 		{
-			min := active_entity.pos + .{y = gizmo_delta} - Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
-			
-			max := active_entity.pos + .{y = gizmo_delta} + Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
-			
-			_1, __ := ray_aabb_intersection(.{start, ray_wor}, .{min, max});
-			
-			if __
-			{
-				hit_pos := start + ray_wor * _1;
-				active_entity.pos.y = hit_pos.y - gizmo_delta;
-			}
+			is_grabbing = false;
 		}
 		
+		for 0 .. 2
 		{
-			min := active_entity.pos + .{x = gizmo_delta} - Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			axis : Vector3;
+			axis.component[it] = gizmo_delta;
+			gizmo_pos := active_entity.pos + axis;
+			gizmo_color : Vector4;
+			gizmo_color.w = 1;
+			gizmo_color.component[it] = 1;
 			
-			max := active_entity.pos + .{x = gizmo_delta} + Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			gizmo_rot : Vector3;
+			if it == 0 gizmo_rot.z = deg_to_rad(90);
+			else if it == 2 gizmo_rot.x = deg_to_rad(90);
 			
-			_1, __ := ray_aabb_intersection(.{start, ray_wor}, .{min, max});
+			push_quad(pb, gizmo_pos, gizmo_size, gizmo_rot, gizmo_color, get_white_square());
 			
-			if __
+			half_extents : Vector3;
+			
+			// probably a math way to generalize this
+			if it == 0 
 			{
-				hit_pos := start + ray_wor * _1;
-				active_entity.pos.x = hit_pos.x - gizmo_delta;
+				half_extents = .{gizmo_size.y / 2, gizmo_size.x / 2, 0};
+			}
+			else if it == 1
+			{
+				half_extents = .{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			}
+			else if it == 2
+			{
+				half_extents = .{gizmo_size.x / 2, 0, gizmo_size.y / 2};
+			}
+			
+			aabb : AABB;
+			aabb.min = gizmo_pos - half_extents;
+			aabb.max = gizmo_pos + half_extents;
+			
+			t, hit := ray_aabb_intersection(raycast, aabb);
+			
+			if hit && is_key_down(.MOUSE_BUTTON_LEFT) && !is_grabbing
+			{
+				is_grabbing = true;
+				grab_index = it;
+			}
+			
+			if is_grabbing && it == grab_index
+			{
+				t : float;
+				tt : float;
+				if it == 0
+				{
+					t = ray_plane_intersection(raycast, .{gizmo_pos.z, .{0, 0, 1}, true});
+					tt = ray_plane_intersection(raycast_last_frame, .{gizmo_pos.z, .{0, 0, 1}, true});
+				}
+				else if it == 1
+				{
+					t = ray_plane_intersection(raycast, .{gizmo_pos.z, .{0, 0, 1}, true});
+					tt = ray_plane_intersection(raycast_last_frame, .{gizmo_pos.z, .{0, 0, 1}, true});
+				}
+				else if it == 2
+				{
+					t = ray_plane_intersection(raycast, .{gizmo_pos.y, .{0, 1, 0}, true});
+					tt = ray_plane_intersection(raycast_last_frame, .{gizmo_pos.y, .{0, 1, 0}, true});
+				}
+				
+				hit_pos := raycast.o + raycast.dir * t;
+				hit_pos_last := raycast_last_frame.o + raycast_last_frame.dir * tt;
+				
+				movement := dot(hit_pos - hit_pos_last, axis);
+				
+				active_entity.pos += axis * movement * delta * 100;
+				
+				
+				//active_entity.pos.component[it] += hit_pos.component[it] - hit_pos_last.component[it];
 			}
 		}
-		
 	}
-	
-	//push_debug_line(pb, start, end, COLOR_WHITE);
 	
 	// draw aabbs
 	for *e : game.entities
@@ -485,17 +535,17 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			aabb.min = (model * m.xform * .{m.aabb.min.x, m.aabb.min.y, m.aabb.min.z, 1}).xyz;
 			aabb.max = (model * m.xform * .{m.aabb.max.x, m.aabb.max.y, m.aabb.max.z, 1}).xyz;
 			
-			_, __ := ray_aabb_intersection(.{start, ray_wor}, aabb);
+			_, hit := ray_aabb_intersection(raycast, aabb);
 			
 			color := COLOR_WHITE;
 			
-			if __
+			if hit
 			{
 				color = COLOR_RED;
 				hot_entity = e;
 				this_frame_hot = true;
 				
-				if is_key_pressed(.MOUSE_BUTTON_LEFT)
+				if is_key_pressed(.MOUSE_BUTTON_LEFT) && !is_grabbing
 				{
 					active_entity = e;
 				}
@@ -590,3 +640,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 
 hot_entity : *Entity;
 active_entity : *Entity;
+is_grabbing : bool;
+grab_index : int = -1;
+raycast_last_frame : Ray;
+raycast : Ray;

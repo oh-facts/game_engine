@@ -122,41 +122,7 @@ r_submit :: (pb : R_Push_Buffer)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
-	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
-	
-	// 3d ui batches
-	if pb.quad_batches.count 
-	{
-		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
-		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
-		
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-		glUseProgram(shader);
-		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
-		
-		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
-		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
-		
-		batches := pb.quad_batches;
-		batch := batches.first;
-		
-		while batch
-		{
-			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-			
-			memcpy(ssbo_data, batch.base, batch.size);
-			
-			glUnmapNamedBuffer(buffer);
-			
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
-			
-			batch = batch.next;
-		}
-	}
-	
 	glEnable(GL_CULL_FACE);
 	
 	// mesh batches
@@ -287,6 +253,42 @@ r_submit :: (pb : R_Push_Buffer)
 			}
 		}
 	}
+	
+	glDisable(GL_CULL_FACE);
+	// 3d ui batches
+	if pb.quad_batches.count 
+	{
+		glDisable(GL_DEPTH_TEST);
+		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+		
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+		glUseProgram(shader);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
+		batches := pb.quad_batches;
+		batch := batches.first;
+		
+		while batch
+		{
+			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			
+			memcpy(ssbo_data, batch.base, batch.size);
+			
+			glUnmapNamedBuffer(buffer);
+			
+			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+			
+			batch = batch.next;
+		}
+	}
+	
+	glEnable(GL_CULL_FACE);
 	
 	// ui batches
 	if pb.sprite_batches.count 

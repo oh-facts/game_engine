@@ -10,6 +10,33 @@ Ray :: struct
 	dir : Vector3;
 }
 
+Plane :: struct
+{
+	d : float;
+	n : Vector3;
+	double_sided : bool;
+}
+
+ray_plane_intersection :: (ray : Ray, plane : Plane) -> float
+{
+	nd := dot(ray.dir, plane.n);
+	pn := dot(ray.o, plane.n);
+	
+	if !plane.double_sided
+	{
+		if (nd >= 0) {
+			return -1;
+		}
+	}
+	
+	t := (plane.d - pn) / nd;
+	
+	if (t >= 0) {
+		return t;
+	}
+	return -1;
+}
+
 ray_aabb_intersection :: (ray : Ray, aabb : AABB) -> float, bool
 {
 	t1 := (aabb.min.x - ray.o.x) / ray.dir.x;
