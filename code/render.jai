@@ -229,9 +229,9 @@ push_quad_impl :: (batches : *Batch_List, pos : Vector3, size : Vector2, rot : V
 	roll : Quaternion;
 	set_from_axis_and_angle (*roll, 0, 0, -1, rot.z);
 	pitch : Quaternion;
-	set_from_axis_and_angle (*roll, -1, 0, 0, rot.x);
+	set_from_axis_and_angle (*pitch, -1, 0, 0, rot.x);
 	yaw : Quaternion;
-	set_from_axis_and_angle (*roll, 0, -1, 0, rot.y);
+	set_from_axis_and_angle (*yaw, 0, -1, 0, rot.y);
 	rotation := roll * yaw * pitch;
 	
 	model = rotate(model, rotation);

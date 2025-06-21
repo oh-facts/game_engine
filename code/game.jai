@@ -355,7 +355,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
 	//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
 	push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
-	push_quad(pb, .{}, .{1, 1}, .{}, COLOR_GREEN, get_white_square());
 	
 	game.cow.pos.z -= delta;
 	
@@ -399,19 +398,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		push_mesh_asset(pb, translate(Matrix4_Identity, e.pos), e.mesh_asset_hash, color, e.joints, e.an_batch);
 	}
 	
-	if active_entity
-	{
-		move_input : Vector3;
-		move_input.x = cast (float) is_key_down (xx #char "D")
-			- cast (float) is_key_down (xx #char "A");
-		move_input.y = cast (float) is_key_down (xx #char "E")
-			- cast (float) is_key_down (xx #char "Q");
-		move_input.z = cast (float) is_key_down (xx #char "S")
-			- cast (float) is_key_down (xx #char "W");
-		move_input = rotate (unit_vector (move_input), camera.rotation);
-		active_entity.pos += move_input * delta * 2;
-	}
-	
 	if is_key_down(xx #char "C")
 	{
 		active_entity = null;
@@ -435,12 +421,49 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	ray_wor : Vector3 = (inverse(view) * ray_eye).xyz;
 	ray_wor = normalize(ray_wor);
 	
-	//if is_key_pressed(#char "P")
 	start : Vector3;
 	end : Vector3;
 	{
 		start = camera.position;
 		end = start + 1000 * ray_wor;
+	}
+	
+	if active_entity
+	{
+		gizmo_size : Vector2 = .{0.5, 2};
+		gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
+		
+		push_quad(pb, active_entity.pos + .{y = gizmo_delta}, gizmo_size, .{}, COLOR_YELLOW, get_white_square());
+		push_quad(pb, active_entity.pos + .{x = gizmo_delta}, gizmo_size, .{z = deg_to_rad(90)}, COLOR_RED, get_white_square());
+		push_quad(pb, active_entity.pos +.{z = gizmo_delta}, gizmo_size, .{x = deg_to_rad(90)}, COLOR_BLUE, get_white_square());
+		{
+			min := active_entity.pos + .{y = gizmo_delta} - Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			
+			max := active_entity.pos + .{y = gizmo_delta} + Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			
+			_1, __ := ray_aabb_intersection(.{start, ray_wor}, .{min, max});
+			
+			if __
+			{
+				hit_pos := start + ray_wor * _1;
+				active_entity.pos.y = hit_pos.y - gizmo_delta;
+			}
+		}
+		
+		{
+			min := active_entity.pos + .{x = gizmo_delta} - Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			
+			max := active_entity.pos + .{x = gizmo_delta} + Vector3.{gizmo_size.x / 2, gizmo_size.y / 2, 0};
+			
+			_1, __ := ray_aabb_intersection(.{start, ray_wor}, .{min, max});
+			
+			if __
+			{
+				hit_pos := start + ray_wor * _1;
+				active_entity.pos.x = hit_pos.x - gizmo_delta;
+			}
+		}
+		
 	}
 	
 	//push_debug_line(pb, start, end, COLOR_WHITE);

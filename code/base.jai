@@ -16,6 +16,11 @@ COLOR_MAGENTA :: Vector4.{1, 0, 1, 1};
 
 COLOR_ORANGE :: Vector4.{0.79, 0.33, 0, 1};
 
+deg_to_rad :: inline (d : float) -> float
+{
+	return d * PI / 180.;
+}
+
 Handle :: struct {
 	U64 : [2]u64;
 }

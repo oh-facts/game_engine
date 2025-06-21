@@ -1,11 +1,7 @@
-AABB :: union
+AABB :: struct
 {
-	using aaa : struct
-	{
-		min : Vector3;
-		max : Vector3;
-	}
-	component : [2]Vector3;
+	min : Vector3;
+	max : Vector3;
 }
 
 Ray :: struct
