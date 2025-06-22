@@ -65,9 +65,27 @@ ray_aabb_intersection :: (ray : Ray, aabb : AABB) -> float, bool
 	return tmin, true;
 }
 
+// TODO(mizu): Load all mesh data like you've been loading other data
+// Then traverse nodes to make the node hierearchy?
+
+// TODO(mizu): I think I will have an entity from gltf mesh
+// This will read a file and set up an entity tree based on the gltf file name and mesh name
+
+// Make a gltf cache
+// GLTF :: struct
+// {
+// ..
+// }
+
+// mesh
+
+/*
+GLTF_Scene
+*/
+
 Asset :: struct
 {
-	next : *Asset;
+	hash_next : *Asset;
 	
 	key : string;
 	hash : u128;
@@ -249,7 +267,7 @@ asset_from_hash :: (slots : *[]Asset_Slot, hash : u128) -> *Asset
 	{
 		cur := slot.first;
 		while cur {
-			defer cur = cur.next;
+			defer cur = cur.hash_next;
 			
 			if cur.hash == hash {
 				out = cur;
@@ -271,7 +289,7 @@ asset_from_hash :: (slots : *[]Asset_Slot, hash : u128) -> *Asset
 		}
 		else
 		{
-			slot.last.next = out;
+			slot.last.hash_next = out;
 			slot.last = out;
 		}
 	}
