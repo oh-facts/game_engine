@@ -118,6 +118,8 @@ Asset :: struct
 	first_hash : u128;
 	last_hash : u128;
 
+	xform : Matrix4;
+
 	// hash link
 	hash_next : *Asset;
 
@@ -164,9 +166,26 @@ Asset :: struct
 	vertex_buffer : u32;
 	index_buffer : u32;
 
-	// local transform / aabb
-	xform : Matrix4;
 	aabb : AABB;
+//	aabb_animated_slots : []AABB_Animated_Slot;
+}
+
+//#run print("%\n", size_of(Asset));
+
+// Make a hashmap for the
+
+AABB_Animated_Node :: struct
+{
+	next : *AABB_Animated_Node;
+	aabb : []AABB;
+	key : string;
+	hash : u128;
+}
+
+AABB_Animated_Slot :: struct
+{
+	first : *AABB_Animated_Slot;
+	last  : *AABB_Animated_Slot;
 }
 
 Asset_Slot :: struct
@@ -251,6 +270,34 @@ add_animation :: (count : u32, name : string, skin_name : string) -> []Animation
 	return asset.anim, asset;
 }
 
+_dfs_pre_rec :: (body : Code, hash : u128)
+{
+
+	root_node := node_from_hash(hash);
+
+	child_asset_node : *Asset;
+
+	if root_node.first_key.count
+	{
+		child_asset_node = node_from_hash(root_node.first_hash);
+	}
+
+	while child_asset_node
+	{
+		_dfs_pre_rec(body, child_asset_node.hash);
+
+		if child_asset_node.next_key.count
+		{
+			child_asset_node = node_from_hash(child_asset_node.next_hash);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+}
+
 // @for_expansion
 dfs_pre :: (root : *Asset, body: Code, flags: For_Flags) #expand
 {
@@ -263,6 +310,7 @@ dfs_pre :: (root : *Asset, body: Code, flags: For_Flags) #expand
 	depth[top] = 0;
 	top += 1;
 	`it_index := 0;
+
 	while top > 0
 	{
 		top -= 1;
@@ -666,7 +714,12 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 			name_str := str_from_cstr(data.materials[i].name);
 
 			mat_key := simple_gltf_mat_key(gltf_it, *data.materials[i]);
-			tex_key := simple_gltf_tex_key(gltf_it, data.materials[i].pbr_metallic_roughness.base_color_texture.texture);
+			tex_key : string;
+			if data.materials[i].pbr_metallic_roughness.base_color_texture.texture
+			{
+				tex_key = simple_gltf_tex_key(gltf_it, data.materials[i].pbr_metallic_roughness.base_color_texture.texture);
+			}
+
 
 			//material := tprint("%0%", foldername_local, cgltf_material_index(data, *data.materials[i]));;
 
@@ -1289,7 +1342,7 @@ gltf_traverse_node4 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker,
 	if parent_asset_node equip_node_with_parent(node_key, parent_asset_node);
 
 	mat : [16]float;
-	cgltf_node_transform_world(mesh_node.node, mat.data);
+	cgltf_node_transform_local(mesh_node.node, mat.data);
 
 	for i : 0 .. 4 - 1
 	{
