@@ -1,3 +1,8 @@
+/*
+[ ] skinned aabbs: I think the best way to deal with skinned mesh aabbs is to output vertex min / max
+ after skinning
+*/
+
 // NOTE(mizu): Global modules
 #import "Basic";
 #import "System";
@@ -41,75 +46,75 @@ main :: ()
 {
 	print("Do not enter is written on the doorway, why can't everyone just go away\n");
 	print("Except for you, you can stay\n");
-
+	
 	SetProcessDPIAware();
-
+	
 	the_window = create_window(960, 540, "The Sad Debugger");
-
+	
 	saved : Saved_Window_Info;
 	//toggle_fullscreen(the_window, true, *saved);
-
+	
 	exe_folder = path_strip_filename(get_path_of_running_executable());
-
+	
 	// TODO(mizu): Make a sprint() that uses the perm arena
 	data_folder = join(exe_folder, "../data");
 	models_folder = join(data_folder, "/models");
 	shaders_folder = join(data_folder, "/shaders");
 	fonts_folder = join(data_folder, "/fonts");
-
+	
 	delta : float;
 	time_elapsed : float;
-
+	
 	start := get_perf_counter();
 	freq := get_perf_freq();
-
+	
 	r_init();
 	asset_init();
 	quit := false;
-
+	
 	game : Game;
 	counter : float;
-
+	
 	while !quit
 	{
 		counter += delta;
-
+		
 		time_since_last := time_elapsed;
-
+		
 		update_window_events();
-
+		
 		for events_this_frame
 		{
 			if it.type == .QUIT then quit = true;
-
+			
 			if it.type == .KEYBOARD
 			{
 				if it.key_pressed == 0 continue;
-
+				
 				if it.key_code == .ESCAPE
 				{
 					quit = true;
 				}
 			}
 		}
-
+		
 		pb : R_Push_Buffer;
 		update_game(*game, *pb, delta, counter);
 		r_submit(pb);
-
+		
 		{
 			dc := GetDC(the_window);
 			SwapBuffers(dc);
 			ReleaseDC(the_window, dc);
 		}
-
+		
 		end := get_perf_counter();
 		time_elapsed = (end - start) / (freq * 1.);
 		delta = time_elapsed - time_since_last;
-
+		
 		reset_temporary_storage();
 	}
-
+	
 	print("quit safely\n");
 }
 
@@ -140,7 +145,7 @@ get_window_size :: (win : Window_Type) -> Vector2
 	GetClientRect(win, *rect);
 	out.x = xx (rect.right - rect.left);
 	out.y = xx (rect.bottom - rect.top);
-
+	
 	return out;
 }
 
