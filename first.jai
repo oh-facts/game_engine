@@ -1,22 +1,6 @@
 #import "Compiler";
 #import "File";
 #import "Basic";
-#import "meow_hash";
-hash_string :: (data : string) -> u128 {
-	
-#asm { hash: vec; }
-	
-	MeowHash(MeowDefaultSeed, xx data.count, data.data, hash);
-	
-	out : u128;
-	out.U64[0] = MeowU64From(hash, 0);
-	out.U64[1] = MeowU64From(hash, 1);
-	
-	return out;
-}
-u128 :: struct {
-	U64 : [2]u64;
-};
 
 build :: () 
 {
