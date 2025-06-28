@@ -21,6 +21,11 @@ deg_to_rad :: inline (d : float) -> float
 	return d * PI / 180.;
 }
 
+rad_to_deg :: inline (r : float) -> float
+{
+	return r * 180 / PI;
+}
+
 Handle :: struct {
 	U64 : [2]u64;
 }
