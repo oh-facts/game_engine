@@ -33,6 +33,7 @@
 #load "camera.jai";
 #load "asset.jai";
 #load "game.jai";
+#load "widget.jai";
 
 the_window: Window_Type;
 
@@ -52,7 +53,7 @@ main :: ()
 	the_window = create_window(960, 540, "The Sad Debugger");
 	
 	saved : Saved_Window_Info;
-	//toggle_fullscreen(the_window, true, *saved);
+	toggle_fullscreen(the_window, true, *saved);
 	
 	exe_folder = path_strip_filename(get_path_of_running_executable());
 	

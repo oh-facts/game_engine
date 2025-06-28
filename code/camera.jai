@@ -1,3 +1,5 @@
+control_camera : bool;
+
 Camera :: struct
 {
 	speed := 4.0;
@@ -12,8 +14,6 @@ Camera :: struct
 	transform := Matrix4_Identity;
 	
 	viewport : Vector2;
-	
-	control : bool;
 }
 
 update_2d_camera :: (using camera : *Camera, delta : float, _viewport : Vector2)
@@ -29,7 +29,7 @@ update_flying_camera :: (using camera : *Camera, delta_time : float, vp : Vector
 	move_input  : Vector3;
 	move_speed  : float;
 	
-	if control 
+	if control_camera 
 	{
 		x, y, w, h := get_dimensions (the_window, false);
 		user32 :: #system_library "User32";
@@ -37,13 +37,7 @@ update_flying_camera :: (using camera : *Camera, delta_time : float, vp : Vector
 		SetCursorPos (w / 2, h / 2);
 	}
 	
-	if is_key_pressed(.TAB) 
-	{
-		toggle_cursor(xx control);
-		control = !control;
-	}
-	
-	if control 
+	if control_camera 
 	{
 		move_speed = speed;
 		mouse_delta = xy (xx mouse_delta_x, xx mouse_delta_y);

@@ -280,7 +280,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		//gltf_load_file(arena, "female_lying.glb");
 		
 		camera.position = .{0, 0, 3};
-		camera.control = true;
+		control_camera = true;
 		toggle_cursor(0);
 		
 		entity_store_init(game);
@@ -327,6 +327,8 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		font_state_init();
 		
 		jeff : int;
+		
+		widget_init();
 	}
 	
 	win_size := get_window_size(the_window);
@@ -353,82 +355,25 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	size := Vector2.{670, 80};
 	
 	color := COLOR_RED;
-	x,y := get_mouse_pointer_position(the_window, false);
 	
 	//print("% %\n", x, y);
+	x,y := get_mouse_pointer_position(the_window, false);
 	
-	if x > xx (pos.x) && x < xx (pos.x + size.x)
-	{
-		if y > xx (pos.y) && y < xx (pos.y + size.y)
+	/*
+		if x > xx (pos.x) && x < xx (pos.x + size.x)
 		{
-			color = COLOR_GREEN;
-			
-			pb.hacker_draw = true;
-		}
-	}
-	
-	push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
-	//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
-	push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
-	
-	game.cow.pos.z -= delta;
-	
-	// animate entities
-	for *e : game.entities
-	{
-		if e.flags & .Animated
-		{
-			anim, jaunt, asset := animation_data_from_hash(e.animation_hash);
-			
-			if e.counter > asset.length
+			if y > xx (pos.y) && y < xx (pos.y + size.y)
 			{
-				for i : 0 .. 255
-				{
-					e.kf_index[i].pos = 0;
-					e.kf_index[i].rot = 0;
-					e.counter = 0;
-				}
-			}
-			
-			e.counter += delta;
-			
-			joints, an_batch := push_animation(pb, e.animation_hash, e.counter, e.kf_index);
-			e.joints = joints;
-			e.an_batch = an_batch;
-		}
-	}
-	
-	// draw entities
-	for e : game.entities
-	{
-		color := COLOR_WHITE;
-		if 0
-		{
-			if *e == hot_entity
-			{
-				color = COLOR_YELLOW;
-			}
-			if *e == active_entity
-			{
-				color = COLOR_BLUE;
+				color = COLOR_GREEN;
+				
+				pb.hacker_draw = true;
 			}
 		}
 		
-		model := translate(Matrix4_Identity, e.pos);
-		
-		roll : Quaternion;
-		set_from_axis_and_angle (*roll, 0, 0, -1, e.rot.z);
-		pitch : Quaternion;
-		set_from_axis_and_angle (*pitch, -1, 0, 0, e.rot.x);
-		yaw : Quaternion;
-		set_from_axis_and_angle (*yaw, 0, -1, 0, e.rot.y);
-		rotation := roll * yaw * pitch;
-		
-		model = rotate(model, rotation);
-		model = scale(model, e.size);
-		
-		push_mesh_asset(pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
-	}
+		push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
+		//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
+		push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
+		*/
 	
 	{
 		ray_nds : Vector2;
@@ -456,10 +401,8 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		raycast = .{start, ray_wor};
 	}
 	
-	if active_entity
+	if active_entity && current_app_mode == .Editor
 	{
-		push_ui_text(pb, tprint("%", active_entity.pos), .{0,32}, .Delius, 32, COLOR_WHITE);
-		
 		gizmo_size : Vector2 = .{0.5, 2};
 		gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
 		
@@ -475,17 +418,17 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 		if is_key_pressed(#char "S")
 		{
-			current_mode = .Scale;
+			current_gizmo_mode = .Scale;
 		}
 		
 		else if is_key_pressed(#char "T")
 		{
-			current_mode = .Translate;
+			current_gizmo_mode = .Translate;
 		}
 		
 		else if is_key_pressed(#char "R")
 		{
-			current_mode = .Rotate;
+			current_gizmo_mode = .Rotate;
 		}
 		
 		for 0 .. 2
@@ -556,7 +499,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				
 				movement := dot(hit_pos - hit_pos_last, axis);
 				
-				if current_mode ==
+				if current_gizmo_mode ==
 				{
 					case .Translate;
 					active_entity.pos += axis * movement * delta * 100;
@@ -575,6 +518,131 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			active_entity = null;
 		}
 		
+	}
+	
+	begin_widgets();
+	
+	nil_widget : Widget;
+	entity_widget_root := *nil_widget;
+	placer_widget_root := *nil_widget;
+	
+	new_context := context;
+	push_context new_context
+	{
+		{
+			col();
+			entity_widget_root = _start;
+			entity_widget_root.fixed_pos = .{60, 60};
+			
+			format_float := *context.print_style.default_format_float;
+			format_float.trailing_width = 1;
+			
+			if active_entity
+			{
+				txt := tprint("pos: % % %", active_entity.pos.x, active_entity.pos.y, active_entity.pos.z);
+				fixed_label(txt);
+				
+				rot : Vector3i;
+				rot.x = xx rad_to_deg(active_entity.rot.x);
+				rot.y = xx rad_to_deg(active_entity.rot.y);
+				rot.z = xx rad_to_deg(active_entity.rot.z);
+				
+				rot.x %= 360;
+				rot.y %= 360;
+				rot.z %= 360;
+				
+				txt = tprint("rot: % % %", rot.x, rot.y, rot.z);
+				fixed_label(txt);
+				
+				txt = tprint("size: % % %", active_entity.size.x, active_entity.size.y, active_entity.size.z);
+				fixed_label(txt);
+			}
+		}
+		
+		{
+			col();
+			placer_widget_root = _start;
+			placer_widget_root.fixed_pos = .{600, 60};
+			fixed_label("bo");
+			fixed_label("bo");
+			fixed_label("bo");
+		}
+		
+	}
+	
+	widget_layout(entity_widget_root);
+	widget_layout(placer_widget_root);
+	
+	draw_widgets(pb, entity_widget_root);
+	draw_widgets(pb, placer_widget_root);
+	
+	end_widgets();
+	
+	if is_key_pressed(.TAB)
+	{
+		current_app_mode += 1;
+		current_app_mode = current_app_mode % .Count;
+		toggle_cursor(xx control_camera);
+		control_camera = !control_camera;
+	}
+	
+	game.cow.pos.z -= delta;
+	
+	// animate entities
+	for *e : game.entities
+	{
+		if e.flags & .Animated
+		{
+			anim, jaunt, asset := animation_data_from_hash(e.animation_hash);
+			
+			if e.counter > asset.length
+			{
+				for i : 0 .. 255
+				{
+					e.kf_index[i].pos = 0;
+					e.kf_index[i].rot = 0;
+					e.counter = 0;
+				}
+			}
+			
+			e.counter += delta;
+			
+			joints, an_batch := push_animation(pb, e.animation_hash, e.counter, e.kf_index);
+			e.joints = joints;
+			e.an_batch = an_batch;
+		}
+	}
+	
+	// draw entities
+	for e : game.entities
+	{
+		color := COLOR_WHITE;
+		if 0
+		{
+			if *e == hot_entity
+			{
+				color = COLOR_YELLOW;
+			}
+			if *e == active_entity
+			{
+				color = COLOR_BLUE;
+			}
+		}
+		
+		model := translate(Matrix4_Identity, e.pos);
+		
+		roll : Quaternion;
+		set_from_axis_and_angle (*roll, 0, 0, -1, e.rot.z);
+		pitch : Quaternion;
+		set_from_axis_and_angle (*pitch, -1, 0, 0, e.rot.x);
+		yaw : Quaternion;
+		set_from_axis_and_angle (*yaw, 0, -1, 0, e.rot.y);
+		rotation := roll * yaw * pitch;
+		
+		model = rotate(model, rotation);
+		model = scale(model, e.size);
+		
+		push_mesh_asset(pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
 	}
 	
 	aabb_rec :: (e : *Entity, pb : *R_Push_Buffer, hash : u128, _model : Matrix4, this_frame_hot : *bool)
@@ -610,11 +678,11 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			
 			/*
 			points : [8]Vector3;
-
+	
 			xs : [2]float = .[min.x, max.x];
 			ys : [2]float = .[min.y, max.y];
 			zs : [2]float = .[min.z, max.z];
-
+	
 			for x : 0 .. 1
 			{
 				for y : 0 .. 1
@@ -622,7 +690,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 					for z : 0 .. 1
 					{
 						point := model * m.xform * .{xs[x], ys[y], zs[z], 1};
-
+	
 						points[x * 2 * 2 + y * 2 + z] = point.xyz;
 						push_debug_vertex(pb, point.xyz, COLOR_RED);
 					}
@@ -732,11 +800,19 @@ is_grabbing : bool;
 grab_index : int = -1;
 raycast_last_frame : Ray;
 raycast : Ray;
-current_mode : Gizmo_Mode;
+current_gizmo_mode : Gizmo_Mode;
+current_app_mode : App_Mode;
 
 Gizmo_Mode :: enum
 {
 	Translate;
 	Scale;
 	Rotate;
+}
+
+App_Mode :: enum
+{
+	Game;
+	Editor;
+	Count;
 }
