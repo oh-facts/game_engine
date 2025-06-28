@@ -111,6 +111,7 @@ Asset :: struct
 	prev_key : string;
 	first_key : string;
 	last_key : string;
+	parent_key : string;
 	
 	// asset pointers are persistant forever
 	// The vertex / skinning / joint / texture data are streamed in and out
@@ -135,6 +136,7 @@ Asset :: struct
 	prev_hash : u128;
 	first_hash : u128;
 	last_hash : u128;
+	parent_hash : u128;
 	
 	xform : Matrix4;
 	
@@ -373,6 +375,9 @@ equip_node_with_parent :: (name : string, parent : *Asset) -> *Asset
 	asset := asset_from_key(*asset_store.nodes, name);
 	child_key := sprint("%", name);
 	child_hash := hash_string(child_key);
+	
+	asset.parent_key = sprint("%", parent.key);
+	asset.parent_hash = hash_string(parent.key);
 	
 	if !parent.last_key.count
 	{

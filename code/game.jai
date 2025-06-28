@@ -236,13 +236,7 @@ Game :: struct
 	arena : *Arena;
 	
 	camera : Camera;
-	
 	ui_camera : Camera;
-	
-	ascent : float;
-	cow : *Entity;
-	cow2 : *Entity;
-	butterfly : *Entity;
 	
 	entities : []Entity;
 }
@@ -275,55 +269,16 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		// and extracts walk and whatever else
 		
 		gltf_load_file(arena, "watermelon_stall.glb");
-		//		gltf_load_file(arena, "butterfly.glb");
 		gltf_load_file(arena, "cow.glb");
-		//gltf_load_file(arena, "female_lying.glb");
 		
 		camera.position = .{0, 0, 3};
 		control_camera = true;
 		toggle_cursor(0);
 		
 		entity_store_init(game);
-		{
-			cow = entity_alloc(game);
-			cow.node_asset_hash = hash_string("cow.cow_root");
-			cow.animation_hash = hash_string("cow.walk");
-			cow.flags |= .Animated;
-		}
 		
-		{
-			cow2 = entity_alloc(game);
-			cow2.node_asset_hash = hash_string("cow.cow_root");
-			cow2.animation_hash = hash_string("cow.jump");
-			cow2.pos = .{-3, 0, 0};
-			cow2.flags |= .Animated;
-		}
+		//watermelon_stall.root
 		
-		{
-			watermelon_stall := entity_alloc(game);
-			watermelon_stall.node_asset_hash = hash_string("watermelon_stall.root");
-			watermelon_stall.pos = .{0, 0, -25};
-		}
-		
-		if false
-		{
-			woman := entity_alloc(game);
-			woman.node_asset_hash = hash_string("female_lying.Armature");
-			woman.animation_hash = hash_string("female_lying.Armature|mixamo.com|Layer0");
-			woman.flags |= .Animated;
-			//			woman.node_asset_hash = hash_string("cow.cow_root");
-		}
-		
-		if false
-		{
-			gltf_load_file(arena, "downtown.glb");
-			downtown := entity_alloc(game);
-			downtown.node_asset_hash = hash_string("downtown.Downtown_ArtDeco_1");
-			//			downtown.node_asset_hash = hash_string("downtown.Downtown_ModernOffice_4_Downtown_Concrete_FLR_1_0");
-		}
-		
-		/*
-		*/
 		font_state_init();
 		
 		jeff : int;
@@ -374,6 +329,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
 		push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
 		*/
+	
 	
 	{
 		ray_nds : Vector2;
@@ -563,11 +519,21 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			col();
 			placer_widget_root = _start;
 			placer_widget_root.fixed_pos = .{600, 60};
-			fixed_label("bo");
-			fixed_label("bo");
-			fixed_label("bo");
+			
+			for slot : asset_store.nodes
+			{
+				asset := slot.first;
+				while asset
+				{
+					if !asset.parent_key.count
+					{
+						fixed_label(tprint("%", asset.key), it_index);
+						push_mesh_asset(pb, Matrix4_Identity, asset.hash);
+					}
+					asset = asset.hash_next;
+				}
+			}
 		}
-		
 	}
 	
 	widget_layout(entity_widget_root);
@@ -585,8 +551,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		toggle_cursor(xx control_camera);
 		control_camera = !control_camera;
 	}
-	
-	game.cow.pos.z -= delta;
 	
 	// animate entities
 	for *e : game.entities
