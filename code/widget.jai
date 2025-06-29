@@ -52,6 +52,9 @@ Widget :: struct
 	font_size : s32;
 	fixed_pos : Vector2;
 	
+	final_pos : Vector2;
+	final_size : Vector2;
+	
 	last_touched : u64;
 }
 
@@ -68,6 +71,7 @@ Widget_State :: struct
 	parent_stack : *Widget;
 	free_stack : *Widget;
 	ticks : u64;
+	mpos : Vector2;
 }
 
 widget_state : Widget_State;
@@ -127,11 +131,16 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 		hash_next := out.hash_next;
 		hash_prev := out.hash_prev;
 		
+		final_pos := out.final_pos;
+		final_size := out.final_size;
+		
 		out.* = .{};
 		out.hash = hash;
 		out.key = key;
 		out.hash_next;
 		out.hash_prev;
+		out.final_pos = final_pos;
+		out.final_size = final_size;
 	}
 	
 	// set up hierearchy
@@ -189,9 +198,10 @@ col :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) #expand
   }
 }
 
-begin_widgets :: ()
+begin_widgets :: (_mpos : Vector2)
 {
 	using widget_state;
+	mpos = _mpos;
 }
 
 end_widgets :: ()
@@ -269,13 +279,25 @@ widget_layout :: (root : *Widget)
 	
 	if root.parent
 	{
-		root.parent.size = root.size;
+		if root.parent.child_axis == .X
+		{
+			root.parent.size.x += root.size.x;
+			root.parent.size.y = root.size.y;
+		}
+		else
+		{
+			root.parent.size.x = root.size.x;
+			root.parent.size.y += root.size.y;
+		}
 	}
 }
 
 draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
 {
 	pos := root.pos + root.fixed_pos;
+	
+	root.final_pos = pos;
+	root.final_size = root.size;
 	
 	if root.flags & .Draw_Bg
 	{
@@ -292,7 +314,15 @@ draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
 		
 		pos.y += root.size.y / 2 + root.font_size / 2;
 		pos.x += 6;
-		push_ui_text(pb, root.text, pos, .Delius, root.font_size, COLOR_WHITE);
+		
+		color := COLOR_WHITE;
+		
+		if root.hot
+		{
+			color = COLOR_ORANGE;
+		}
+		
+		push_ui_text(pb, root.text, pos, .Delius, root.font_size, color);
 	}
 	
 	{
@@ -341,8 +371,9 @@ end_col :: ()
 	parent_stack = parent_stack.meta_next;
 }
 
-fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> bool
 {
+	using widget_state;
 	key := make_widget_key(index, depth, loc);
 	
 	label := widget_from_key(key);
@@ -351,4 +382,40 @@ fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #c
 	label.flags |= .Draw_Text | .Draw_Bg;
 	label.font_size = 16;
 	label.size = .{300, 50};
+	
+	active : bool;
+	
+	if mpos.x > xx (label.final_pos.x) && mpos.x < xx (label.final_pos.x + label.final_size.x)
+	{
+		if mpos.y > xx (label.final_pos.y) && mpos.y < xx (label.final_pos.y + label.final_size.y)
+		{
+			label.hot = true;
+			
+			if is_key_pressed(.MOUSE_BUTTON_LEFT)
+			{
+				active = true;
+			}
+		}
+	}
+	
+	return active;
+}
+
+widget_test :: () -> *Widget
+{
+	row();
+	out := _start;
+	fixed_label("hi");
+	
+	{
+		col();
+		fixed_label("hi");
+		fixed_label("hi");
+		fixed_label(tprint("%", _start.final_size));
+	}
+	
+	fixed_label("hi");
+	fixed_label("hi");
+	fixed_label(tprint("%", out.final_size));
+	return out;
 }

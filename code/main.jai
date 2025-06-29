@@ -1,6 +1,16 @@
 /*
 [ ] skinned aabbs: I think the best way to deal with skinned mesh aabbs is to output vertex min / max
  after skinning
+
+// [x] find out why some nodes are not centered
+		// ohhh. I should render their mesh?
+		// but what if mesh has child meshes?
+		// This was happening because their origin was set to the center of the scene. They look fine after setting each mesh's origin to the center of the mesh
+
+		// [ ] I am thinking about another asset kind that is just
+		// a merged mesh. Like imagine I hash a bunch of root meshes to 
+		// create a new mesh that is just the merged version of the base meshes.
+		
 */
 
 // NOTE(mizu): Global modules

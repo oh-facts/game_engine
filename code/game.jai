@@ -330,7 +330,6 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
 		*/
 	
-	
 	{
 		ray_nds : Vector2;
 		ray_nds.x = (x / win_size.x) * 2 - 1;
@@ -476,7 +475,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 	}
 	
-	begin_widgets();
+	begin_widgets(.{xx x,xx y});
 	
 	nil_widget : Widget;
 	entity_widget_root := *nil_widget;
@@ -515,6 +514,35 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			}
 		}
 		
+		if false 
+		{
+			col();
+			placer_widget_root = _start;
+			placer_widget_root.fixed_pos = .{600, -800};
+			asset_index : int;
+			for slot : asset_store.meshes
+			{
+				asset := slot.first;
+				while asset
+				{
+					if fixed_label(tprint("%", asset.key), asset_index)
+					{
+						active_asset_hash = asset.hash;
+					}
+					asset_index += 1;
+					asset = asset.hash_next;
+				}
+			}
+			
+			fixed_label(tprint("%", placer_widget_root.final_size));
+			
+			if active_asset_hash.U64[0]
+			{
+				push_mesh(pb, Matrix4_Identity, active_asset_hash);
+			}
+		}
+		
+		if false 
 		{
 			col();
 			placer_widget_root = _start;
@@ -527,14 +555,29 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 				{
 					if !asset.parent_key.count
 					{
-						fixed_label(tprint("%", asset.key), it_index);
-						push_mesh_asset(pb, Matrix4_Identity, asset.hash);
+						if fixed_label(tprint("%", asset.key), it_index)
+						{
+							active_asset_hash = asset.hash;
+						}
 					}
+					
 					asset = asset.hash_next;
 				}
 			}
+			fixed_label(tprint("%", placer_widget_root.final_size));
+		}
+		
+		if active_asset_hash.U64[0]
+		{
+			push_mesh_node(pb, Matrix4_Identity, active_asset_hash);
 		}
 	}
+	
+	/*
+	test_root := widget_test();
+	widget_layout(test_root);
+	draw_widgets(pb, test_root);
+	*/
 	
 	widget_layout(entity_widget_root);
 	widget_layout(placer_widget_root);
@@ -606,7 +649,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		model = rotate(model, rotation);
 		model = scale(model, e.size);
 		
-		push_mesh_asset(pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
+		push_mesh_node(pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
 	}
 	
 	aabb_rec :: (e : *Entity, pb : *R_Push_Buffer, hash : u128, _model : Matrix4, this_frame_hot : *bool)
@@ -780,3 +823,5 @@ App_Mode :: enum
 	Editor;
 	Count;
 }
+
+active_asset_hash : u128;
