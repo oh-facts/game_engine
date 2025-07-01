@@ -14,6 +14,7 @@ Widget_Flags :: enum_flags
 {
 	Draw_Text;
 	Draw_Bg;
+	Clip;
 }
 
 Widget_Axis :: enum
@@ -51,9 +52,12 @@ Widget :: struct
 	size : Vector2;
 	font_size : s32;
 	fixed_pos : Vector2;
+	clip_size : Vector2;
+	view_offset : Vector2;
 	
 	final_pos : Vector2;
 	final_size : Vector2;
+	clipped : bool;
 	
 	last_touched : u64;
 }
@@ -133,14 +137,16 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 		
 		final_pos := out.final_pos;
 		final_size := out.final_size;
+		clipped := out.clipped;
 		
 		out.* = .{};
 		out.hash = hash;
 		out.key = key;
-		out.hash_next;
-		out.hash_prev;
+		out.hash_next = hash_next;
+		out.hash_prev = hash_prev;
 		out.final_pos = final_pos;
 		out.final_size = final_size;
+		out.clipped = clipped;
 	}
 	
 	// set up hierearchy
@@ -251,6 +257,12 @@ end_widgets :: ()
 	ticks += 1;
 }
 
+widget_layout_and_clip :: (root : *Widget)
+{
+	widget_layout(root);
+	clip_widgets(root);
+}
+
 widget_layout :: (root : *Widget)
 {
 	if root.parent
@@ -292,45 +304,107 @@ widget_layout :: (root : *Widget)
 	}
 }
 
-draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
+clip_widgets :: (root : *Widget)
 {
-	pos := root.pos + root.fixed_pos;
-	
-	root.final_pos = pos;
+	root.final_pos = root.pos + root.fixed_pos + root.parent.view_offset;;
 	root.final_size = root.size;
 	
-	if root.flags & .Draw_Bg
+	if root.parent.flags & .Clip
 	{
-		// This is a very delulu way to draw borders
-		push_ui_quad(pb, pos, root.size, 0, COLOR_WHITE, get_white_square());
-		push_ui_quad(pb, pos + .{1,1}, root.size - .{2,2}, 0, COLOR_BLACK, get_white_square());
-	}
-	
-	if root.flags & .Draw_Text
-	{
-		// I have no idea how to properly align text
-		// Somehow, adding font_size / 2 makes it fine
-		// the size.y / 2 is so it aligns to its bg rect
+		clip_left := root.parent.final_pos.x;
+		clip_right := root.parent.final_pos.x + root.parent.clip_size.x;
+		clip_top := root.parent.final_pos.y;
+		clip_bottom := root.parent.final_pos.y + root.parent.clip_size.y;
 		
-		pos.y += root.size.y / 2 + root.font_size / 2;
-		pos.x += 6;
+		root_left := root.final_pos.x;
+		root_right := root.final_pos.x + root.final_size.x;
+		root_top := root.final_pos.y;
+		root_bottom := root.final_pos.y + root.final_size.y;
 		
-		color := COLOR_WHITE;
-		
-		if root.hot
+		if (root_right <= clip_left || root_left >= clip_right ||
+				root_bottom <= clip_top || root_top >= clip_bottom)
 		{
-			color = COLOR_ORANGE;
+			root.clipped = true;
+			root.final_size = .{0, 0};
 		}
-		
-		push_ui_text(pb, root.text, pos, .Delius, root.font_size, color);
+		else
+		{
+			root.clipped = false;
+			
+			visible_left := max(root_left, clip_left);
+			visible_right := min(root_right, clip_right);
+			visible_top := max(root_top, clip_top);
+			visible_bottom := min(root_bottom, clip_bottom);
+			
+			root.final_size.x = visible_right - visible_left;
+			root.final_size.y = visible_bottom - visible_top;
+			
+			//root.final_pos.x = visible_left;
+			//root.final_pos.y = visible_top;
+		}
 	}
 	
+	if !root.clipped
 	{
 		child :=  root.first;
 		while child 
 		{
-			draw_widgets(pb, child);
+			clip_widgets(child);
 			child = child.next;
+		}
+	}
+	
+}
+
+draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
+{
+	if !root.clipped
+	{
+		if root.flags & .Clip
+		{
+			params := push_batch_group_sprite_params(pb);
+			
+			params.scissor = rectF32(root.final_pos, root.clip_size);
+		}
+		
+		if root.flags & .Draw_Bg
+		{
+			// This is a very delulu way to draw borders
+			push_ui_quad(pb, root.final_pos, root.size, 0, COLOR_WHITE, get_white_square());
+			push_ui_quad(pb, root.final_pos + .{1,1}, root.size - .{2,2}, 0, COLOR_BLACK, get_white_square());
+		}
+		
+		if root.flags & .Draw_Text
+		{
+			// I have no idea how to properly align text
+			// Somehow, adding font_size / 2 makes it fine
+			// the size.y / 2 is so it aligns to its bg rect
+			pos := root.final_pos;
+			pos.y += root.size.y / 2 + root.font_size / 2;
+			pos.x += 6;
+			
+			color := COLOR_WHITE;
+			
+			if root.hot
+			{
+				color = COLOR_ORANGE;
+			}
+			
+			push_ui_text(pb, root.text, pos, .Delius, root.font_size, color);
+		}
+		
+		{
+			child :=  root.first;
+			while child 
+			{
+				draw_widgets(pb, child);
+				child = child.next;
+			}
+		}
+		
+		if root.flags & .Clip
+		{
+			pop_batch_group_sprite_params(pb);
 		}
 	}
 }
@@ -385,15 +459,18 @@ fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #c
 	
 	active : bool;
 	
-	if mpos.x > xx (label.final_pos.x) && mpos.x < xx (label.final_pos.x + label.final_size.x)
+	if !label.clipped
 	{
-		if mpos.y > xx (label.final_pos.y) && mpos.y < xx (label.final_pos.y + label.final_size.y)
+		if mpos.x > xx (label.final_pos.x) && mpos.x < xx (label.final_pos.x + label.final_size.x)
 		{
-			label.hot = true;
-			
-			if is_key_pressed(.MOUSE_BUTTON_LEFT)
+			if mpos.y > xx (label.final_pos.y) && mpos.y < xx (label.final_pos.y + label.final_size.y)
 			{
-				active = true;
+				label.hot = true;
+				
+				if is_key_pressed(.MOUSE_BUTTON_LEFT)
+				{
+					active = true;
+				}
 			}
 		}
 	}

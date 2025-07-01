@@ -56,12 +56,60 @@ Batch :: struct
 	next : *Batch;
 };
 
+// I can lego brick batch group and batch list
+
 Batch_List :: struct
 {
 	first : *Batch;
-	last : *Batch;
+	last  : *Batch;
+	next : *Batch_List;
+	
 	count : u32;
+	
+	params : *Batch_List_Params;
 };
+
+Batch_Group :: struct
+{
+	first : *Batch_List;
+	last  : *Batch_List;
+	count : u32;
+	
+	params_stack : *Batch_List_Params;
+}
+
+Batch_List_Params :: struct
+{
+	next : *Batch_List_Params;
+	proj : Matrix4;
+	view : Matrix4;
+	scissor : RectF32;
+}
+
+nil_batch_list_params : Batch_List_Params;
+
+push_batch_group_sprite_params :: (pb : *R_Push_Buffer) -> *Batch_List_Params
+{
+	out : *Batch_List_Params;
+	out = tpush_struct(Batch_List_Params);
+	
+	//, proj : Matrix4, view : Matrix4, scissor : RectF32
+	
+	out.proj = pb.sprite_lists.params_stack.proj;
+	out.view = pb.sprite_lists.params_stack.view;
+	out.scissor = pb.sprite_lists.params_stack.scissor;
+	
+	// push to stack
+	out.next = pb.sprite_lists.params_stack;
+	pb.sprite_lists.params_stack = out;
+	
+	return out;
+}
+
+pop_batch_group_sprite_params :: (pb : *R_Push_Buffer)
+{
+	pb.sprite_lists.params_stack = pb.sprite_lists.params_stack.next;
+}
 
 R_Flags :: enum_flags u32
 {
@@ -94,20 +142,31 @@ R_Mesh :: struct
 
 R_Push_Buffer :: struct
 {
-	sprite_batches : Batch_List;
-	quad_batches : Batch_List;
+	sprite_lists : Batch_Group;
+	quad_lists : Batch_Group;
+	
 	mesh_batches : Batch_List;
 	skinning_xforms : Batch_List;
 	debug_lines : Batch_List;
 	debug_vertices : Batch_List;
 	
+	viewport : RectF32;
 	proj : Matrix4;
 	view : Matrix4;
-	ui_proj : Matrix4;
-	ui_view : Matrix4;
-	viewport : Vector2;
-	
 	hacker_draw : bool;
+}
+
+begin_render :: () -> R_Push_Buffer
+{
+	out : R_Push_Buffer;
+	out.sprite_lists.params_stack = *nil_batch_list_params;
+	out.quad_lists.params_stack = *nil_batch_list_params;
+	return out;
+}
+
+end_render :: (pb : *R_Push_Buffer)
+{
+	
 }
 
 push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
@@ -142,9 +201,40 @@ push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
 	return out;
 }
 
+push_batch_list :: (group : *Batch_Group) -> *Batch_List
+{
+	list := group.last;
+	
+	// is this correct?
+	// think deeply
+	// if you have different params, then push a new group
+	// sounds correct
+	// But I usually use something like a gen value
+	if !list || list.params != group.params_stack
+	{
+		list = tzpush_struct(Batch_List);
+		list.params = group.params_stack;
+		
+		if !group.last
+		{
+			group.first = list;
+			group.last = list;
+		}
+		else
+		{
+			group.last.next = list;
+			group.last = list;
+		}
+		
+		group.count += 1;
+	}
+	
+	return list;
+}
+
 push_ui_quad :: inline (pb : *R_Push_Buffer, pos : Vector2, size : Vector2, rot : float, color : Vector4, tex_id : Handle)
 {
-	push_quad_impl(*pb.sprite_batches, .{pos.x + size.x / 2, pos.y + size.y / 2, 0}, size, .{0, 0, rot}, color, tex_id);
+	push_quad_impl(*pb.sprite_lists, .{pos.x + size.x / 2, pos.y + size.y / 2, 0}, size, .{0, 0, rot}, color, tex_id);
 }
 
 push_ui_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : Font_Kind, font_size : int, color : Vector4)
@@ -214,11 +304,13 @@ push_3d_text :: (pb : *R_Push_Buffer, text : string, pos : Vector3, rot : Vector
 
 push_quad :: inline (pb : *R_Push_Buffer, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
 {
-	push_quad_impl(*pb.quad_batches, pos, size, rot, color, tex_id);
+	push_quad_impl(*pb.quad_lists, pos, size, rot, color, tex_id);
 }
 
-push_quad_impl :: (batches : *Batch_List, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
+push_quad_impl :: (group : *Batch_Group, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
 {
+	batches := push_batch_list(group);
+	
 	sprite :*R_Sprite = xx push_batch(batches, size_of(R_Sprite), xx MB(1));
 	
 	model := Matrix4_Identity;

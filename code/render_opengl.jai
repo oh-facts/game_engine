@@ -103,13 +103,15 @@ r_init :: ()
 
 r_submit :: (pb : R_Push_Buffer)
 {
-	glViewport(0, 0, xx pb.viewport.x, xx pb.viewport.y);
+	glViewport(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
+	glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
 	
 	glClearColor(0.2, 0.2, 0.3, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_SCISSOR_TEST);
 	
 	//glPointSize(12.0);
 	
@@ -255,13 +257,14 @@ r_submit :: (pb : R_Push_Buffer)
 	}
 	
 	glDisable(GL_CULL_FACE);
+	
 	// 3d ui batches
-	if pb.quad_batches.count 
+	
+	if pb.quad_lists.count
 	{
 		glDisable(GL_DEPTH_TEST);
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
 		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
-		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
 		glUseProgram(shader);
 		
@@ -271,27 +274,32 @@ r_submit :: (pb : R_Push_Buffer)
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
 		
-		batches := pb.quad_batches;
-		batch := batches.first;
+		batches := pb.quad_lists.first;
 		
-		while batch
+		while batches
 		{
-			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			batch := batches.first;
 			
-			memcpy(ssbo_data, batch.base, batch.size);
-			
-			glUnmapNamedBuffer(buffer);
-			
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
-			
-			batch = batch.next;
+			while batch
+			{
+				ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+				
+				memcpy(ssbo_data, batch.base, batch.size);
+				
+				glUnmapNamedBuffer(buffer);
+				
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+				
+				batch = batch.next;
+			}
+			batches = batches.next;
 		}
 	}
 	
 	glEnable(GL_CULL_FACE);
 	
 	// ui batches
-	if pb.sprite_batches.count 
+	if pb.sprite_lists.count 
 	{
 		glDisable(GL_DEPTH_TEST);
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
@@ -303,23 +311,35 @@ r_submit :: (pb : R_Push_Buffer)
 		proj_loc := glGetUniformLocation(shader, "u_proj");
 		view_loc := glGetUniformLocation(shader, "u_view");
 		
-		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.ui_view.coef[0][0]);
-		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.ui_proj.coef[0][0]);
+		batches := pb.sprite_lists.first;
 		
-		batches := pb.sprite_batches;
-		batch := batches.first;
-		
-		while batch
+		while batches
 		{
-			ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, *batches.params.view.coef[0][0]);
+			glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *batches.params.proj.coef[0][0]);
 			
-			memcpy(ssbo_data, batch.base, batch.size);
+			// bottom left -> top left
+			{
+				scissor_origin := batches.params.scissor.min;
+				scissor_origin.y = pb.viewport.size.y - scissor_origin.y - batches.params.scissor.size.y;
+				
+				glScissor(xx scissor_origin.x, xx scissor_origin.y, xx batches.params.scissor.size.x, xx batches.params.scissor.size.y);
+			}
 			
-			glUnmapNamedBuffer(buffer);
-			
-			glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
-			
-			batch = batch.next;
+			batch := batches.first;
+			while batch
+			{
+				ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+				
+				memcpy(ssbo_data, batch.base, batch.size);
+				
+				glUnmapNamedBuffer(buffer);
+				
+				glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+				
+				batch = batch.next;
+			}
+			batches = batches.next;
 		}
 	}
 }

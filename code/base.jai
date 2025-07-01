@@ -1,8 +1,10 @@
-Corner_00 :: 0;
-Corner_01 :: 1;
-Corner_10 :: 2;
-Corner_11 :: 3;
-Corner_COUNT :: 4;
+f32 :: float32;
+f64 :: float64;
+
+u128 :: struct 
+{
+	U64 : [2]u64;
+};
 
 COLOR_WHITE :: Vector4.{1, 1, 1, 1};
 COLOR_BLACK :: Vector4.{0, 0, 0, 1};
@@ -87,21 +89,11 @@ operator - :: (a : Vector3i, b : Vector3i) -> Vector3i {
 	return out;
 }
 
-u128 :: union 
-{
-	U64 : [2]u64;
-};
-
 RectF32 :: struct 
 {
 	min : Vector2;
 	max : Vector2;
-};
-
-RectS32 :: struct 
-{
-	min : Vector2i;
-	max : Vector2i;
+	size : Vector2;
 };
 
 rectF32 :: (min_x : float32, min_y : float32, max_x : float32, max_y : float32) -> RectF32 {
@@ -112,6 +104,18 @@ rectF32 :: (min_x : float32, min_y : float32, max_x : float32, max_y : float32) 
 	
 	out.max.x = max_x;
 	out.max.y = max_y;
+	
+	out.size.x = max_x - min_x;
+	out.size.y = max_y - min_y;
+	
+	return out;
+}
+
+rectF32 :: (pos : Vector2, size : Vector2) -> RectF32 {
+	out : RectF32;
+	
+	out.min = pos;
+	out.size = size;
 	
 	return out;
 }

@@ -296,10 +296,15 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	pb.proj = proj;
 	pb.view = view;
 	
-	pb.ui_proj = ui_proj;
-	pb.ui_view = ui_view;
+	pb.viewport = rectF32(0, 0, win_size.x, win_size.y);
 	
-	pb.viewport = win_size;
+	scissor := rectF32(0, 0, win_size.x, win_size.y);
+	{
+		params := push_batch_group_sprite_params(pb);
+		params.proj = ui_proj;
+		params.view = ui_view;
+		params.scissor = scissor;
+	}
 	
 	font_begin();
 	
@@ -311,24 +316,7 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	
 	color := COLOR_RED;
 	
-	//print("% %\n", x, y);
 	x,y := get_mouse_pointer_position(the_window, false);
-	
-	/*
-		if x > xx (pos.x) && x < xx (pos.x + size.x)
-		{
-			if y > xx (pos.y) && y < xx (pos.y + size.y)
-			{
-				color = COLOR_GREEN;
-				
-				pb.hacker_draw = true;
-			}
-		}
-		
-		push_ui_quad(pb, pos, size, 0, COLOR_BLACK, get_white_square());
-		//push_3d_text(pb, "please enjoy each triangle equally", .{}, .{}, .Delius, 32, COLOR_WHITE);
-		push_ui_text(pb, "please enjoy each triangle equally", text_pos, .Delius, 32, COLOR_WHITE);
-		*/
 	
 	{
 		ray_nds : Vector2;
@@ -514,11 +502,19 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 			}
 		}
 		
-		if false 
+		//if false 
 		{
 			col();
 			placer_widget_root = _start;
-			placer_widget_root.fixed_pos = .{600, -800};
+			placer_widget_root.fixed_pos = .{600, 300};
+			
+			view_offset : Vector2;
+			view_offset.y += wheel_delta;
+			
+			placer_widget_root.view_offset = view_offset;
+			placer_widget_root.clip_size = .{300, 300};
+			placer_widget_root.flags |= .Clip;
+			
 			asset_index : int;
 			for slot : asset_store.meshes
 			{
@@ -574,13 +570,16 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 	}
 	
 	/*
-	test_root := widget_test();
-	widget_layout(test_root);
-	draw_widgets(pb, test_root);
-	*/
+		test_root := widget_test();
+		widget_layout(test_root);
+		draw_widgets(pb, test_root);
+		*/
 	
-	widget_layout(entity_widget_root);
-	widget_layout(placer_widget_root);
+	entity_widget_root.parent = *nil_widget;
+	placer_widget_root.parent = *nil_widget;
+	
+	widget_layout_and_clip(entity_widget_root);
+	widget_layout_and_clip(placer_widget_root);
 	
 	draw_widgets(pb, entity_widget_root);
 	draw_widgets(pb, placer_widget_root);
@@ -799,6 +798,8 @@ update_game :: (using game : *Game, pb : *R_Push_Buffer, delta : float, counter 
 		
 		aabb_rec(e, pb, e.node_asset_hash, model, *this_frame_hot);
 	}
+	
+	pop_batch_group_sprite_params(pb);
 }
 
 hot_entity : *Entity;

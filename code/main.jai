@@ -11,6 +11,8 @@
 		// a merged mesh. Like imagine I hash a bunch of root meshes to 
 		// create a new mesh that is just the merged version of the base meshes.
 		
+// [ ] Use a frame arena for every system that needs per frame memory instead of using the global frame arena (a la temp memory). Use that for scratch memory maybe. For cache it should be better if you use a per - system frame arena, no?
+
 */
 
 // NOTE(mizu): Global modules
@@ -107,11 +109,16 @@ main :: ()
 					quit = true;
 				}
 			}
+			if it.type == .MOUSE_WHEEL
+			{
+				wheel_delta += it.wheel_delta;
+			}
 		}
 		
-		pb : R_Push_Buffer;
+		pb := begin_render();
 		update_game(*game, *pb, delta, counter);
 		r_submit(pb);
+		end_render(*pb);
 		
 		{
 			dc := GetDC(the_window);
@@ -138,6 +145,8 @@ is_key_pressed :: inline (key : Key_Code) -> bool #must
 {
 	return (input_button_states[cast (s64) key] & .START) != 0;
 }
+
+wheel_delta : s32;
 
 toggle_cursor :: (show : s32)
 {
