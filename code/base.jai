@@ -324,3 +324,120 @@ matrix_from_transform :: (t : Transform) -> Matrix4
 	mat = scale(mat, t.scale);
 	return mat;
 }
+
+AABB :: struct
+{
+	min : Vector3;
+	max : Vector3;
+}
+
+Ray :: struct
+{
+	o : Vector3;
+	dir : Vector3;
+}
+
+Plane :: struct
+{
+	d : float;
+	n : Vector3;
+	double_sided : bool;
+}
+
+ray_plane_intersection :: (ray : Ray, plane : Plane) -> float
+{
+	nd := dot(ray.dir, plane.n);
+	pn := dot(ray.o, plane.n);
+	
+	if !plane.double_sided
+	{
+		if (nd >= 0) {
+			return -1;
+		}
+	}
+	
+	t := (plane.d - pn) / nd;
+	
+	if (t >= 0) {
+		return t;
+	}
+	return -1;
+}
+
+ray_aabb_intersection :: (ray : Ray, aabb : AABB) -> float, bool
+{
+	t1 := (aabb.min.x - ray.o.x) / ray.dir.x;
+	t2 := (aabb.max.x - ray.o.x) / ray.dir.x;
+	t3 := (aabb.min.y - ray.o.y) / ray.dir.y;
+	t4 := (aabb.max.y - ray.o.y) / ray.dir.y;
+	t5 := (aabb.min.z - ray.o.z) / ray.dir.z;
+	t6 := (aabb.max.z - ray.o.z) / ray.dir.z;
+	
+	tmin := max(Max(Min(t1, t2), Min(t3, t4)), Min(t5, t6));
+	tmax := min(Min(Max(t1, t2), Max(t3, t4)), Max(t5, t6));
+	
+	// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+	if (tmax < 0) {
+		return -1, false;
+	}
+	
+	// if tmin > tmax, ray doesn't intersect AABB
+	if (tmin > tmax) {
+		return -1, false;
+	}
+	
+	if (tmin < 0) {
+		return tmax, true;
+	}
+	return tmin, true;
+}
+
+reserve :: (size : u64) -> *void
+{
+	out := VirtualAlloc(xx 0, size, MEM_RESERVE, PAGE_READWRITE);
+	assert(xx out);
+	return xx out;
+}
+
+commit :: (ptr : *void, size : u64) -> bool
+{
+	out := VirtualAlloc(ptr, size, MEM_COMMIT, PAGE_READWRITE);
+	assert(xx out);
+	return xx out;
+}
+
+decommit :: (ptr : *void, size : u64)
+{
+	VirtualFree(ptr, size, MEM_DECOMMIT);
+}
+
+release :: (ptr : *void, size : u64)
+{
+	VirtualFree(ptr, 0, MEM_RELEASE);
+}
+
+get_page_size :: () -> u64
+{
+	sysinfo : SYSTEM_INFO;
+	GetSystemInfo(*sysinfo);
+	return sysinfo.dwPageSize;
+}
+
+get_perf_counter :: () -> s64
+{
+	counter : s64;
+	QueryPerformanceCounter(*counter);
+	return counter;
+}
+
+get_perf_freq :: () -> s64
+{
+	frequency : s64;
+	QueryPerformanceFrequency(*frequency);
+	return frequency;
+}
+
+sleep :: (ms : s32)
+{
+	Sleep(ms);
+}

@@ -484,7 +484,10 @@ push_mesh :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_W
 push_mesh_node :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_WHITE, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
 {
 	root_node := node_from_hash(hash);
-	computed_model := root_node.xform * model;
+	computed_model := model * root_node.xform;
+	
+	// uncomment to see a funfun
+	// computed_model = root_node.xform * model;
 	
 	if root_node.mesh.count
 	{
