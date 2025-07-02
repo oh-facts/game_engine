@@ -281,7 +281,6 @@ Entity_State :: struct
 {
 	arena : *Arena;
 	entities : []Entity;
-	entity_count : int;
 }
 
 entity_state_init :: () -> Entity_State
@@ -297,9 +296,9 @@ entity_state_init :: () -> Entity_State
 
 entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 {
-	out := entities.data + entity_count;
+	out := entities.data + entities.count;
 	out.size = .{1,1,1};
-	entity_count += 1;
+	entities.count += 1;
 	return out;
 }
 
@@ -460,7 +459,6 @@ main :: ()
 	camera : Camera;
 	ui_camera : Camera;
 	
-	entities : []Entity;
 	arena = arena_init();
 	
 	// Make the gltf load file thing part of the node_from_key
@@ -476,6 +474,9 @@ main :: ()
 	toggle_cursor(0);
 	
 	entity_state := entity_state_init();
+	
+	//po := entity_alloc(*entity_state);
+	//po.node_asset_hash = hash_string("watermelon_stall.root");
 	
 	//watermelon_stall.root
 	
@@ -778,8 +779,8 @@ main :: ()
 				using m.aabb;
 				
 				aabb : AABB;
-				aabb.min = (model * node.xform * .{m.aabb.min.x, m.aabb.min.y, m.aabb.min.z, 1}).xyz;
-				aabb.max = (model * node.xform * .{m.aabb.max.x, m.aabb.max.y, m.aabb.max.z, 1}).xyz;
+				aabb.min = (model * .{m.aabb.min.x, m.aabb.min.y, m.aabb.min.z, 1}).xyz;
+				aabb.max = (model * .{m.aabb.max.x, m.aabb.max.y, m.aabb.max.z, 1}).xyz;
 				
 				_, hit := ray_aabb_intersection(raycast, aabb);
 				
@@ -870,7 +871,7 @@ main :: ()
 				{
 					for *edge
 					{
-						<< it = (model * node.xform * .{it.x, it.y, it.z, 1}).xyz;
+						<< it = (model * .{it.x, it.y, it.z, 1}).xyz;
 					}
 					push_debug_line(pb, edge[0], edge[1], color);
 				}

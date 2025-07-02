@@ -34,19 +34,25 @@ Widget :: struct
 	
 	parent : *Widget;
 	
-	child_axis : Widget_Axis;
-	
 	hash_next : *Widget;
 	hash_prev : *Widget;
 	
+	// parent stack / free list link
 	meta_next : *Widget;
 	
-	flags : Widget_Flags;
-	
+	// key is user provided
+	// should be unique.
 	key : Widget_Key;
 	hash : u128;
 	
+	// styling / layouting params ---
+	// can be changed on whim
+	
+	child_axis : Widget_Axis;
+	
 	hot : bool;
+	flags : Widget_Flags;
+	active : bool;
 	
 	text : string;
 	pos : Vector2;
@@ -56,12 +62,12 @@ Widget :: struct
 	fixed_pos : Vector2;
 	clip_size : Vector2;
 	view_offset : Vector2;
+	// --- end
 	
+	// where, if at all, are the widgets drawn?
 	final_pos : Vector2;
 	final_size : Vector2;
 	clipped : bool;
-	
-	active : bool;
 	
 	last_touched : u64;
 }
@@ -106,10 +112,12 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 	// check if widget already exists
 	{
 		cur := slot.first;
-		while cur {
+		while cur 
+		{
 			defer cur = cur.hash_next;
 			
-			if cur.hash == hash {
+			if cur.hash == hash 
+			{
 				out = cur;
 				break;
 			}
@@ -119,7 +127,16 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 	// if not, allocate
 	if !out
 	{
-		out = push_struct(arena, Asset);
+		if free_stack
+		{
+			out = free_stack;
+			free_stack = free_stack.meta_next;
+			out.* = .{};
+		}
+		else
+		{
+			out = push_struct(arena, Asset);
+		}
 		
 		if !slot.first
 		{
@@ -261,13 +278,13 @@ end_widgets :: ()
 	ticks += 1;
 }
 
-widget_layout_and_clip :: (root : *Widget)
+layout_and_clip_widgets :: (root : *Widget)
 {
-	widget_layout(root);
+	layout_widgets(root);
 	clip_widgets(root);
 }
 
-widget_layout :: (root : *Widget)
+layout_widgets :: (root : *Widget)
 {
 	if root.prev
 	{
@@ -290,18 +307,19 @@ widget_layout :: (root : *Widget)
 	child :=  root.first;
 	while child 
 	{
-		widget_layout(child);
+		layout_widgets(child);
 		child = child.next;
 	}
 	
+	// It is max()'d because if a small child comes in the row / col, the parent shouldn't me shrunk to it
 	if root.parent.child_axis == .X
 	{
 		root.parent.size.x += root.size.x;
-		root.parent.size.y = root.size.y;
+		root.parent.size.y = max(root.parent.size.y, root.size.y);
 	}
 	else
 	{
-		root.parent.size.x = root.size.x;
+		root.parent.size.x = max(root.parent.size.x, root.size.x);
 		root.parent.size.y += root.size.y;
 	}
 	/*
@@ -490,10 +508,10 @@ signal_from_widget :: (label : *Widget) -> bool
 
 begin_window :: (window : *Editor_Window)
 {
+	using widget_state;
+	
 	root := begin_col();
 	root.fixed_pos = window.pos;
-	
-	using widget_state;
 	
 	bar_key := make_widget_key();
 	bar := widget_from_key(bar_key);
@@ -515,8 +533,7 @@ begin_window :: (window : *Editor_Window)
 	
 	end_parent();
 	
-	spacer := widget_from_key(make_widget_key());
-	spacer.size = .{0, 2};
+	simple_spacer_widget(0,2);
 	
 	// styling
 	title.text = window.title;
@@ -544,7 +561,7 @@ begin_window :: (window : *Editor_Window)
 		node_view.active = true;
 	}
 	
-	if current_asset_viewer_tab == .Mesh
+	else if current_asset_viewer_tab == .Mesh
 	{
 		mesh_view.active = true;
 	}
@@ -555,17 +572,17 @@ begin_window :: (window : *Editor_Window)
 		window.is_dragging = true;
 	}
 	
-	if signal_from_widget(hide)
+	else if signal_from_widget(hide)
 	{
 		window.hide = !window.hide;
 	}
 	
-	if signal_from_widget(node_view)
+	else if signal_from_widget(node_view)
 	{
 		current_asset_viewer_tab = .Node;
 	}
 	
-	if signal_from_widget(mesh_view)
+	else if signal_from_widget(mesh_view)
 	{
 		current_asset_viewer_tab = .Mesh;
 	}
@@ -578,22 +595,50 @@ begin_window :: (window : *Editor_Window)
 	{
 		delta := Vector2.{xx x, xx y} - Vector2.{xx last_mpos_x, xx last_mpos_y};
 		window.pos += delta;
+		
+		if !is_key_down(.MOUSE_BUTTON_LEFT)
+		{
+			window.is_dragging = false;
+		}
 	}
 	
 	last_mpos_x, last_mpos_y = get_mouse_pointer_position(the_window, false);
 	
-	if !is_key_down(.MOUSE_BUTTON_LEFT) && window.is_dragging
 	{
-		window.is_dragging = false;
+		r_flag := widget_from_key(make_widget_key());
+		
+		// text alignment is a bikeshed feature
+		r_flag.text = "       please enjoy each flag equally";
+		r_flag.size = .{300, 20};
+		r_flag.flags |= .Draw_Text | .Draw_Bg;
+		r_flag.font_size = 12;
 	}
+	
+	simple_spacer_widget(0,2);
+	
+	//hacker_draw
+	
+	{
+		// pls enjoy each flag equally
+		row();
+		simple_flag_widget(*window.hacker_draw);
+		simple_spacer_widget(20,20);
+		simple_flag_widget(*window.draw_asset);
+		simple_spacer_widget(20,20);
+		simple_flag_widget(*window.draw_aabb);
+		simple_spacer_widget(20,20);
+		simple_flag_widget(*window.hide);
+	}
+	
+	simple_spacer_widget(0,2);
 }
 
 end_window :: (pb : *R_Push_Buffer, window : *Editor_Window)
 {
 	end_col();
-	
+	pb.hacker_draw = window.hacker_draw;
 	window.widget_root.parent = *nil_widget;
-	widget_layout_and_clip(window.widget_root);
+	layout_and_clip_widgets(window.widget_root);
 	draw_widgets(pb, window.widget_root);
 }
 
@@ -606,12 +651,32 @@ fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #c
 	
 	label.text = text;
 	label.flags |= .Draw_Text | .Draw_Bg;
-	label.font_size = 16;
-	label.size = .{300, 50};
+	label.font_size = 12;
+	label.size = .{300, 30};
 	
 	active := signal_from_widget(label);
 	
 	return active, label;
+}
+
+simple_flag_widget :: (active : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+{
+	flag_widget := widget_from_key(make_widget_key(index, depth, loc));
+	flag_widget.text = ifx active.* then "x" else "";
+	flag_widget.size = .{20, 20};
+	flag_widget.flags |= .Draw_Text | .Draw_Bg;
+	flag_widget.font_size = 12;
+	
+	if signal_from_widget(flag_widget)
+	{
+		active.* = !active.*;
+	}
+}
+
+simple_spacer_widget :: (x : float = 0, y : float = 0, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+{
+	spacer_widget := widget_from_key(make_widget_key(index, depth, loc));
+	spacer_widget.size = .{x, y};
 }
 
 widget_test4 :: () -> *Widget
@@ -698,6 +763,10 @@ Editor_Window :: struct
 	hide : bool;
 	widget_root : *Widget;
 	counter : f32;
+	
+	hacker_draw : bool;
+	draw_asset : bool;
+	draw_aabb : bool;
 }
 
 init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_Window
@@ -706,11 +775,74 @@ init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_
 	out.title = title;
 	out.pos = pos;
 	out.size = size;
-	
+	out.draw_asset = true;
 	return out;
 }
 
 nil_widget : Widget;
+draw_node_asset_aabb :: (pb : *R_Push_Buffer, hash : u128, _model : Matrix4)
+{
+	node := node_from_hash(hash);
+	model := _model * node.xform;
+	
+	if node.mesh.count
+	{
+		draw_mesh_aabb(pb, node.mesh_hash, model);
+	}
+	
+	child_asset_node : *Asset;
+	
+	if node.first_key.count
+	{
+		child_asset_node = node_from_hash(node.first_hash);
+	}
+	
+	while child_asset_node
+	{
+		draw_node_asset_aabb(pb, child_asset_node.hash, model);
+		
+		if child_asset_node.next_key.count
+		{
+			child_asset_node = node_from_hash(child_asset_node.next_hash);
+		}
+		else
+		{
+			break;
+		}
+	}
+}
+
+draw_mesh_aabb :: (pb : *R_Push_Buffer, hash : u128, model : Matrix4)
+{
+	m := mesh_from_hash(hash);
+	
+	using m.aabb;
+	
+	edges : [12][2]Vector3;
+	
+	edges[0] = .[.{min.x, min.y, min.z}, .{min.x, min.y, max.z}];
+	edges[1] = .[.{min.x, min.y, min.z}, .{min.x, max.y, min.z}];
+	edges[2] = .[.{min.x, min.y, min.z}, .{max.x, min.y, min.z}];
+	edges[3] = .[.{min.x, min.y, max.z}, .{min.x, max.y, max.z}];
+	edges[4] = .[.{min.x, min.y, max.z}, .{max.x, min.y, max.z}];
+	edges[5] = .[.{min.x, max.y, min.z}, .{min.x, max.y, max.z}];
+	edges[6] = .[.{min.x, max.y, min.z}, .{max.x, max.y, min.z}];
+	edges[7] = .[.{min.x, max.y, max.z}, .{max.x, max.y, max.z}];
+	edges[8] = .[.{max.x, min.y, min.z}, .{max.x, min.y, max.z}];
+	edges[9] = .[.{max.x, min.y, min.z}, .{max.x, max.y, min.z}];
+	edges[10] = .[.{max.x, min.y, max.z}, .{max.x, max.y, max.z}];
+	edges[11] = .[.{max.x, max.y, min.z}, .{max.x, max.y, max.z}];
+	
+	// local space -> world space and drawing
+	for edge : edges
+	{
+		for *edge
+		{
+			<< it = (model * .{it.x, it.y, it.z, 1}).xyz;
+		}
+		push_debug_line(pb, edge[0], edge[1], COLOR_WHITE);
+	}
+}
 
 update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_Push_Buffer)
 {
@@ -721,6 +853,8 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 	new_context := context;
 	push_context new_context
 	{
+		
+		if false
 		{
 			col();
 			entity_widget_root = _start;
@@ -756,30 +890,70 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 			
 			if window.hide
 			{
+				col();
+				placer_widget_root = _start;
 				
+				view_offset : Vector2;
+				view_offset.y += wheel_delta;
+				
+				placer_widget_root.view_offset = view_offset;
+				placer_widget_root.clip_size = window.size;
+				placer_widget_root.flags |= .Clip;
+				
+				asset_index : int;
+				
+				if current_asset_viewer_tab == 
 				{
-					col();
-					placer_widget_root = _start;
+					case .Mesh;
 					
-					view_offset : Vector2;
-					view_offset.y += wheel_delta;
-					
-					placer_widget_root.view_offset = view_offset;
-					placer_widget_root.clip_size = window.size;
-					placer_widget_root.flags |= .Clip;
-					
-					asset_index : int;
-					
-					if current_asset_viewer_tab == 
+					for slot : asset_store.meshes
 					{
-						case .Mesh;
-						
-						for slot : asset_store.meshes
+						asset := slot.first;
+						while asset
 						{
-							asset := slot.first;
-							while asset
+							active, widg := fixed_label(tprint("%", asset.key), asset_index);
+							
+							if active_node_asset_hash == asset.hash
 							{
-								active, widg := fixed_label(tprint("%", asset.key), asset_index);
+								widg.active = true;
+							}
+							
+							if active
+							{
+								active_mesh_asset_hash = asset.hash;
+							}
+							asset_index += 1;
+							asset = asset.hash_next;
+						}
+					}
+					
+					if active_mesh_asset_hash.U64[0]
+					{
+						yaw : Quaternion;
+						set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
+						model := rotation_matrix(Matrix4, yaw);
+						
+						if window.draw_asset
+						{
+							push_mesh(pb, model, active_mesh_asset_hash);
+						}
+						
+						if window.draw_aabb
+						{
+							draw_mesh_aabb(pb, active_mesh_asset_hash, model);
+						}
+						
+					}
+					
+					case .Node;
+					for slot : asset_store.nodes
+					{
+						asset := slot.first;
+						while asset
+						{
+							if !asset.parent_key.count
+							{
+								active, widg := fixed_label(tprint("%", asset.key), it_index);
 								
 								if active_node_asset_hash == asset.hash
 								{
@@ -788,52 +962,29 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 								
 								if active
 								{
-									active_mesh_asset_hash = asset.hash;
+									active_node_asset_hash = asset.hash;
 								}
-								asset_index += 1;
-								asset = asset.hash_next;
 							}
+							
+							asset = asset.hash_next;
 						}
+					}
+					
+					if active_node_asset_hash.U64[0]
+					{
+						yaw : Quaternion;
+						set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
+						model := rotation_matrix(Matrix4, yaw);
 						
-						if active_mesh_asset_hash.U64[0]
+						if window.draw_asset
 						{
-							yaw : Quaternion;
-							set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
-							push_mesh(pb, rotation_matrix(Matrix4, yaw), active_mesh_asset_hash);
+							push_mesh_node(pb, model, active_node_asset_hash);
 						}
 						
-						case .Node;
-						for slot : asset_store.nodes
+						if window.draw_aabb
 						{
-							asset := slot.first;
-							while asset
-							{
-								if !asset.parent_key.count
-								{
-									active, widg := fixed_label(tprint("%", asset.key), it_index);
-									
-									if active_node_asset_hash == asset.hash
-									{
-										widg.active = true;
-									}
-									
-									if active
-									{
-										active_node_asset_hash = asset.hash;
-									}
-								}
-								
-								asset = asset.hash_next;
-							}
+							draw_node_asset_aabb(pb, active_node_asset_hash, model);
 						}
-						
-						if active_node_asset_hash.U64[0]
-						{
-							yaw : Quaternion;
-							set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
-							push_mesh_node(pb, rotation_matrix(Matrix4, yaw), active_node_asset_hash);
-						}
-						
 					}
 				}
 			}
@@ -842,7 +993,7 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 	}
 	
 	entity_widget_root.parent = *nil_widget;
-	widget_layout_and_clip(entity_widget_root);
+	layout_and_clip_widgets(entity_widget_root);
 	draw_widgets(pb, entity_widget_root);
 }
 
