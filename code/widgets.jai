@@ -14,6 +14,7 @@ Widget_Flags :: enum_flags
 {
 	Draw_Text;
 	Draw_Bg;
+	Draw_Border;
 	Clip;
 	Fixed_Size;
 }
@@ -401,10 +402,14 @@ draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
 			color = COLOR_RED;
 		}
 		
-		if root.flags & .Draw_Bg
+		if root.flags & .Draw_Border
 		{
 			// This is a very delulu way to draw borders
 			push_ui_quad(pb, root.final_pos, root.size, 0, color, get_white_square());
+		}
+		
+		if root.flags & .Draw_Bg
+		{
 			push_ui_quad(pb, root.final_pos + .{1,1}, root.size - .{2,2}, 0, COLOR_BLACK, get_white_square());
 		}
 		
@@ -506,106 +511,6 @@ signal_from_widget :: (label : *Widget) -> bool
 	return active;
 }
 
-// For when you return, you were going to make the entity updating thing its own thing.
-// Maybe make a tab for it. Maybe put the asset viewing thing in a tab function.
-// call begin and end window like normal, but process whatever tab is selected
-
-begin_window :: (window : *Editor_Window)
-{
-	using widget_state;
-	
-	root := begin_col();
-	root.fixed_pos = window.pos;
-	
-	bar_key := make_widget_key();
-	bar := widget_from_key(bar_key);
-	
-	begin_parent(bar);
-	bar.child_axis = .X;
-	
-	hide_key := make_widget_key();
-	hide := widget_from_key(hide_key);
-	
-	tabs_key := make_widget_key();
-	tab := widget_from_key(tabs_key);
-	begin_parent(tab);
-	tab.child_axis = .X;
-	
-	asset_tab_key := make_widget_key();
-	asset_tab := widget_from_key(asset_tab_key);
-	
-	game_tab_key := make_widget_key();
-	game_tab := widget_from_key(game_tab_key);
-	
-	end_parent();
-	end_parent();
-	
-	// styling
-	asset_tab.text = "asset";
-	asset_tab.size = .{140, 20};
-	asset_tab.flags |= .Draw_Text | .Draw_Bg;
-	asset_tab.font_size = 12;
-	
-	game_tab.text = "game";
-	game_tab.size = .{140, 20};
-	game_tab.flags |= .Draw_Text | .Draw_Bg;
-	game_tab.font_size = 12;
-	
-	hide.text = ifx !window.hide then "v" else ">"; 
-	hide.size = .{20, 20};
-	hide.flags |= .Draw_Text | .Draw_Bg;
-	hide.font_size = 12;
-	
-	// interactions
-	if signal_from_widget(tab) 
-	{
-		window.is_dragging = true;
-	}
-	
-	else if signal_from_widget(hide)
-	{
-		window.hide = !window.hide;
-	}
-	
-	if signal_from_widget(asset_tab) 
-	{
-		window.current_app_mode_tab = .Asset_Viewer;
-	}
-	
-	else if signal_from_widget(game_tab) 
-	{
-		window.current_app_mode_tab = .Game;
-	}
-	
-	window.widget_root = root;
-	
-	x,y := get_mouse_pointer_position(the_window, false);
-	
-	if window.is_dragging
-	{
-		delta := Vector2.{xx x, xx y} - Vector2.{xx last_mpos_x, xx last_mpos_y};
-		window.pos += delta;
-		
-		if !is_key_down(.MOUSE_BUTTON_LEFT)
-		{
-			window.is_dragging = false;
-		}
-	}
-	
-	last_mpos_x, last_mpos_y = get_mouse_pointer_position(the_window, false);
-	
-	simple_spacer_widget(0,2);
-}
-
-end_window :: (pb : *R_Push_Buffer, window : *Editor_Window)
-{
-	end_col();
-	pb.hacker_draw = window.hacker_draw;
-	window.widget_root.parent = *nil_widget;
-	layout_and_clip_widgets(window.widget_root);
-	draw_widgets(pb, window.widget_root);
-}
-
 fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> bool, *Widget
 {
 	using widget_state;
@@ -623,7 +528,24 @@ fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #c
 	return active, label;
 }
 
-simple_flag_widget :: (active : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+simple_label :: (text : string, size : Vector2, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> bool, *Widget
+{
+	using widget_state;
+	key := make_widget_key(index, depth, loc);
+	
+	label := widget_from_key(key);
+	
+	label.text = text;
+	label.flags |= .Draw_Text | .Draw_Bg;
+	label.font_size = 12;
+	label.size = size;
+	
+	active := signal_from_widget(label);
+	
+	return active, label;
+}
+
+simple_radio_widget :: (active : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
 {
 	flag_widget := widget_from_key(make_widget_key(index, depth, loc));
 	flag_widget.text = ifx active.* then "x" else "";
@@ -637,7 +559,7 @@ simple_flag_widget :: (active : *bool, index := 0, depth : *Widget_Key = xx 0, l
 	}
 }
 
-simple_spacer_widget :: (x : float = 0, y : float = 0, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+simple_spacer_widget :: (x : float, y : float, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
 {
 	spacer_widget := widget_from_key(make_widget_key(index, depth, loc));
 	spacer_widget.size = .{x, y};
