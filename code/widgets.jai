@@ -506,6 +506,10 @@ signal_from_widget :: (label : *Widget) -> bool
 	return active;
 }
 
+// For when you return, you were going to make the entity updating thing its own thing.
+// Maybe make a tab for it. Maybe put the asset viewing thing in a tab function.
+// call begin and end window like normal, but process whatever tab is selected
+
 begin_window :: (window : *Editor_Window)
 {
 	using widget_state;
@@ -522,52 +526,38 @@ begin_window :: (window : *Editor_Window)
 	hide_key := make_widget_key();
 	hide := widget_from_key(hide_key);
 	
-	title_key := make_widget_key();
-	title := widget_from_key(title_key);
+	tabs_key := make_widget_key();
+	tab := widget_from_key(tabs_key);
+	begin_parent(tab);
+	tab.child_axis = .X;
 	
-	node_view_key := make_widget_key();
-	node_view := widget_from_key(node_view_key);
+	asset_tab_key := make_widget_key();
+	asset_tab := widget_from_key(asset_tab_key);
 	
-	mesh_view_key := make_widget_key();
-	mesh_view := widget_from_key(mesh_view_key);
+	game_tab_key := make_widget_key();
+	game_tab := widget_from_key(game_tab_key);
 	
 	end_parent();
-	
-	simple_spacer_widget(0,2);
+	end_parent();
 	
 	// styling
-	title.text = window.title;
-	title.size = .{160, 20};
-	title.flags |= .Draw_Text | .Draw_Bg;
-	title.font_size = 12;
+	asset_tab.text = "asset";
+	asset_tab.size = .{140, 20};
+	asset_tab.flags |= .Draw_Text | .Draw_Bg;
+	asset_tab.font_size = 12;
 	
-	hide.text = ifx window.hide then "v" else ">"; 
+	game_tab.text = "game";
+	game_tab.size = .{140, 20};
+	game_tab.flags |= .Draw_Text | .Draw_Bg;
+	game_tab.font_size = 12;
+	
+	hide.text = ifx !window.hide then "v" else ">"; 
 	hide.size = .{20, 20};
 	hide.flags |= .Draw_Text | .Draw_Bg;
 	hide.font_size = 12;
 	
-	node_view.text = "nodes"; 
-	node_view.size = .{55, 20};
-	node_view.flags |= .Draw_Text | .Draw_Bg;
-	node_view.font_size = 12;
-	
-	mesh_view.text = "meshes"; 
-	mesh_view.size = .{65, 20};
-	mesh_view.flags |= .Draw_Text | .Draw_Bg;
-	mesh_view.font_size = 12;
-	
-	if current_asset_viewer_tab == .Node
-	{
-		node_view.active = true;
-	}
-	
-	else if current_asset_viewer_tab == .Mesh
-	{
-		mesh_view.active = true;
-	}
-	
 	// interactions
-	if signal_from_widget(title)
+	if signal_from_widget(tab) 
 	{
 		window.is_dragging = true;
 	}
@@ -577,14 +567,14 @@ begin_window :: (window : *Editor_Window)
 		window.hide = !window.hide;
 	}
 	
-	else if signal_from_widget(node_view)
+	if signal_from_widget(asset_tab) 
 	{
-		current_asset_viewer_tab = .Node;
+		window.current_app_mode_tab = .Asset_Viewer;
 	}
 	
-	else if signal_from_widget(mesh_view)
+	else if signal_from_widget(game_tab) 
 	{
-		current_asset_viewer_tab = .Mesh;
+		window.current_app_mode_tab = .Game;
 	}
 	
 	window.widget_root = root;
@@ -603,32 +593,6 @@ begin_window :: (window : *Editor_Window)
 	}
 	
 	last_mpos_x, last_mpos_y = get_mouse_pointer_position(the_window, false);
-	
-	{
-		r_flag := widget_from_key(make_widget_key());
-		
-		// text alignment is a bikeshed feature
-		r_flag.text = "       please enjoy each flag equally";
-		r_flag.size = .{300, 20};
-		r_flag.flags |= .Draw_Text | .Draw_Bg;
-		r_flag.font_size = 12;
-	}
-	
-	simple_spacer_widget(0,2);
-	
-	//hacker_draw
-	
-	{
-		// pls enjoy each flag equally
-		row();
-		simple_flag_widget(*window.hacker_draw);
-		simple_spacer_widget(20,20);
-		simple_flag_widget(*window.draw_asset);
-		simple_spacer_widget(20,20);
-		simple_flag_widget(*window.draw_aabb);
-		simple_spacer_widget(20,20);
-		simple_flag_widget(*window.hide);
-	}
 	
 	simple_spacer_widget(0,2);
 }
@@ -751,263 +715,4 @@ widget_test3 :: () -> *Widget
 	fixed_label("4");
 	
 	return out;
-}
-
-Editor_Window :: struct
-{
-	title : string;
-	pos : Vector2;
-	size : Vector2;
-	mouse_last_pos : Vector2;
-	is_dragging : bool;
-	hide : bool;
-	widget_root : *Widget;
-	counter : f32;
-	
-	scroll_offsets : [2]float;
-	
-	hacker_draw : bool;
-	draw_asset : bool;
-	draw_aabb : bool;
-}
-
-init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_Window
-{
-	out : Editor_Window;
-	out.title = title;
-	out.pos = pos;
-	out.size = size;
-	out.draw_asset = true;
-	
-	return out;
-}
-
-nil_widget : Widget;
-draw_node_asset_aabb :: (pb : *R_Push_Buffer, hash : u128, _model : Matrix4)
-{
-	node := node_from_hash(hash);
-	model := _model * node.xform;
-	
-	if node.mesh.count
-	{
-		draw_mesh_aabb(pb, node.mesh_hash, model);
-	}
-	
-	child_asset_node : *Asset;
-	
-	if node.first_key.count
-	{
-		child_asset_node = node_from_hash(node.first_hash);
-	}
-	
-	while child_asset_node
-	{
-		draw_node_asset_aabb(pb, child_asset_node.hash, model);
-		
-		if child_asset_node.next_key.count
-		{
-			child_asset_node = node_from_hash(child_asset_node.next_hash);
-		}
-		else
-		{
-			break;
-		}
-	}
-}
-
-draw_mesh_aabb :: (pb : *R_Push_Buffer, hash : u128, model : Matrix4)
-{
-	m := mesh_from_hash(hash);
-	
-	using m.aabb;
-	
-	edges : [12][2]Vector3;
-	
-	edges[0] = .[.{min.x, min.y, min.z}, .{min.x, min.y, max.z}];
-	edges[1] = .[.{min.x, min.y, min.z}, .{min.x, max.y, min.z}];
-	edges[2] = .[.{min.x, min.y, min.z}, .{max.x, min.y, min.z}];
-	edges[3] = .[.{min.x, min.y, max.z}, .{min.x, max.y, max.z}];
-	edges[4] = .[.{min.x, min.y, max.z}, .{max.x, min.y, max.z}];
-	edges[5] = .[.{min.x, max.y, min.z}, .{min.x, max.y, max.z}];
-	edges[6] = .[.{min.x, max.y, min.z}, .{max.x, max.y, min.z}];
-	edges[7] = .[.{min.x, max.y, max.z}, .{max.x, max.y, max.z}];
-	edges[8] = .[.{max.x, min.y, min.z}, .{max.x, min.y, max.z}];
-	edges[9] = .[.{max.x, min.y, min.z}, .{max.x, max.y, min.z}];
-	edges[10] = .[.{max.x, min.y, max.z}, .{max.x, max.y, max.z}];
-	edges[11] = .[.{max.x, max.y, min.z}, .{max.x, max.y, max.z}];
-	
-	// local space -> world space and drawing
-	for edge : edges
-	{
-		for *edge
-		{
-			<< it = (model * .{it.x, it.y, it.z, 1}).xyz;
-		}
-		push_debug_line(pb, edge[0], edge[1], COLOR_WHITE);
-	}
-}
-
-update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_Push_Buffer)
-{
-	window.counter += delta;
-	entity_widget_root := *nil_widget;
-	placer_widget_root := *nil_widget;
-	
-	new_context := context;
-	push_context new_context
-	{
-		
-		if false
-		{
-			col();
-			entity_widget_root = _start;
-			
-			format_float := *context.print_style.default_format_float;
-			format_float.trailing_width = 1;
-			
-			if active_entity
-			{
-				txt := tprint("pos: % % %", active_entity.pos.x, active_entity.pos.y, active_entity.pos.z);
-				fixed_label(txt);
-				
-				rot : Vector3i;
-				rot.x = xx rad_to_deg(active_entity.rot.x);
-				rot.y = xx rad_to_deg(active_entity.rot.y);
-				rot.z = xx rad_to_deg(active_entity.rot.z);
-				
-				rot.x %= 360;
-				rot.y %= 360;
-				rot.z %= 360;
-				
-				txt = tprint("rot: % % %", rot.x, rot.y, rot.z);
-				fixed_label(txt);
-				
-				txt = tprint("size: % % %", active_entity.size.x, active_entity.size.y, active_entity.size.z);
-				fixed_label(txt);
-			}
-		}
-		
-		//if false 
-		{
-			begin_window(window);
-			
-			if !window.hide
-			{
-				col();
-				placer_widget_root = _start;
-				
-				if point_in_rect(.{xx last_mpos_x, xx last_mpos_y}, rectF32(placer_widget_root.final_pos, placer_widget_root.final_size))
-				{
-					window.scroll_offsets[current_asset_viewer_tab] += wheel_delta;
-				}
-				
-				placer_widget_root.view_offset.y = window.scroll_offsets[current_asset_viewer_tab];
-				placer_widget_root.clip_size = window.size;
-				placer_widget_root.flags |= .Clip;
-				
-				asset_index : int;
-				
-				if current_asset_viewer_tab == 
-				{
-					case .Mesh;
-					
-					for slot : asset_store.meshes
-					{
-						asset := slot.first;
-						while asset
-						{
-							active, widg := fixed_label(tprint("%", asset.key), asset_index);
-							
-							if active_mesh_asset_hash == asset.hash
-							{
-								widg.active = true;
-							}
-							
-							if active
-							{
-								active_mesh_asset_hash = asset.hash;
-							}
-							asset_index += 1;
-							asset = asset.hash_next;
-						}
-					}
-					
-					if active_mesh_asset_hash.U64[0]
-					{
-						yaw : Quaternion;
-						set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
-						model := rotation_matrix(Matrix4, yaw);
-						
-						if window.draw_asset
-						{
-							push_mesh(pb, model, active_mesh_asset_hash);
-						}
-						
-						if window.draw_aabb
-						{
-							draw_mesh_aabb(pb, active_mesh_asset_hash, model);
-						}
-						
-					}
-					
-					case .Node;
-					for slot : asset_store.nodes
-					{
-						asset := slot.first;
-						while asset
-						{
-							if !asset.parent_key.count
-							{
-								active, widg := fixed_label(tprint("%", asset.key), asset_index);
-								
-								if active_node_asset_hash == asset.hash
-								{
-									widg.active = true;
-								}
-								
-								if active
-								{
-									active_node_asset_hash = asset.hash;
-								}
-							}
-							asset_index += 1;
-							asset = asset.hash_next;
-						}
-					}
-					
-					if active_node_asset_hash.U64[0]
-					{
-						yaw : Quaternion;
-						set_from_axis_and_angle (*yaw, 0, -1, 0, window.counter);
-						model := rotation_matrix(Matrix4, yaw);
-						
-						if window.draw_asset
-						{
-							push_mesh_node(pb, model, active_node_asset_hash);
-						}
-						
-						if window.draw_aabb
-						{
-							draw_node_asset_aabb(pb, active_node_asset_hash, model);
-						}
-					}
-				}
-			}
-			end_window(pb, window);
-		}
-	}
-	
-	entity_widget_root.parent = *nil_widget;
-	layout_and_clip_widgets(entity_widget_root);
-	draw_widgets(pb, entity_widget_root);
-}
-
-last_mpos_x, last_mpos_y : int;
-
-current_asset_viewer_tab : Asset_Viewer_Tab;
-
-Asset_Viewer_Tab :: enum
-{
-	Node;
-	Mesh;
 }
