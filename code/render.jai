@@ -267,7 +267,7 @@ push_ui_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : 
 		
 		for text
 		{
-			glyph := glyph_from_key(.{it, font_kind, font_size});
+			glyph := glyph_from_key(it, font_kind, font_size);
 			
 			using glyph;
 			size := tex_size_from_handle(tex);
@@ -289,7 +289,7 @@ push_3d_text :: (pb : *R_Push_Buffer, text : string, pos : Vector3, rot : Vector
 	
 	for text
 	{
-		glyph := glyph_from_key(.{it, font_kind, font_size});
+		glyph := glyph_from_key(it, font_kind, font_size);
 		
 		using glyph;
 		size := tex_size_from_handle(tex);

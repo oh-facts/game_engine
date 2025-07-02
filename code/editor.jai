@@ -764,6 +764,8 @@ Editor_Window :: struct
 	widget_root : *Widget;
 	counter : f32;
 	
+	scroll_offsets : [2]float;
+	
 	hacker_draw : bool;
 	draw_asset : bool;
 	draw_aabb : bool;
@@ -776,6 +778,7 @@ init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_
 	out.pos = pos;
 	out.size = size;
 	out.draw_asset = true;
+	
 	return out;
 }
 
@@ -888,15 +891,17 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 		{
 			begin_window(window);
 			
-			if window.hide
+			if !window.hide
 			{
 				col();
 				placer_widget_root = _start;
 				
-				view_offset : Vector2;
-				view_offset.y += wheel_delta;
+				if point_in_rect(.{xx last_mpos_x, xx last_mpos_y}, rectF32(placer_widget_root.final_pos, placer_widget_root.final_size))
+				{
+					window.scroll_offsets[current_asset_viewer_tab] += wheel_delta;
+				}
 				
-				placer_widget_root.view_offset = view_offset;
+				placer_widget_root.view_offset.y = window.scroll_offsets[current_asset_viewer_tab];
 				placer_widget_root.clip_size = window.size;
 				placer_widget_root.flags |= .Clip;
 				
@@ -913,7 +918,7 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 						{
 							active, widg := fixed_label(tprint("%", asset.key), asset_index);
 							
-							if active_node_asset_hash == asset.hash
+							if active_mesh_asset_hash == asset.hash
 							{
 								widg.active = true;
 							}
@@ -953,7 +958,7 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 						{
 							if !asset.parent_key.count
 							{
-								active, widg := fixed_label(tprint("%", asset.key), it_index);
+								active, widg := fixed_label(tprint("%", asset.key), asset_index);
 								
 								if active_node_asset_hash == asset.hash
 								{
@@ -965,7 +970,7 @@ update_asset_viewer_window :: (window : *Editor_Window, delta : float, pb : *R_P
 									active_node_asset_hash = asset.hash;
 								}
 							}
-							
+							asset_index += 1;
 							asset = asset.hash_next;
 						}
 					}

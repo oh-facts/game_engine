@@ -106,7 +106,8 @@ Glyph :: struct
 	kind : Font_Kind;
 	//ft_library : FT_Library;
 	
-	key : string;
+	key : Glyph_Key;
+	hash : u128;
 }
 
 Glyph_Slot :: struct
@@ -118,7 +119,6 @@ Glyph_Slot :: struct
 Font_State :: struct
 {
 	arena : *Arena;
-	frame : *Arena;
 	slots : []Glyph_Slot;
 	
 	libraries : [Font_Kind.Count]FT_Library;
@@ -130,7 +130,7 @@ font_state : Font_State;
 font_begin :: ()
 {
 	using font_state;
-	frame.used = ARENA_HEADER_SIZE;
+	//frame.used = ARENA_HEADER_SIZE;
 }
 
 font_state_init :: ()
@@ -138,7 +138,7 @@ font_state_init :: ()
 	using font_state;
 	
 	arena = arena_init();
-	frame = arena_init();
+	//frame = arena_init();
 	
 	slots.count = 256;
 	slots.data = push_array(arena, Glyph_Slot, xx slots.count);
@@ -156,18 +156,30 @@ font_state_init :: ()
 	
 }
 
-glyph_from_key :: (key : Glyph_Key) -> *Glyph
+// documenting old stupid bug
+// I can't keep strings and use as keys if I am allocating it from transient memory
+// Its probably best to keep the hash around and reuse that or use the struct form of keys
+// instead of data form for cases where the string is derived from the data
+
+glyph_from_key :: (cp : u32, kind : Font_Kind, size : int) -> *Glyph
 {
 	using font_state;
+	
+	// paranoid about padding garbage creeping in
+	key : Glyph_Key;
+	key.cp = cp;
+	key.kind = kind;
+	key.size = size;
 	
 	out : *Glyph;
 	
 	data_size := size_of(type_of(key));
 	
 	str_key : string;
-	str_key.data = push_array(frame, u8, xx data_size);
+	str_key.data = tzpush_array(u8, data_size);
 	str_key.count = data_size;
 	memcpy(str_key.data, *key, data_size);
+	//str_key := tprint("%", key);
 	
 	hash := hash_string(str_key);
 	
@@ -180,7 +192,7 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 		while cur {
 			defer cur = cur.next;
 			
-			if cur.key == str_key {
+			if cur.hash == hash {
 				out = cur;
 				break;
 			}
@@ -208,7 +220,8 @@ glyph_from_key :: (key : Glyph_Key) -> *Glyph
 		
 		// init with key stuff
 		{
-			out.key = str_key;
+			out.hash = hash;
+			out.key = key;
 			out.pt_size = key.size;
 			out.kind = key.kind;
 		}
@@ -429,7 +442,7 @@ main :: ()
 	the_window = create_window(960, 540, "The Sad Debugger");
 	
 	saved : Saved_Window_Info;
-	toggle_fullscreen(the_window, true, *saved);
+	//toggle_fullscreen(the_window, true, *saved);
 	
 	exe_folder = path_strip_filename(get_path_of_running_executable());
 	
@@ -439,7 +452,7 @@ main :: ()
 	shaders_folder = join(data_folder, "/shaders");
 	fonts_folder = join(data_folder, "/fonts");
 	
-	asset_viewer_window := init_editor_window("asset viewer", .{600, 300}, .{300, 300});
+	asset_viewer_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
 	
 	delta : float;
 	time_elapsed : float;
@@ -489,6 +502,7 @@ main :: ()
 		counter += delta;
 		
 		time_since_last := time_elapsed;
+		wheel_delta = 0;
 		
 		update_window_events();
 		

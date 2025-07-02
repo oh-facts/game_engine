@@ -35,6 +35,10 @@ GLTF_Scene
 
 // Make a mesh, skin -> []aabb asset
 
+// Ok, rjf told me this (asset megastruct) was stupid (he phrased it politely and provided reasoning).
+// There is very little common between a texture and an asset
+// Code editors should allow some kind of screenshot / text tooltip - like viewing. Not referring to comments.
+
 Asset :: struct
 {
 	// Keys for asset hierearchies.

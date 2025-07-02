@@ -116,6 +116,7 @@ rectF32 :: (pos : Vector2, size : Vector2) -> RectF32 {
 	
 	out.min = pos;
 	out.size = size;
+	out.max = pos + size;
 	
 	return out;
 }
