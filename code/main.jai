@@ -1320,6 +1320,16 @@ begin_editor_window :: (window : *Editor_Window)
 		window.current_app_mode_tab = .Game;
 	}
 	
+	if window.current_app_mode_tab == .Asset_Viewer
+	{
+		asset_tab.active = true;
+	}
+	
+	else if window.current_app_mode_tab == .Game
+	{
+		game_tab.active = true;
+	}
+	
 	window.widget_root = root;
 	
 	x,y := get_mouse_pointer_position(the_window, false);
