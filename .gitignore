@@ -7,6 +7,7 @@ build/
 builds/
 .build/
 .Build/
+ships/
 
 # editor
 .vs

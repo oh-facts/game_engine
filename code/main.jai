@@ -45,6 +45,10 @@
 #load "asset.jai";
 #load "widgets.jai";
 
+major :: 0;
+minor :: 2;
+patch :: 1;
+
 Entity_Flags :: enum_flags
 {
 	Animated;
@@ -442,7 +446,7 @@ main :: ()
 	
 	SetProcessDPIAware();
 	
-	the_window = create_window(960, 540, "The SAD Debugger by SAD Game Tools");
+	the_window = create_window(960, 540, tprint("The SAD Debugger by SAD Game Tools | %.%.%", major, minor, patch));
 	
 	saved : Saved_Window_Info;
 	//toggle_fullscreen(the_window, true, *saved);
