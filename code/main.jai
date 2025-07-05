@@ -442,7 +442,7 @@ main :: ()
 	
 	SetProcessDPIAware();
 	
-	the_window = create_window(960, 540, "The Sad Debugger");
+	the_window = create_window(960, 540, "The SAD Debugger by SAD Game Tools");
 	
 	saved : Saved_Window_Info;
 	//toggle_fullscreen(the_window, true, *saved);
