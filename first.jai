@@ -21,9 +21,7 @@ build :: ()
 			case "ship";
 			root_ship_folder := "ships";
 			
-			tag := ifx it_index + 1 < args.count then args[it_index + 1] else "";
-			
-			current_ship_folder := sprint("%/%.%.%.%", root_ship_folder, major, minor, patch, tag);
+			current_ship_folder := sprint("%/%.%.%", root_ship_folder, major, minor, patch);
 			
 			make_directory_if_it_does_not_exist(root_ship_folder);
 			make_directory_if_it_does_not_exist(current_ship_folder);
