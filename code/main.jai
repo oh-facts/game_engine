@@ -13,6 +13,13 @@
 		
 // [ ] Use a frame arena for every system that needs per frame memory instead of using the global frame arena (a la temp memory). Use that for scratch memory maybe. For cache it should be better if you use a per - system frame arena, no?
 
+That bug I was having in the WAS BECAUSE OF THE FAR PLANE
+
+THERE WAS NO NEED TO CRANK UP RAY STEPS AND CRANK DOWN EPSILON
+
+BASICALLY I CONVERT ray marched world space pos -> clip pos so I can fill the depth buffer
+My far plane is only 1000 so things beyon that are ignored. My planet radius is like 1000 and I've been viewing it 
+from outer space
 */
 
 // NOTE(mizu): Global modules
@@ -47,7 +54,7 @@
 
 major :: 0;
 minor :: 2;
-patch :: 1;
+patch :: 7;
 
 Entity_Flags :: enum_flags
 {
@@ -330,7 +337,7 @@ entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 
 Camera :: struct
 {
-	speed := 4.0;
+	speed := 400.0;
 	ROTATION_SPEED :: 0.3;
 	ROTATION_SMOOTHING :: 0.3;
 	
@@ -381,6 +388,7 @@ update_flying_camera :: (using camera : *Camera, delta_time : float, vp : Vector
 			- cast (float) is_key_down (xx #char "W");
 		move_input = rotate (unit_vector (move_input), rotation);
 	}
+	
 	position += move_input * move_speed;
 	
 	//position.y = 0.15;
@@ -416,7 +424,7 @@ get_perspective_proj_and_view_matrix :: (using camera : Camera) -> Matrix4, Matr
 	view_matrix := inverse (transform);
 	
 	aspect_ratio := viewport.x / cast (float) viewport.y;
-	projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 0.1, 1000.0);
+	projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 0.1, 10000.0);
 	
 	return projection_matrix, view_matrix;
 }
@@ -503,6 +511,7 @@ main :: ()
 		po := entity_alloc(*entity_state);
 		po.node_asset_hash = hash_string("cow.cow_root");
 		set_entity_name(po, "moo machine");
+		po.pos = .{243, -219, 980};
 	}
 	
 	//watermelon_stall.root
@@ -592,6 +601,7 @@ main :: ()
 					
 					simple_label(tprint("%, %, %", rot.x, rot.y, rot.z), .{180, 20});
 				}
+				simple_label(tprint("%", delta), .{180, 20});
 				
 				if boss_window.current_app_mode_tab ==
 				{
@@ -1251,8 +1261,11 @@ init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_
 	out.tabs[App_Mode_Tab.Asset_Viewer].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
 	
 	// copied the above one
-	out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
-	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
+	//out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
+	//out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
+	
+	out.tabs[App_Mode_Tab.Game].camera.position = .{-120, 90, 1500};
+	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(35), deg_to_rad(26), 0};
 	
 	return out;
 }

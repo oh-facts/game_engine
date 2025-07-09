@@ -15,7 +15,7 @@ layout (std430, row_major, binding = 0) buffer ssbo2
 	Debug_Vertex objs[];
 };
 
-#define COMMON_SHADER_END
+@common_shader_end;
 
 flat out int a_index;
 
@@ -27,7 +27,7 @@ void main()
 	a_index = gl_VertexID;
 }
 
-#define VERTEX_SHADER_END
+@vertex_shader_end;
 
 layout (location=0) out vec4 out_color;
 flat in int a_index;

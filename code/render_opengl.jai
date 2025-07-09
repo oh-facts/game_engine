@@ -70,6 +70,9 @@ r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : Tex_Para
 	return out;
 }
 
+hmap : u64;
+mountain_map : u64;
+
 r_init :: () 
 {
 	gl_create_context(the_window, 4, 6);
@@ -99,6 +102,16 @@ r_init :: ()
 	data : [1]s64 : .[0xFFFFFFFF];
 	
 	r_gl_state.white_square = r_image_create(1, 1, 4, xx data.data, .Nearest, .Nearest, .Repeat);
+	
+	{
+		data := read_entire_file(tprint("%/noise.png", data_folder));
+		hmap = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
+	}
+	
+	{
+		data := read_entire_file(tprint("%/mountain.png", data_folder));
+		mountain_map = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
+	}
 }
 
 r_submit :: (pb : R_Push_Buffer)
@@ -107,6 +120,7 @@ r_submit :: (pb : R_Push_Buffer)
 	glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
 	
 	glClearColor(0.2, 0.2, 0.3, 1.0);
+	//glClearColor(0., 0., 0., 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glEnable(GL_BLEND);
@@ -261,6 +275,9 @@ r_submit :: (pb : R_Push_Buffer)
 		shader := r_gl_state.vf_shaders[VF_Shaders.Planet];
 		glUseProgram(shader);
 		
+		hmap_loc := glGetUniformLocation(shader, "u_height_map");
+		mountain_loc := glGetUniformLocation(shader, "u_mountain_map");
+		
 		proj_loc := glGetUniformLocation(shader, "u_proj");
 		view_loc := glGetUniformLocation(shader, "u_view");
 		screen_size_loc := glGetUniformLocation(shader, "u_screen_size");
@@ -268,6 +285,15 @@ r_submit :: (pb : R_Push_Buffer)
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
 		glUniform2fv(screen_size_loc, 1, pb.viewport.size.component.data);
+		
+		{
+			l, r := uvec2_from_u64(hmap);
+			glUniform2ui(hmap_loc, l, r);
+		}
+		{
+			l, r := uvec2_from_u64(mountain_map);
+			glUniform2ui(mountain_loc, l, r);
+		}
 		
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
@@ -457,11 +483,11 @@ compile_shaders :: ()
 		shader_file := read_entire_file(abs_path, true);
 		defer free(shader_file);
 		
-		found, left, right := split_from_left(shader_file, "#define COMMON_SHADER_END");
+		found, left, right := split_from_left(shader_file, "@common_shader_end;");
 		
 		common_shader_text := left;
 		
-		found, left, right = split_from_left(right, "#define VERTEX_SHADER_END");
+		found, left, right = split_from_left(right, "@vertex_shader_end;");
 		
 		vertex_shader_text := left;
 		

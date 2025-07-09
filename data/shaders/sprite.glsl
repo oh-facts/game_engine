@@ -23,7 +23,7 @@ layout (std430, row_major, binding = 0) buffer ssbo2
 	R_Rect2 rects[];
 };
 
-#define COMMON_SHADER_END
+@common_shader_end;
 
 flat out int a_index;
 out vec2 a_uv;
@@ -64,7 +64,7 @@ void main()
 	a_index = gl_InstanceID;
 }
 
-#define VERTEX_SHADER_END
+@vertex_shader_end;
 
 layout (location=0) out vec4 out_color;
 flat in int a_index;

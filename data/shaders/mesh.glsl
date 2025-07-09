@@ -35,7 +35,7 @@ layout (std430, row_major, binding = 1) buffer ssbo3
 	mat4 joint[];
 };
 
-#define COMMON_SHADER_END
+@common_shader_end;
 
 out vec2 a_uv;
 out vec3 a_normal;
@@ -66,7 +66,7 @@ void main()
 
 // gl_Position = u_proj * u_view * u_model * vec4(v.pos, 1.0);
 
-#define VERTEX_SHADER_END
+@vertex_shader_end;
 
 layout (location=0) out vec4 out_color;
 in vec2 a_uv;
