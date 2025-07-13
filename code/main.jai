@@ -464,9 +464,10 @@ main :: ()
 	exe_folder = path_strip_filename(get_path_of_running_executable());
 	
 	// TODO(mizu): Make a sprint() that uses the perm arena
+	code_folder = join(exe_folder, "../code");
+	
 	data_folder = join(exe_folder, "../data");
 	models_folder = join(data_folder, "/models");
-	shaders_folder = join(data_folder, "/shaders");
 	fonts_folder = join(data_folder, "/fonts");
 	
 	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
@@ -1222,7 +1223,7 @@ the_window: Window_Type;
 exe_folder : string;
 data_folder : string;
 models_folder : string;
-shaders_folder : string;
+code_folder : string;
 fonts_folder : string;
 
 Editor_Tab :: struct

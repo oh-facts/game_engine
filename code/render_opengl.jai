@@ -89,6 +89,15 @@ r_init :: ()
 	glCreateVertexArrays(1, *stupid_fucking_opengl);
 	glBindVertexArray(stupid_fucking_opengl);
 	
+	// init shaders
+	{
+		init_shader(.Sprite, "sprite");
+		init_shader(.Mesh, "mesh");
+		init_shader(.Debug_Vertex, "debug_vertex");
+		//init_shader(.Planet, "planet");
+		//init_shader(.Voxel, "voxel");
+	}
+	
 	compile_shaders();
 	//glEnable(GL_FRAMEBUFFER_SRGB);
 	
@@ -144,19 +153,20 @@ r_submit :: (pb : R_Push_Buffer)
 	// mesh batches
 	if pb.mesh_batches.count 
 	{
-		shader := r_gl_state.vf_shaders[VF_Shaders.Mesh];
-		glUseProgram(shader);
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Mesh];
+		
+		glUseProgram(shader.id);
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, r_gl_state.skinning_transforms);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
-		model_loc := glGetUniformLocation(shader, "u_model");
-		color_loc := glGetUniformLocation(shader, "u_color");
-		color_map_loc := glGetUniformLocation(shader, "u_color_map");
-		flags_loc := glGetUniformLocation(shader, "u_flags");
-		base_xform_loc := glGetUniformLocation(shader, "u_base_xform_index");
-		debug_loc := glGetUniformLocation(shader, "u_debug");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
+		model_loc := glGetUniformLocation(shader.id, "u_model");
+		color_loc := glGetUniformLocation(shader.id, "u_color");
+		color_map_loc := glGetUniformLocation(shader.id, "u_color_map");
+		flags_loc := glGetUniformLocation(shader.id, "u_flags");
+		base_xform_loc := glGetUniformLocation(shader.id, "u_base_xform_index");
+		debug_loc := glGetUniformLocation(shader.id, "u_debug");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
@@ -217,13 +227,13 @@ r_submit :: (pb : R_Push_Buffer)
 	if pb.debug_lines.count || pb.debug_vertices.count 
 	{
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Debug_Vertex];
-		shader := r_gl_state.vf_shaders[VF_Shaders.Debug_Vertex];
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Debug_Vertex];
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-		glUseProgram(shader);
+		glUseProgram(shader.id);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
@@ -273,13 +283,13 @@ r_submit :: (pb : R_Push_Buffer)
 	// world test sandbox thing
 	if false
 	{
-		shader := r_gl_state.vf_shaders[VF_Shaders.Planet];
-		glUseProgram(shader);
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Planet];
+		glUseProgram(shader.id);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
 		
-		screen_size_loc := glGetUniformLocation(shader, "u_screen_size");
+		screen_size_loc := glGetUniformLocation(shader.id, "u_screen_size");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
@@ -290,16 +300,16 @@ r_submit :: (pb : R_Push_Buffer)
 	}
 	
 	// voxel sandbox thing
-	//if false
+	if false
 	{
-		shader := r_gl_state.vf_shaders[VF_Shaders.Voxel];
-		glUseProgram(shader);
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Voxel];
+		glUseProgram(shader.id);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
-		time_loc := glGetUniformLocation(shader, "u_time");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
+		time_loc := glGetUniformLocation(shader.id, "u_time");
 		
-		screen_size_loc := glGetUniformLocation(shader, "u_screen_size");
+		screen_size_loc := glGetUniformLocation(shader.id, "u_screen_size");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
@@ -317,12 +327,12 @@ r_submit :: (pb : R_Push_Buffer)
 	{
 		glDisable(GL_DEPTH_TEST);
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
-		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Sprite];
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-		glUseProgram(shader);
+		glUseProgram(shader.id);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
@@ -356,13 +366,13 @@ r_submit :: (pb : R_Push_Buffer)
 	{
 		glDisable(GL_DEPTH_TEST);
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
-		shader := r_gl_state.vf_shaders[VF_Shaders.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Sprite];
 		
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
-		glUseProgram(shader);
+		glUseProgram(shader.id);
 		
-		proj_loc := glGetUniformLocation(shader, "u_proj");
-		view_loc := glGetUniformLocation(shader, "u_view");
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
 		
 		batches := pb.sprite_lists.first;
 		
@@ -399,16 +409,6 @@ r_submit :: (pb : R_Push_Buffer)
 
 #scope_file;
 
-VF_Shaders :: enum 
-{
-	Sprite;
-	Mesh;
-	Debug_Vertex;
-	Planet;
-	Voxel;
-	Count;
-}
-
 Instance_Buffers :: enum 
 {
 	Sprite;
@@ -424,14 +424,29 @@ R_GL_Image :: struct
 	h : int;
 };
 
-vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh", "debug_vertex", "planet", "voxel"];
+VF_Shader_Kind :: enum 
+{
+	Sprite;
+	Mesh;
+	Debug_Vertex;
+	Planet;
+	Voxel;
+	Count;
+}
 
 R_GL_State :: struct 
 {
+	Shader :: struct
+	{
+		path : string;
+		id : GLuint;
+		init : bool;
+	}
+	
 	arena : *Arena;
 	white_square : Handle;
 	
-	vf_shaders : [VF_Shaders.Count]GLuint;
+	vf_shaders : [VF_Shader_Kind.Count]Shader;
 	inst_buffers : [Instance_Buffers.Count]GLuint;
 	
 	skinning_transforms : GLuint;
@@ -486,11 +501,19 @@ uvec2_from_u64 :: (v : u64) -> u32, u32
 	return l, r;
 }
 
+init_shader :: (kind : VF_Shader_Kind, path : string)
+{
+	r_gl_state.vf_shaders[kind].path = path;
+	r_gl_state.vf_shaders[kind].init = true;
+}
+
 compile_shaders :: () 
 {
-	for 0 .. VF_Shaders.Count - 1 
+	for *r_gl_state.vf_shaders 
 	{
-		abs_path := tprint("%/%.glsl", shaders_folder, vf_shader_paths[it]);
+		if !it.init continue;
+		
+		abs_path := tprint("%/%.glsl", code_folder, it.path);
 		
 		shader_file := read_entire_file(abs_path, true);
 		defer free(shader_file);
@@ -508,7 +531,7 @@ compile_shaders :: ()
 		combined_vertex_shader_text := tprint("%0%\0", common_shader_text, vertex_shader_text);
 		combined_fragment_shader_text := tprint("%0%\0", common_shader_text, fragment_shader_text);
 		
-		r_gl_state.vf_shaders[it] = make_shader_program(combined_vertex_shader_text, combined_fragment_shader_text);
+		it.id = make_shader_program(combined_vertex_shader_text, combined_fragment_shader_text);
 	}
 }
 
