@@ -271,29 +271,40 @@ r_submit :: (pb : R_Push_Buffer)
 	}
 	
 	// world test sandbox thing
+	if false
 	{
 		shader := r_gl_state.vf_shaders[VF_Shaders.Planet];
 		glUseProgram(shader);
 		
-		hmap_loc := glGetUniformLocation(shader, "u_height_map");
-		mountain_loc := glGetUniformLocation(shader, "u_mountain_map");
-		
 		proj_loc := glGetUniformLocation(shader, "u_proj");
 		view_loc := glGetUniformLocation(shader, "u_view");
+		
 		screen_size_loc := glGetUniformLocation(shader, "u_screen_size");
 		
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
 		glUniform2fv(screen_size_loc, 1, pb.viewport.size.component.data);
 		
-		{
-			l, r := uvec2_from_u64(hmap);
-			glUniform2ui(hmap_loc, l, r);
-		}
-		{
-			l, r := uvec2_from_u64(mountain_map);
-			glUniform2ui(mountain_loc, l, r);
-		}
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+	}
+	
+	// voxel sandbox thing
+	//if false
+	{
+		shader := r_gl_state.vf_shaders[VF_Shaders.Voxel];
+		glUseProgram(shader);
+		
+		proj_loc := glGetUniformLocation(shader, "u_proj");
+		view_loc := glGetUniformLocation(shader, "u_view");
+		time_loc := glGetUniformLocation(shader, "u_time");
+		
+		screen_size_loc := glGetUniformLocation(shader, "u_screen_size");
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		glUniform1fv(time_loc, 1, *pb.counter);
+		glUniform2fv(screen_size_loc, 1, pb.viewport.size.component.data);
 		
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
@@ -394,6 +405,7 @@ VF_Shaders :: enum
 	Mesh;
 	Debug_Vertex;
 	Planet;
+	Voxel;
 	Count;
 }
 
@@ -412,7 +424,7 @@ R_GL_Image :: struct
 	h : int;
 };
 
-vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh", "debug_vertex", "planet"];
+vf_shader_paths :[VF_Shaders.Count]string: .["sprite", "mesh", "debug_vertex", "planet", "voxel"];
 
 R_GL_State :: struct 
 {

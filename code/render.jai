@@ -154,6 +154,7 @@ R_Push_Buffer :: struct
 	proj : Matrix4;
 	view : Matrix4;
 	hacker_draw : bool;
+	counter : f32;
 }
 
 begin_render :: () -> R_Push_Buffer

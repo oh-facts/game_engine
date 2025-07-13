@@ -20,6 +20,8 @@ THERE WAS NO NEED TO CRANK UP RAY STEPS AND CRANK DOWN EPSILON
 BASICALLY I CONVERT ray marched world space pos -> clip pos so I can fill the depth buffer
 My far plane is only 1000 so things beyon that are ignored. My planet radius is like 1000 and I've been viewing it 
 from outer space
+
+[ ] Higher depth precision
 */
 
 // NOTE(mizu): Global modules
@@ -54,7 +56,7 @@ from outer space
 
 major :: 0;
 minor :: 2;
-patch :: 7;
+patch :: 8;
 
 Entity_Flags :: enum_flags
 {
@@ -337,7 +339,7 @@ entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 
 Camera :: struct
 {
-	speed := 400.0;
+	speed := 4.0;
 	ROTATION_SPEED :: 0.3;
 	ROTATION_SMOOTHING :: 0.3;
 	
@@ -352,7 +354,7 @@ Camera :: struct
 	
 	control : bool;
 }
-
+camerra : *Camera;
 update_2d_camera :: (using camera : *Camera, delta : float, _viewport : Vector2)
 {
 	viewport = _viewport;
@@ -424,7 +426,7 @@ get_perspective_proj_and_view_matrix :: (using camera : Camera) -> Matrix4, Matr
 	view_matrix := inverse (transform);
 	
 	aspect_ratio := viewport.x / cast (float) viewport.y;
-	projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 0.1, 10000.0);
+	projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 0.001, 10000.0);
 	
 	return projection_matrix, view_matrix;
 }
@@ -468,7 +470,7 @@ main :: ()
 	fonts_folder = join(data_folder, "/fonts");
 	
 	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
-	
+	camerra = *boss_window.tabs[1].camera;
 	delta : float;
 	time_elapsed : float;
 	
@@ -505,13 +507,14 @@ main :: ()
 		po := entity_alloc(*entity_state);
 		po.node_asset_hash = hash_string("watermelon_stall.root");
 		set_entity_name(po, "wa'er melon s'all");
+		po.pos = .{0,101.8,0};
 	}
 	
 	{
 		po := entity_alloc(*entity_state);
 		po.node_asset_hash = hash_string("cow.cow_root");
 		set_entity_name(po, "moo machine");
-		po.pos = .{243, -219, 980};
+		po.pos = .{-30, 40, -30};
 	}
 	
 	//watermelon_stall.root
@@ -549,6 +552,7 @@ main :: ()
 		}
 		
 		pb := begin_render();
+		pb.counter = counter;
 		win_size := get_window_size(the_window);
 		
 		x,y := get_mouse_pointer_position(the_window, false);
@@ -1261,11 +1265,11 @@ init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_
 	out.tabs[App_Mode_Tab.Asset_Viewer].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
 	
 	// copied the above one
-	//out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
-	//out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
+	out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
+	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
 	
-	out.tabs[App_Mode_Tab.Game].camera.position = .{-120, 90, 1500};
-	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(35), deg_to_rad(26), 0};
+	//out.tabs[App_Mode_Tab.Game].camera.position = .{-120, 90, 1500};
+	//out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(35), deg_to_rad(26), 0};
 	
 	return out;
 }
