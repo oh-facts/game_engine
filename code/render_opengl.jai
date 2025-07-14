@@ -1,5 +1,96 @@
 // Make ssbos size based ?
 
+Instance_Buffers :: enum 
+{
+	Sprite;
+	Debug_Vertex;
+	Count;
+}
+
+R_GL_Image :: struct 
+{
+	next : *R_GL_Image;
+	id : GLuint;
+	resident : GLuint64;
+	w : int;
+	h : int;
+};
+
+VF_Shader_Kind :: enum 
+{
+	Sprite;
+	Mesh;
+	Debug_Vertex;
+	Planet;
+	Voxel;
+	Screen;
+	Count;
+}
+
+R_GL_Framebuffer :: struct
+{
+	color_texture : *R_GL_Image;
+	depth_stencil_texture : *R_GL_Image;
+	id : GLuint;
+}
+
+r_gl_framebuffer_create :: (fb_size : Vector2i) -> R_GL_Framebuffer
+{
+	using out : R_GL_Framebuffer;
+	
+	glCreateFramebuffers(1, *id);
+	
+	color_texture = r_gl_image_create(fb_size.x, fb_size.y, GL_RGBA32F, null, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	glNamedFramebufferTexture(id, GL_COLOR_ATTACHMENT0, color_texture.id, 0);
+	
+	depth_stencil_texture = r_gl_image_create(fb_size.x, fb_size.y, GL_DEPTH32F_STENCIL8, null, GL_LINEAR, GL_LINEAR, GL_CLAMP_TO_EDGE);
+	
+	glNamedFramebufferTexture(id, GL_DEPTH_STENCIL_ATTACHMENT, depth_stencil_texture.id, 0);
+	
+	fb_status := glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER);
+	
+	if fb_status != GL_FRAMEBUFFER_COMPLETE
+	{
+		assert(false, "framebuffer incomplete or something, error %", fb_status);
+	}
+	
+	return out;
+}
+
+r_gl_framebuffer_free :: (fb : R_GL_Framebuffer)
+{
+	glDeleteFramebuffers(1, *fb.id);
+	
+	r_gl_image_free(fb.color_texture);
+	r_gl_image_free(fb.depth_stencil_texture);
+}
+
+R_GL_State :: struct 
+{
+	// shader kind is implicit.
+	// array index in the vf_shaders array
+	Shader :: struct
+	{
+		path : string;
+		id : GLuint;
+		init : bool;
+	}
+	
+	arena : *Arena;
+	white_square : Handle;
+	
+	vf_shaders : [VF_Shader_Kind.Count]Shader;
+	inst_buffers : [Instance_Buffers.Count]GLuint;
+	
+	skinning_transforms : GLuint;
+	draw_fb : R_GL_Framebuffer;
+	
+	free_image : *R_GL_Image;
+	last_draw_size : Vector2i;
+}
+
+r_gl_state : *R_GL_State;
+
 r_buffer_create :: (hint : Buffer_Hint, data : *void, size : u64) -> GLuint
 {
 	ssbo : GLuint;
@@ -62,7 +153,7 @@ r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : Tex_Para
 	
 	gl_wrap = gl_param_from_tex_param_table[xx wrap];
 	
-	img = r_gl_image_create(w, h, n, bytes, gl_min_filter, gl_mag_filter, gl_wrap);
+	img = r_gl_image_create(w, h, GL_RGBA32F, bytes, gl_min_filter, gl_mag_filter, gl_wrap);
 	
 	out : Handle;
 	out.U64[0] = xx img;
@@ -73,7 +164,7 @@ r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : Tex_Para
 hmap : u64;
 mountain_map : u64;
 
-r_init :: () 
+r_init :: (fb_size : Vector2i) 
 {
 	gl_create_context(the_window, 4, 6);
 	gl_load(*gl);
@@ -96,6 +187,7 @@ r_init :: ()
 		init_shader(.Debug_Vertex, "debug_vertex");
 		//init_shader(.Planet, "planet");
 		//init_shader(.Voxel, "voxel");
+		init_shader(.Screen, "screen");
 	}
 	
 	compile_shaders();
@@ -121,15 +213,31 @@ r_init :: ()
 		data := read_entire_file(tprint("%/mountain.png", data_folder));
 		mountain_map = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
 	}
+	
+	// init draw framebuffer
+	r_gl_state.draw_fb = r_gl_framebuffer_create(fb_size);
+	r_gl_state.last_draw_size = fb_size;
 }
 
-r_submit :: (pb : R_Push_Buffer)
+r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 {
+	if draw_size != r_gl_state.last_draw_size
+	{
+		r_gl_framebuffer_free(r_gl_state.draw_fb);
+		r_gl_state.draw_fb = r_gl_framebuffer_create(draw_size);
+	}
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, r_gl_state.draw_fb.id);
 	glViewport(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
 	glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
 	
 	glClearColor(0.2, 0.2, 0.3, 1.0);
-	//glClearColor(0., 0., 0., 1.0);
+	
+	glEnable(GL_DEPTH_TEST);
+	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+	glClearDepth(0.0);
+	glDepthFunc(GL_GREATER);
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glEnable(GL_BLEND);
@@ -147,7 +255,6 @@ r_submit :: (pb : R_Push_Buffer)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	
 	// mesh batches
@@ -325,7 +432,6 @@ r_submit :: (pb : R_Push_Buffer)
 	
 	if pb.quad_lists.count
 	{
-		glDisable(GL_DEPTH_TEST);
 		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
 		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Sprite];
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
@@ -405,60 +511,50 @@ r_submit :: (pb : R_Push_Buffer)
 			batches = batches.next;
 		}
 	}
-}
-
-#scope_file;
-
-Instance_Buffers :: enum 
-{
-	Sprite;
-	Debug_Vertex;
-	Count;
-}
-
-R_GL_Image :: struct 
-{
-	id : GLuint;
-	resident : GLuint64;
-	w : int;
-	h : int;
-};
-
-VF_Shader_Kind :: enum 
-{
-	Sprite;
-	Mesh;
-	Debug_Vertex;
-	Planet;
-	Voxel;
-	Count;
-}
-
-R_GL_State :: struct 
-{
-	Shader :: struct
+	
+	// copy to screen
 	{
-		path : string;
-		id : GLuint;
-		init : bool;
+		glDisable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_CULL_FACE);
+		
+		glClearColor(1, 0, 0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		
+		glViewport(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
+		glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Screen];
+		
+		glUseProgram(shader.id);
+		
+		color_tex_loc := glGetUniformLocation(shader.id, "u_color_tex");
+		
+		{
+			l, r := uvec2_from_u64(r_gl_state.draw_fb.color_texture.resident);
+			glUniform2ui(color_tex_loc, l, r);
+		}
+		
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 	
-	arena : *Arena;
-	white_square : Handle;
-	
-	vf_shaders : [VF_Shader_Kind.Count]Shader;
-	inst_buffers : [Instance_Buffers.Count]GLuint;
-	
-	skinning_transforms : GLuint;
+	r_gl_state.last_draw_size = draw_size;
 }
 
-r_gl_state : *R_GL_State;
-
-r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : GLint,
+r_gl_image_create :: (w : s32, h : s32, format : GLuint, bytes : *u8, min_filter : GLint,
 											mag_filter : GLint,
 											wrap  : GLint) -> *R_GL_Image
 {
-	img : *R_GL_Image = push_struct(r_gl_state.arena, R_GL_Image);
+	img := r_gl_state.free_image;
+	
+	if img 
+	{
+		r_gl_state.free_image = img.next; 
+	}
+	else
+	{
+		img = push_struct(r_gl_state.arena, R_GL_Image);
+	}
 	
 	<< img = .{};
 	
@@ -468,7 +564,7 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : GLint
 	glTextureParameteri(id, GL_TEXTURE_MIN_FILTER, min_filter);
 	glTextureParameteri(id, GL_TEXTURE_MAG_FILTER, mag_filter);
 	
-	glTextureStorage2D(id, 1, GL_RGBA32F, xx w, xx h);
+	glTextureStorage2D(id, 1, format, xx w, xx h);
 	
 	if bytes 
 	{
@@ -491,6 +587,14 @@ r_gl_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : GLint
 	img.h = h;
 	
 	return img;
+}
+
+r_gl_image_free :: (image : *R_GL_Image)
+{
+	glMakeTextureHandleNonResidentARB(image.resident);
+	glDeleteTextures(1, *image.id);
+	image.next = r_gl_state.free_image;
+	r_gl_state.free_image = image;
 }
 
 uvec2_from_u64 :: (v : u64) -> u32, u32 

@@ -354,7 +354,9 @@ Camera :: struct
 	
 	control : bool;
 }
+
 camerra : *Camera;
+
 update_2d_camera :: (using camera : *Camera, delta : float, _viewport : Vector2)
 {
 	viewport = _viewport;
@@ -415,7 +417,7 @@ get_ortho_proj_and_view_matrix :: (camera : Camera) -> Matrix4, Matrix4
 {
 	aspect_ratio := (camera.viewport.x * 1.) / camera.viewport.y;
 	
-	proj := orthographic_projection_matrix(0, camera.viewport.x, camera.viewport.y, 0, 0, 1);
+	proj := orthographic_projection_matrix(0, camera.viewport.x, camera.viewport.y, 0, 0, 1, true);
 	view := make_look_at_matrix(camera.position, camera.position + .{0, 0, -1}, .{0, 1, 0}, false);
 	
 	return proj, view;
@@ -426,9 +428,22 @@ get_perspective_proj_and_view_matrix :: (using camera : Camera) -> Matrix4, Matr
 	view_matrix := inverse (transform);
 	
 	aspect_ratio := viewport.x / cast (float) viewport.y;
-	projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 0.001, 10000.0);
+	//projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 10000.0, 0.1, depth_range_01 = true);
+	projection_matrix := make_inf_proj_matrix (fov * PI/180, aspect_ratio, 0.1);
 	
 	return projection_matrix, view_matrix;
+}
+
+// https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
+make_inf_proj_matrix :: (fovY_radians : float, aspectWbyH : float, zNear : float ) -> Matrix4
+{
+	f := 1.0 / tan(fovY_radians / 2.0);
+	out : Matrix4;
+	out._11 = f / aspectWbyH;
+	out._22 = f;
+	out._43 = -1.0;
+	out._34 = zNear;
+	return out;
 }
 
 hot_entity : *Entity;
@@ -478,7 +493,7 @@ main :: ()
 	start := get_perf_counter();
 	freq := get_perf_freq();
 	
-	r_init();
+	r_init(get_window_size(the_window));
 	asset_init();	
 	font_state_init();
 	widget_init();
@@ -508,7 +523,7 @@ main :: ()
 		po := entity_alloc(*entity_state);
 		po.node_asset_hash = hash_string("watermelon_stall.root");
 		set_entity_name(po, "wa'er melon s'all");
-		po.pos = .{0,101.8,0};
+		//po.pos = .{0,101.8,0};
 	}
 	
 	{
@@ -558,13 +573,13 @@ main :: ()
 		
 		x,y := get_mouse_pointer_position(the_window, false);
 		
-		update_2d_camera(*ui_camera, delta, win_size);
+		update_2d_camera(*ui_camera, delta, .{xx win_size.x, xx win_size.y});
 		
 		ui_proj, ui_view := get_ortho_proj_and_view_matrix(ui_camera);
 		
-		pb.viewport = rectF32(0, 0, win_size.x, win_size.y);
+		pb.viewport = rectF32(0, 0, xx win_size.x, xx win_size.y);
 		
-		scissor := rectF32(0, 0, win_size.x, win_size.y);
+		scissor := rectF32(0, 0, xx win_size.x, xx win_size.y);
 		{
 			params := push_batch_group_sprite_params(*pb);
 			params.proj = ui_proj;
@@ -580,7 +595,7 @@ main :: ()
 		{
 			current_editor_tab := *boss_window.tabs[boss_window.current_app_mode_tab];
 			
-			update_flying_camera(*current_editor_tab.camera, delta, win_size);
+			update_flying_camera(*current_editor_tab.camera, delta, .{xx win_size.x, xx win_size.y});
 			proj, view := get_perspective_proj_and_view_matrix(current_editor_tab.camera);
 			pb.proj = proj;
 			pb.view = view;
@@ -781,8 +796,8 @@ main :: ()
 					
 					{
 						ray_nds : Vector2;
-						ray_nds.x = (x / win_size.x) * 2 - 1;
-						ray_nds.y = - ((y / win_size.y) * 2 - 1);
+						ray_nds.x = (x / cast(f32) win_size.x) * 2 - 1;
+						ray_nds.y = - ((y / cast(f32) win_size.y) * 2 - 1);
 						
 						//print("%\n", ray_nds);
 						
@@ -945,6 +960,9 @@ main :: ()
 						}
 					}
 					
+					push_quad(*pb, .{0, 10, 0}, .{5, 5}, .{}, COLOR_RED, get_white_square());
+					push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
+					
 					// animate entities
 					for *e : entity_state.entities
 					{
@@ -1035,11 +1053,11 @@ main :: ()
 							
 							/*
 							points : [8]Vector3;
-					
+										
 							xs : [2]float = .[min.x, max.x];
 							ys : [2]float = .[min.y, max.y];
 							zs : [2]float = .[min.z, max.z];
-					
+										
 							for x : 0 .. 1
 							{
 								for y : 0 .. 1
@@ -1047,7 +1065,7 @@ main :: ()
 									for z : 0 .. 1
 									{
 										point := model * m.xform * .{xs[x], ys[y], zs[z], 1};
-					
+										
 										points[x * 2 * 2 + y * 2 + z] = point.xyz;
 										push_debug_vertex(pb, point.xyz, COLOR_RED);
 									}
@@ -1155,15 +1173,13 @@ main :: ()
 					
 				}
 			}
-			
-			
 		}
 		
 		end_editor_window(*pb, *boss_window);
 		end_widgets();
 		
 		pop_batch_group_sprite_params(*pb);
-		r_submit(pb);
+		r_submit(pb, win_size);
 		end_render(*pb);
 		
 		swap_buffers(the_window);
@@ -1207,13 +1223,13 @@ swap_buffers :: (win : Window_Type)
 	ReleaseDC(the_window, dc);
 }
 
-get_window_size :: (win : Window_Type) -> Vector2
+get_window_size :: (win : Window_Type) -> Vector2i
 {
-	out : Vector2;
-	rect, rect2 : RECT;
+	out : Vector2i;
+	rect : RECT;
 	GetClientRect(win, *rect);
-	out.x = xx (rect.right - rect.left);
-	out.y = xx (rect.bottom - rect.top);
+	out.x = rect.right - rect.left;
+	out.y = rect.bottom - rect.top;
 	
 	return out;
 }
