@@ -50,7 +50,7 @@ commands =
 	},
 	.cloc = 
 	{
-		.win = "cloc code first.jai data/shaders/",
+		.win = "cloc code first.jai",
 		.linux = "",
 		.footer_panel = true,
 		.out = "*compilation*",

@@ -21,7 +21,8 @@ BASICALLY I CONVERT ray marched world space pos -> clip pos so I can fill the de
 My far plane is only 1000 so things beyon that are ignored. My planet radius is like 1000 and I've been viewing it 
 from outer space
 
-[ ] Higher depth precision
+[x] Higher depth precision + inf far plane. Was really annoying me. Now I can work on game.
+
 */
 
 // NOTE(mizu): Global modules
@@ -31,7 +32,6 @@ from outer space
 #import "Math";
 #import "File";
 #import "File_Utilities";
-#import "IntroSort";
 #import "Random";
 #import "stb_image";
 #import "Window_Creation";
