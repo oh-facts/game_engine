@@ -134,6 +134,15 @@ AABB :: struct
 	max : Vector3;
 }
 
+transform_aabb :: (_aabb : AABB, model : Matrix4) -> AABB
+{
+	aabb : AABB;
+	aabb.min = (model * .{_aabb.min.x, _aabb.min.y, _aabb.min.z, 1}).xyz;
+	aabb.max = (model * .{_aabb.max.x, _aabb.max.y, _aabb.max.z, 1}).xyz;
+	
+	return aabb;
+}
+
 Ray :: struct
 {
 	o : Vector3;

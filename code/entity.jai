@@ -3,6 +3,12 @@ Entity_Flags :: enum_flags
 	Animated;
 }
 
+Entity_Model_Kind :: enum
+{
+	Node_Asset;
+	Cube;
+}
+
 Entity :: struct
 {
 	// 32 chars
@@ -11,13 +17,14 @@ Entity :: struct
 	short_name_memory : [32]u8;
 	
 	flags : Entity_Flags;
-	kf_index : [256]Key_Frame_Index;
+	kf_index : []Key_Frame_Index;
 	counter : float;
 	pos : Vector3;
 	size : Vector3;
 	rot : Vector3;
 	animation_hash : u128;
 	node_asset_hash : u128;
+	model_kind : Entity_Model_Kind;
 	
 	// per frame artifacts
 	joints : *Matrix4;
@@ -30,6 +37,7 @@ Entity_State :: struct
 	entities : []Entity;
 }
 
+// [256]
 entity_state_init :: () -> Entity_State
 {
 	out : Entity_State;
@@ -46,6 +54,7 @@ entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 	out := entities.data + entities.count;
 	out.size = .{1,1,1};
 	out.short_name.data = out.short_name_memory.data;
+	out.model_kind = .Cube;
 	entities.count += 1;
 	return out;
 }

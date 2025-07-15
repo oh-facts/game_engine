@@ -138,6 +138,14 @@ main :: ()
 	
 	entity_state := entity_state_init();
 	
+	{
+		po := entity_alloc(*entity_state);
+		po.node_asset_hash = hash_string("watermelon_stall.root");
+		po.model_kind = .Node_Asset;
+		set_entity_name(po, "wa'er melon s'all");
+		//po.pos = .{0,101.8,0};
+	}
+	
 	// Make the gltf load file thing part of the node_from_key
 	// then when you do cow.walk.
 	// it loads cow.glb
@@ -385,6 +393,14 @@ main :: ()
 					
 					simple_label(tprint("%", current_gizmo_mode), .{100,20});
 					
+					{
+						pressed := simple_label("+", .{20,20});
+						if pressed
+						{
+							entity_alloc(*entity_state);
+						}
+					}
+					
 					// idk if contexts are expensive like that
 					new_context := context;
 					push_context new_context
@@ -392,6 +408,7 @@ main :: ()
 						format_float := *context.print_style.default_format_float;
 						format_float.trailing_width = 1;
 						
+						// display entity stuff
 						for e : entity_state.entities
 						{
 							simple_label(e.short_name, .{300, 20}, it_index);
@@ -581,9 +598,6 @@ main :: ()
 					push_quad(*pb, .{0, 10, 0}, .{5, 5}, .{}, COLOR_RED, get_white_square());
 					push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
 					
-					draw_cube(*pb, Matrix4_Identity, COLOR_GREEN);
-					draw_cube(*pb, translate(Matrix4_Identity, .{1, 0, 0}), COLOR_RED);
-					
 					// animate entities
 					for *e : entity_state.entities
 					{
@@ -638,7 +652,15 @@ main :: ()
 						model = rotate(model, rotation);
 						model = scale(model, e.size);
 						
-						draw_node_asset(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
+						if e.model_kind == 
+						{
+							case .Node_Asset;
+							draw_node_asset(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
+							
+							case .Cube;
+							draw_cube(*pb, model, color);
+						}
+						
 					}
 					
 					aabb_rec :: (e : *Entity, pb : *R_Push_Buffer, hash : u128, _model : Matrix4, this_frame_hot : *bool)
@@ -650,11 +672,8 @@ main :: ()
 						{
 							m := mesh_from_hash(node.mesh_hash);
 							
-							using m.aabb;
-							
-							aabb : AABB;
-							aabb.min = (model * .{m.aabb.min.x, m.aabb.min.y, m.aabb.min.z, 1}).xyz;
-							aabb.max = (model * .{m.aabb.max.x, m.aabb.max.y, m.aabb.max.z, 1}).xyz;
+							// local space -> world space
+							aabb := transform_aabb(m.aabb, model);
 							
 							_, hit := ray_aabb_intersection(raycast, aabb);
 							
@@ -672,83 +691,7 @@ main :: ()
 								}
 							}
 							
-							/*
-							points : [8]Vector3;
-										
-							xs : [2]float = .[min.x, max.x];
-							ys : [2]float = .[min.y, max.y];
-							zs : [2]float = .[min.z, max.z];
-										
-							for x : 0 .. 1
-							{
-								for y : 0 .. 1
-								{
-									for z : 0 .. 1
-									{
-										point := model * m.xform * .{xs[x], ys[y], zs[z], 1};
-										
-										points[x * 2 * 2 + y * 2 + z] = point.xyz;
-										push_debug_vertex(pb, point.xyz, COLOR_RED);
-									}
-								}
-							}
-							*/
-							
-							/*
-							// NOTE(prismo):
-							a=['min.x', 'max.x']
-							a1=['min.y', 'max.y']
-							a2=['min.z', 'max.z']
-							l=[]
-							for i in a:
-								for j in a1:
-										for k in a2:
-												l1=[i,j,k]
-												l.append(l1)
-							r=[]
-							for i in l:
-								for j in l:
-										if [j,i] not in r:
-												if i[1]==j[1] and i[2]==j[2] and i!=j:
-														k=[i,j]
-														r.append(k)
-												elif i[0]==j[0] and i[2]==j[2] and i!=j:
-														k=[i,j]
-														r.append(k)
-												elif i[0]==j[0] and i[1]==j[1] and i!=j:
-														k=[i,j]
-														r.append(k)
-							count=0
-							for i in r:
-								count+=1
-								#print(count)
-								print(i)
-							*/
-							
-							edges : [12][2]Vector3;
-							
-							edges[0] = .[.{min.x, min.y, min.z}, .{min.x, min.y, max.z}];
-							edges[1] = .[.{min.x, min.y, min.z}, .{min.x, max.y, min.z}];
-							edges[2] = .[.{min.x, min.y, min.z}, .{max.x, min.y, min.z}];
-							edges[3] = .[.{min.x, min.y, max.z}, .{min.x, max.y, max.z}];
-							edges[4] = .[.{min.x, min.y, max.z}, .{max.x, min.y, max.z}];
-							edges[5] = .[.{min.x, max.y, min.z}, .{min.x, max.y, max.z}];
-							edges[6] = .[.{min.x, max.y, min.z}, .{max.x, max.y, min.z}];
-							edges[7] = .[.{min.x, max.y, max.z}, .{max.x, max.y, max.z}];
-							edges[8] = .[.{max.x, min.y, min.z}, .{max.x, min.y, max.z}];
-							edges[9] = .[.{max.x, min.y, min.z}, .{max.x, max.y, min.z}];
-							edges[10] = .[.{max.x, min.y, max.z}, .{max.x, max.y, max.z}];
-							edges[11] = .[.{max.x, max.y, min.z}, .{max.x, max.y, max.z}];
-							
-							// local space -> world space and drawing
-							for edge : edges
-							{
-								for *edge
-								{
-									<< it = (model * .{it.x, it.y, it.z, 1}).xyz;
-								}
-								push_debug_line(pb, edge[0], edge[1], color);
-							}
+							draw_aabb_wireframe(pb, aabb, color);
 						}
 						
 						if !this_frame_hot
@@ -788,10 +731,40 @@ main :: ()
 							
 							this_frame_hot : bool;
 							
-							aabb_rec(e, *pb, e.node_asset_hash, model, *this_frame_hot);
+							if e.model_kind == 
+							{
+								case .Node_Asset;
+								aabb_rec(e, *pb, e.node_asset_hash, model, *this_frame_hot);
+								
+								case .Cube;
+								
+								aabb := transform_aabb(cube_aabb, model);
+								
+								_, hit := ray_aabb_intersection(raycast, aabb);
+								
+								color := COLOR_WHITE;
+								
+								if hit
+								{
+									color = COLOR_RED;
+									hot_entity = e;
+									this_frame_hot = true;
+									
+									if is_key_pressed(.MOUSE_BUTTON_LEFT) && !is_grabbing
+									{
+										active_entity = e;
+									}
+								}
+								
+								if !this_frame_hot
+								{
+									hot_entity = null;
+								}
+								
+								draw_aabb_wireframe(*pb, aabb, color);
+							}
 						}
 					}
-					
 				}
 			}
 		}
