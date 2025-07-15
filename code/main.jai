@@ -59,6 +59,7 @@ from outer space
 #load "render_opengl.jai";
 #load "render_push_buffer.jai";
 #load "render_asset.jai";
+#load "render_shapes.jai";
 #load "asset.jai";
 #load "widgets.jai";
 #load "globals.jai";
@@ -101,13 +102,6 @@ main :: ()
 	print("Do not enter is written on the doorway, why can't everyone just go away\n");
 	print("Except for you, you can stay\n");
 	
-	SetProcessDPIAware();
-	
-	the_window = create_window(960, 540, tprint("The SAD Debugger by SAD Game Tools | %.%.%", major, minor, patch));
-	
-	saved : Saved_Window_Info;
-	//toggle_fullscreen(the_window, true, *saved);
-	
 	exe_folder = path_strip_filename(get_path_of_running_executable());
 	
 	// TODO(mizu): Make a sprint() that uses the perm arena
@@ -117,6 +111,13 @@ main :: ()
 	models_folder = join(data_folder, "/models");
 	fonts_folder = join(data_folder, "/fonts");
 	
+	SetProcessDPIAware();
+	
+	the_window = create_window(960, 540, tprint("The SAD Debugger by SAD Game Tools | %.%.%", major, minor, patch));
+	
+	saved : Saved_Window_Info;
+	//toggle_fullscreen(the_window, true, *saved);
+	
 	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
 	
 	delta : float;
@@ -125,7 +126,8 @@ main :: ()
 	start := get_perf_counter();
 	freq := get_perf_freq();
 	
-	r_init(get_window_size(the_window));
+	r_backend_init(get_window_size(the_window));
+	r_shapes_init();
 	asset_init();	
 	font_state_init();
 	widget_init();
@@ -327,7 +329,7 @@ main :: ()
 							
 							if boss_window.draw_asset
 							{
-								push_mesh(*pb, model, active_mesh_asset_hash);
+								draw_mesh_asset(*pb, model, active_mesh_asset_hash);
 							}
 							
 							if boss_window.draw_aabb
@@ -578,6 +580,9 @@ main :: ()
 					
 					push_quad(*pb, .{0, 10, 0}, .{5, 5}, .{}, COLOR_RED, get_white_square());
 					push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
+					
+					draw_cube(*pb, Matrix4_Identity, COLOR_GREEN);
+					draw_cube(*pb, translate(Matrix4_Identity, .{1, 0, 0}), COLOR_RED);
 					
 					// animate entities
 					for *e : entity_state.entities

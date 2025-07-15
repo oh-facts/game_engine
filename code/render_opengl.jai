@@ -164,7 +164,7 @@ r_image_create :: (w : s32, h : s32, n : s32, bytes : *u8, min_filter : Tex_Para
 hmap : u64;
 mountain_map : u64;
 
-r_init :: (fb_size : Vector2i) 
+r_backend_init :: (fb_size : Vector2i) 
 {
 	gl_create_context(the_window, 4, 6);
 	gl_load(*gl);
@@ -257,14 +257,12 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 	
 	glEnable(GL_CULL_FACE);
 	
-	// mesh batches
-	if pb.mesh_batches.count 
+	// 3d meshes
+	if pb.mesh_batches.count
 	{
 		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Mesh];
 		
 		glUseProgram(shader.id);
-		
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, r_gl_state.skinning_transforms);
 		
 		proj_loc := glGetUniformLocation(shader.id, "u_proj");
 		view_loc := glGetUniformLocation(shader.id, "u_view");
@@ -279,8 +277,11 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
 		glUniform1i(debug_loc, xx pb.hacker_draw);
 		
+		// do skinning if needed
 		if pb.skinning_xforms.count
 		{
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, r_gl_state.skinning_transforms);
+			
 			buffer := r_gl_state.skinning_transforms;
 			
 			xform_size := pb.skinning_xforms.first.size;
@@ -293,40 +294,43 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 			glUnmapNamedBuffer(buffer);
 		}
 		
-		batches := pb.mesh_batches;
-		batch := batches.first;
-		
-		while batch
+		// draw meshes
 		{
-			meshes : *R_Mesh = xx batch.base;
+			batches := pb.mesh_batches;
+			batch := batches.first;
 			
-			for 0 .. batch.count - 1 
+			while batch
 			{
-				mesh := meshes + it;
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mesh.vertex_buffer);
-				glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
-				glUniformMatrix4fv(model_loc, 1, GL_TRUE, *mesh.xform.coef[0][0]);
-				glUniform4fv(color_loc, 1, *mesh.color.component[0]);
-				glUniform1ui(flags_loc, cast, force(u32)mesh.flags);
+				meshes : *R_Mesh = xx batch.base;
 				
-				l, r := uvec2_from_u64(mesh.color_map);
-				glUniform2ui(color_map_loc, l, r);
-				
-				if mesh.flags & .Animated
+				for 0 .. batch.count - 1 
 				{
-					xform_batch :*Matrix4= xx mesh.skinning_xform_batch.base;
-					xform_base := mesh.base_skinning_xform;
+					mesh := meshes + it;
+					glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mesh.vertex_buffer);
+					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+					glUniformMatrix4fv(model_loc, 1, GL_TRUE, *mesh.xform.coef[0][0]);
+					glUniform4fv(color_loc, 1, *mesh.color.component[0]);
+					glUniform1ui(flags_loc, cast, force(u32)mesh.flags);
 					
-					xform_index :u32= xx (xform_base - xform_batch);
+					l, r := uvec2_from_u64(mesh.color_map);
+					glUniform2ui(color_map_loc, l, r);
 					
-					glUniform1ui(base_xform_loc, xform_index);
-					ooga : int;
+					if mesh.flags & .Animated
+					{
+						xform_batch :*Matrix4= xx mesh.skinning_xform_batch.base;
+						xform_base := mesh.base_skinning_xform;
+						
+						xform_index :u32= xx (xform_base - xform_batch);
+						
+						glUniform1ui(base_xform_loc, xform_index);
+						ooga : int;
+					}
+					
+					glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, xx (mesh.start * size_of(u32)));
 				}
 				
-				glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, xx (mesh.start * size_of(u32)));
+				batch = batch.next;
 			}
-			
-			batch = batch.next;
 		}
 	}
 	

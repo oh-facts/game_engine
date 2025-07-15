@@ -1,3 +1,52 @@
+draw_mesh_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_WHITE, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
+{
+	a_mesh := mesh_from_hash(hash);
+	
+	for 0 .. a_mesh.num_primitives - 1
+	{
+		r_mesh :*R_Mesh = xx push_batch(*pb.mesh_batches, size_of(R_Mesh), xx MB(1));
+		a_prim := a_mesh.primitives + it;
+		
+		r_mesh.start = a_prim.start;
+		r_mesh.count = a_prim.count;
+		
+		r_mesh.xform = model;
+		
+		r_mesh.vertex_buffer = a_mesh.vertex_buffer;
+		r_mesh.index_buffer = a_mesh.index_buffer;
+		
+		color, color_map := material_data_from_hash(a_prim.material_hash);
+		
+		if color == .{}
+		{
+			r_mesh.color = .{1, 1, 1, 1};
+		}
+		else
+		{
+			r_mesh.color = color;
+		}
+		
+		r_mesh.color *= tint;
+		
+		if color_map.U64[0]
+		{
+			r_mesh.color_map = tex_id_from_handle(color_map);
+		}
+		else
+		{
+			r_mesh.color_map = tex_id_from_handle(get_white_square());
+		}
+		
+		if joints
+		{
+			r_mesh.flags |= .Animated;
+			//r_mesh.skinning_xform_batch = pb.skinning_xforms.last;
+			r_mesh.base_skinning_xform = joints;
+			r_mesh.skinning_xform_batch = an_batch;
+		}
+	}
+}
+
 draw_node_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_WHITE, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
 {
 	root_node := node_from_hash(hash);
@@ -8,7 +57,7 @@ draw_node_asset :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := C
 	
 	if root_node.mesh.count
 	{
-		push_mesh(pb, computed_model, root_node.mesh_hash, tint, joints, an_batch);
+		draw_mesh_asset(pb, computed_model, root_node.mesh_hash, tint, joints, an_batch);
 	}
 	
 	child_asset_node : *Asset;
