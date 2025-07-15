@@ -2,7 +2,7 @@
 #import "File";
 #import "File_Utilities";
 #import "Basic";
-#load "code/main.jai";
+#load "code/globals.jai";
 
 build :: () 
 {

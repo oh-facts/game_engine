@@ -39,7 +39,83 @@ GLTF_Scene
 // There is very little common between a texture and an asset
 // Code editors should allow some kind of screenshot / text tooltip - like viewing. Not referring to comments.
 
+// =========== Post asset rework =========== //
+
+// do I polymorph with unions or #using as?
+
 Asset :: struct
+{
+	// hash link.
+	hash_next : *Asset;
+	
+	// this asset's key and hash
+	key : string;
+	hash : u128;
+	
+	using asset_union : union
+	{
+		using mesh_asset : *Mesh_Asset;
+		using material_asset : *Material_Asset;
+		using texture_asset : *Texture_Asset;
+		using skin_asset : *Skin_Asset;
+		using animation_asset : *Animation_Asset;
+		using node_asset : *Node_Asset;
+		asset : *void;
+	}
+}
+
+//#run print("%\n", size_of(Asset));
+
+Mesh_Asset :: struct
+{
+	primitives : *Primitive;
+	num_primitives : u64;
+	indices : *u32;
+	num_indices : u64;
+	
+	vertices : *Vertex;
+	num_vertices : u64;
+	
+	// gpu handles
+	vertex_buffer : u32;
+	index_buffer : u32;
+	
+	aabb : AABB;
+}
+
+Material_Asset :: struct
+{
+	// color map asset and hash.
+	map : string;
+	map_hash : u128;
+	
+	// Used by material and color override for meshes
+	color : Vector4;
+}
+
+Texture_Asset :: struct
+{
+	// gpu handle
+	id : Handle;
+}
+
+Skin_Asset :: struct
+{
+	joints : []Joint;
+}
+
+Animation_Asset :: struct
+{
+	// Animation?
+	anim : []Animation;
+	length : float;
+	
+	// skin?
+	skin : string;
+	skin_hash : u128;
+}
+
+Node_Asset :: struct
 {
 	// Keys for asset hierearchies.
 	// strings are helpful for serializing, etc.
@@ -51,22 +127,6 @@ Asset :: struct
 	parent_key : string;
 	
 	// asset pointers are persistant forever
-	// The vertex / skinning / joint / texture data are streamed in and out
-	// Whats a bit annoying about this is that I will have to do a "get_asset()"
-	// anyways because the asset might not be loaded
-	// However, for an asset, the children ptrs will always be loaded, no?
-	// Is there any reason for the children to not be loaded?
-	// Well, one thing is that since I know their AABBs, I might not
-	// even load an asset if its not in view, even if I am drawing
-	// the whole thing
-	// Now, this makes good sense.
-	// But that still doesn't mean I can't keep asset ptrs around
-	// Sure, I might crash if I access an asset directly
-	// But why would I ever do that? And if I do it, its a bug and I should
-	// stop doing it.
-	// Never used const in my life, and if I accidentally modify something I shouldn't,
-	// I stop accidentally modifying it.
-	
 	// Now, I have decided to go with hashed keys for now.
 	
 	next_hash : u128;
@@ -75,101 +135,62 @@ Asset :: struct
 	last_hash : u128;
 	parent_hash : u128;
 	
-	xform : Matrix4;
-	
-	// hash link
-	hash_next : *Asset;
-	
-	// this asset's key and hash
-	key : string;
-	hash : u128;
-	
-	// color map asset and hash.
-	// Used by the material
-	map : string;
-	map_hash : u128;
-	
-	// Used by material and color override for meshes
-	color : Vector4;
-	
-	// map gpu handle
-	id : Handle;
-	
-	// Animation?
-	anim : []Animation;
-	length : float;
-	
-	// skin?
-	skin : string;
-	skin_hash : u128;
-	
-	// joints?
-	joints : []Joint;
-	
 	// mesh key
 	mesh : string;
 	mesh_hash : u128;
 	
-	// mesh data
-	primitives : *Primitive;
-	num_primitives : u64;
-	indices : *u32;
-	num_indices : u64;
-	
-	vertices : *Vertex;
-	num_vertices : u64;
-	
-	// mesh gpu buffers
-	vertex_buffer : u32;
-	index_buffer : u32;
-	
-	aabb : AABB;
+	xform : Matrix4;
 }
 
-//#run print("%\n", size_of(Asset));
+Asset_Map :: struct
+{
+	slots : []Asset_Slot;
+	asset_type : Type;
+}
 
 Asset_Slot :: struct
 {
 	first : *Asset;
-	last : *Asset;
+	last  : *Asset;
 }
 
 asset_store : struct
 {
 	arena : *Arena;
 	
-	meshes : []Asset_Slot;
-	materials : []Asset_Slot;
-	textures : []Asset_Slot;
-	skins : []Asset_Slot;
-	animations : []Asset_Slot;
-	nodes : []Asset_Slot;
+	meshes : Asset_Map;
+	materials : Asset_Map;
+	textures : Asset_Map;
+	skins : Asset_Map;
+	animations : Asset_Map;
+	nodes : Asset_Map;
 }
 
 // Can't decide if I want one big asset array
 // Or multiple arrays.
 // Atm, I think every asset except for meshes
 // will be streamed in/out the same way.
-// Meshes will first be bounds checked
+// Meshes will first be bounds (aabb) checked
+
 asset_init :: ()
 {
 	using asset_store;
 	arena = arena_init();
-	materials.count = 256;
-	materials.data = push_array(arena, Asset_Slot, xx materials.count);
-	textures.count = 256;
-	textures.data = push_array(arena, Asset_Slot, xx materials.count);
-	skins.count = 256;
-	skins.data = push_array(arena, Asset_Slot, xx skins.count);
 	
-	animations.count = 256;
-	animations.data = push_array(arena, Asset_Slot, xx animations.count);
+	init_asset_map :: (map : *Asset_Map, count : int, type : Type)
+	{
+		using asset_store;
+		map.slots.count = count;
+		map.slots.data = push_array(arena, Asset_Slot, xx count);
+		map.asset_type = type;
+	}
 	
-	meshes.count = 256;
-	meshes.data = push_array(arena, Asset_Slot, xx meshes.count);
-	
-	nodes.count = 256;
-	nodes.data = push_array(arena, Asset_Slot, xx nodes.count);
+	init_asset_map(*materials, 256, Material_Asset);
+	init_asset_map(*textures, 256, Texture_Asset);
+	init_asset_map(*skins, 256, Skin_Asset);
+	init_asset_map(*animations, 256, Animation_Asset);
+	init_asset_map(*meshes, 256, Mesh_Asset);
+	init_asset_map(*nodes, 256, Node_Asset);
 }
 
 add_texture :: (data : string, name : string, min_filter : Tex_Param,
@@ -340,22 +361,22 @@ equip_node_with_parent :: (name : string, parent : *Asset) -> *Asset
 	return asset;
 }
 
-animation_data_from_key :: (key : string) -> []Animation, []Joint, *Asset
+animation_data_from_key :: (key : string) -> []Animation, []Joint, float
 {
 	using asset_store;
 	anim := asset_from_key(*animations, key);
 	joints := asset_from_key(*skins, anim.skin);
 	
-	return anim.anim, joints.joints, anim;
+	return anim.anim, joints.joints, anim.length;
 }
 
-animation_data_from_hash :: (hash : u128) -> []Animation, []Joint, *Asset
+animation_data_from_hash :: (hash : u128) -> []Animation, []Joint, float 
 {
 	using asset_store;
 	anim := asset_from_hash(*animations, hash);
 	joints := asset_from_hash(*skins, anim.skin_hash);
 	
-	return anim.anim, joints.joints, anim;
+	return anim.anim, joints.joints, anim.length;
 }
 
 material_data_from_key :: (key : string) -> Vector4, Handle
@@ -416,7 +437,7 @@ node_from_hash :: (hash : u128) -> *Asset
 	return node;
 }
 
-asset_from_hash :: (slots : *[]Asset_Slot, hash : u128) -> *Asset
+asset_from_hash :: (using map : *Asset_Map, hash : u128) -> *Asset
 {
 	using asset_store;
 	out : *Asset;
@@ -453,16 +474,19 @@ asset_from_hash :: (slots : *[]Asset_Slot, hash : u128) -> *Asset
 			slot.last.hash_next = out;
 			slot.last = out;
 		}
+		
+		ti := cast(*Type_Info) map.asset_type;
+		out.asset = arena_push_bytes(arena, xx ti.runtime_size);
 	}
 	
 	return out;
 }
 
-asset_from_key :: (slots : *[]Asset_Slot, key : string) -> *Asset
+asset_from_key :: (map : *Asset_Map, key : string) -> *Asset
 {
 	using asset_store;
 	hash := hash_string(key);
-	out := asset_from_hash(slots, hash);
+	out := asset_from_hash(map, hash);
 	
 	if !out.key.count
 	{
@@ -1001,6 +1025,7 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 	
 	gltf_it.arena = arena;
 	
+	// load Nodes
 	for i : 0 .. data.scenes_count - 1
 	{
 		scene := data.scenes + i;
@@ -1011,21 +1036,21 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 			node := scene.nodes[j];
 			mesh_node = talloc(size_of(GLTF_Mesh_Node_Checker));
 			
-			gltf_traverse_node(*gltf_it, node, mesh_node);
+			gltf_mesh_node_checker_create_tree(node, mesh_node);
 		}
 		
-		gltf_traverse_node2(*gltf_it, mesh_node);
+		gltf_mesh_node_checker_mark_has_mesh(mesh_node);
 		jeff : int;
 		
-		gltf_traverse_node3(*gltf_it, mesh_node);
+		gltf_mesh_node_checker_prune_unused_mesh_nodes(mesh_node);
 		jefff : int;
 		
 		//		asset_node_key := simple_gltf_node_key(gltf_it, mesh_node.node);
 		//		asset_node := add_node(asset_node_key);
-		gltf_traverse_node4(*gltf_it, mesh_node, null);
+		gltf_mesh_node_checker_create_asset_node_tree(*gltf_it, mesh_node, null);
 		jeffff : int;
 		
-		print_asset_node(hash_string("cow.cow_root"));
+		//print_asset_node(hash_string("cow.cow_root"));
 	}
 	
 	//gltf_print(it.scene);
@@ -1034,7 +1059,7 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 }
 
 #scope_file
-
+.
 cgltf_texture_index :: (data : *cgltf_data, object : *cgltf_texture) -> cgltf_size
 {
 	//assert(object && (cgltf_size)(object - data->textures) < data->textures_count);
@@ -1176,6 +1201,9 @@ GLTF_It :: struct
 	asset_name : string;
 };
 
+// check if node has a mesh attached or has a child at some point that has a mesh. This
+// is to avoid nodes that are purely for joints
+
 GLTF_Mesh_Node_Checker :: struct
 {
 	node : *cgltf_node;
@@ -1191,9 +1219,8 @@ GLTF_Mesh_Node_Checker :: struct
 	children_count : int;
 };
 
-// check if node has a mesh attached or has a child at some point that has a mesh. This
-// is to avoid nodes that are purely for joints
-gltf_traverse_node :: (gltf_it : *GLTF_It, gltf_node : *cgltf_node, mesh_node : *GLTF_Mesh_Node_Checker)
+// Make the gltf mesh node hierearchy using cgltf's node hiereacthy.
+gltf_mesh_node_checker_create_tree :: (gltf_node : *cgltf_node, mesh_node : *GLTF_Mesh_Node_Checker)
 {
 	mesh_node.node = gltf_node;
 	for i : 0 .. (cast(int)gltf_node.children_count) - 1
@@ -1212,18 +1239,17 @@ gltf_traverse_node :: (gltf_it : *GLTF_It, gltf_node : *cgltf_node, mesh_node : 
 			mesh_node.last.next = child_mesh_node;
 			mesh_node.last = child_mesh_node;
 		}
-		gltf_traverse_node(gltf_it, gltf_node.children[i], child_mesh_node);
+		gltf_mesh_node_checker_create_tree(gltf_node.children[i], child_mesh_node);
 	}
 }
 
-gltf_traverse_node2 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker)
+// check if node has a mesh attached. If so, propopogate upwards and mark those nodes relevant for mesh nodes;
+gltf_mesh_node_checker_mark_has_mesh :: (mesh_node : *GLTF_Mesh_Node_Checker)
 {
-	// check if node has a mesh attached or has a child at some point that has a mesh. This
-	// is to avoid nodes that are purely for joints
 	child_mesh_node := mesh_node.first;
 	for i : 0 .. (cast(int)mesh_node.children_count) - 1
 	{
-		gltf_traverse_node2(gltf_it, child_mesh_node);
+		gltf_mesh_node_checker_mark_has_mesh(child_mesh_node);
 		child_mesh_node = child_mesh_node.next;
 	}
 	
@@ -1243,7 +1269,8 @@ gltf_traverse_node2 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker)
 	}
 }
 
-gltf_traverse_node3 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker)
+// Remove all nodes that aren't mesh nodes
+gltf_mesh_node_checker_prune_unused_mesh_nodes :: (mesh_node : *GLTF_Mesh_Node_Checker)
 {
 	child_mesh_node := mesh_node.first;
 	for i : 0 .. (cast(int)mesh_node.children_count) - 1
@@ -1274,13 +1301,14 @@ gltf_traverse_node3 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker)
 		
 		if child_mesh_node
 		{
-			gltf_traverse_node3(gltf_it, child_mesh_node);
+			gltf_mesh_node_checker_prune_unused_mesh_nodes(child_mesh_node);
 			child_mesh_node = child_mesh_node.next;
 		}
 	}
 }
 
-gltf_traverse_node4 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker, parent_asset_node : *Asset)
+// set up actual asset node using the "cleaned" up gltf node 
+gltf_mesh_node_checker_create_asset_node_tree :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker, parent_asset_node : *Asset)
 {
 	node_key := simple_gltf_node_key(gltf_it, mesh_node.node);
 	child_asset_node := add_node(node_key);
@@ -1312,7 +1340,7 @@ gltf_traverse_node4 :: (gltf_it : *GLTF_It, mesh_node : *GLTF_Mesh_Node_Checker,
 	child_mesh_node := mesh_node.first;
 	for i : 0 .. (cast(int)mesh_node.children_count) - 1
 	{
-		gltf_traverse_node4(gltf_it, child_mesh_node, child_asset_node);
+		gltf_mesh_node_checker_create_asset_node_tree(gltf_it, child_mesh_node, child_asset_node);
 		child_mesh_node = child_mesh_node.next;
 	}
 }

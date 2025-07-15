@@ -207,7 +207,7 @@ arena_init :: (cmt := ARENA_COMMIT_SIZE, res := ARENA_RESERVE_SIZE) -> *Arena {
 	return out;
 }
 
-arena_push_impl :: (arena : *Arena, size : u64) -> *void {
+arena_push_bytes :: (arena : *Arena, size : u64) -> *void {
 	pmem := align_pow_2(arena.used, arena.align);
 	pnew := pmem + size;
 	
@@ -245,11 +245,11 @@ arena_free :: (arena : *Arena) {
 }
 
 push_struct :: (arena : *Arena, type : Type) -> *void #expand{
-	return arena_push_impl(arena, size_of(type));
+	return arena_push_bytes(arena, size_of(type));
 }
 
 push_array :: (arena : *Arena, type : Type, count : u64) -> *void #expand{
-	return arena_push_impl(arena, size_of(type) * count);
+	return arena_push_bytes(arena, size_of(type) * count);
 }
 
 // Isn't zeroed!

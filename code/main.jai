@@ -22,7 +22,6 @@ My far plane is only 1000 so things beyon that are ignored. My planet radius is 
 from outer space
 
 [x] Higher depth precision + inf far plane. Was really annoying me. Now I can work on game.
-
 */
 
 // NOTE(mizu): Global modules
@@ -43,7 +42,6 @@ from outer space
 #import "Windows_Utf8";
 #import "Unicode";
 #import "freetype-2.12.1";
-
 // NOTE(mizu): local modules
 #import "jai_cgltf";
 
@@ -53,10 +51,7 @@ from outer space
 #load "render.jai";
 #load "asset.jai";
 #load "widgets.jai";
-
-major :: 0;
-minor :: 2;
-patch :: 8;
+#load "globals.jai";
 
 Entity_Flags :: enum_flags
 {
@@ -682,7 +677,7 @@ main :: ()
 					{
 						case .Mesh;
 						
-						for slot : asset_store.meshes
+						for slot : asset_store.meshes.slots
 						{
 							asset := slot.first;
 							while asset
@@ -721,7 +716,7 @@ main :: ()
 						}
 						
 						case .Node;
-						for slot : asset_store.nodes
+						for slot : asset_store.nodes.slots
 						{
 							asset := slot.first;
 							while asset
@@ -968,9 +963,9 @@ main :: ()
 					{
 						if e.flags & .Animated
 						{
-							anim, jaunt, asset := animation_data_from_hash(e.animation_hash);
+							anim, jaunt, anim_length := animation_data_from_hash(e.animation_hash);
 							
-							if e.counter > asset.length
+							if e.counter > anim_length
 							{
 								for i : 0 .. 255
 								{

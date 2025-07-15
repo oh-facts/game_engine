@@ -136,7 +136,15 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 		}
 		else
 		{
-			out = push_struct(arena, Asset);
+			// for some reason, I had Asset here. For A LONG TIME.
+			// Yk how the bug showed up? old widgets started getting written over.
+			// Yk how i figured it out? Debugger. It became fairly obvious fairly quickly
+			// Yk why it wasnt a problem before? My asset struct used to be big and fat.
+			// I made it a union + used ptr instead of storing the asset struct directly inside the asset
+			// This made the asset struct very smoll (smoller than a widget).
+			// out = push_struct(arena, Asset);
+			
+			out = push_struct(arena, Widget);
 		}
 		
 		if !slot.first
