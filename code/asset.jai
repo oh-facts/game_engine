@@ -1059,7 +1059,7 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 }
 
 #scope_file
-.
+
 cgltf_texture_index :: (data : *cgltf_data, object : *cgltf_texture) -> cgltf_size
 {
 	//assert(object && (cgltf_size)(object - data->textures) < data->textures_count);

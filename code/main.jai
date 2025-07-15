@@ -540,6 +540,7 @@ main :: ()
 		
 		time_since_last := time_elapsed;
 		wheel_delta = 0;
+		win_size := get_window_size(the_window);
 		
 		update_window_events();
 		
@@ -564,7 +565,6 @@ main :: ()
 		
 		pb := begin_render();
 		pb.counter = counter;
-		win_size := get_window_size(the_window);
 		
 		x,y := get_mouse_pointer_position(the_window, false);
 		
