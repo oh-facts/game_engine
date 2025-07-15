@@ -1,4 +1,13 @@
 /*
+
+// For when you return, you were going to make the entity updating thing its own thing.
+// Maybe make a tab for it. Maybe put the asset viewing thing in a tab function.
+// call begin and end window like normal, but process whatever tab is selected
+// Entity updating its own thing bad idea.
+// I will talk about an architecture idea I had
+// library vs user code
+
+
 [ ] skinned aabbs: I think the best way to deal with skinned mesh aabbs is to output vertex min / max
  after skinning
 
@@ -48,398 +57,22 @@ from outer space
 // NOTE(mizu): src code
 #load "base.jai";
 #load "render_opengl.jai";
-#load "render.jai";
+#load "render_push_buffer.jai";
+#load "render_asset.jai";
 #load "asset.jai";
 #load "widgets.jai";
 #load "globals.jai";
+#load "entity.jai";
+#load "glyph.jai";
+#load "camera.jai";
+#load "memory.jai";
+#load "editor.jai";
+#load "input.jai";
+#load "platform.jai";
+#load "math.jai";
+#load "string.jai";
 
-Entity_Flags :: enum_flags
-{
-	Animated;
-}
-
-Entity :: struct
-{
-	// 32 chars
-	// its a string view here
-	short_name : string;
-	short_name_memory : [32]u8;
-	
-	flags : Entity_Flags;
-	kf_index : [256]Key_Frame_Index;
-	counter : float;
-	pos : Vector3;
-	size : Vector3;
-	rot : Vector3;
-	animation_hash : u128;
-	node_asset_hash : u128;
-	
-	// per frame artifacts
-	joints : *Matrix4;
-	an_batch : *Batch;
-}
-
-set_entity_name :: (e : *Entity, name : string)
-{
-	// names are u8
-	// Will this be annoying once I have other languages?
-	// Probably but its ok for now. I can't even render utf 32 text rn.
-	memcpy(e.short_name_memory.data, name.data, name.count);
-	e.short_name.count = name.count;
-}
-
-Font_Kind :: enum
-{
-	Delius;
-	Akasha;
-	Count;
-}
-
-/*
- Make it immediate mode!
-If it can't find the glyph. It makes a call to ft to find the glyph.
-Every "frame"
-*/
-
-Glyph_Key :: struct
-{
-	cp : u32;
-	kind : Font_Kind;
-	size : int;
-};
-
-Glyph :: struct
-{
-	next : *Glyph;
-	
-	advance_x : float;
-	advance_y : float;
-	offset_x : float;
-	offset_y : float;
-	ascent : float;
-	descent : float;
-	tex : Handle;
-	height : float;
-	// No need for font cache. Fixed # of fonts. ~10 fonts at best.
-	// All will be preloaded at startup for now
-	// So I am stuffing that stuff here.
-	pt_size : int;
-	font_ascent : int;
-	kind : Font_Kind;
-	//ft_library : FT_Library;
-	
-	key : Glyph_Key;
-	hash : u128;
-}
-
-Glyph_Slot :: struct
-{
-	first : *Glyph;
-	last : *Glyph;
-}
-
-Font_State :: struct
-{
-	arena : *Arena;
-	slots : []Glyph_Slot;
-	
-	libraries : [Font_Kind.Count]FT_Library;
-	faces: [Font_Kind.Count]FT_Face;
-}
-
-font_state : Font_State;
-
-font_state_init :: ()
-{
-	using font_state;
-	
-	arena = arena_init();
-	//frame = arena_init();
-	
-	slots.count = 256;
-	slots.data = push_array(arena, Glyph_Slot, xx slots.count);
-	
-	paths :[2]string = .["delius.ttf", "akasha.ttf"];
-	
-	for 0 .. 1
-	{
-		font_path := tprint("%/%", fonts_folder, paths[it]);
-		font_data := read_entire_file(font_path);
-		
-		FT_Init_FreeType(*libraries[it]);
-		FT_New_Memory_Face(libraries[it], font_data.data, xx font_data.count, 0, *faces[it]);
-	}
-	
-}
-
-// documenting old stupid bug
-// I can't keep strings and use as keys if I am allocating it from transient memory
-// Its probably best to keep the hash around and reuse that or use the struct form of keys
-// instead of data form for cases where the string is derived from the data
-
-glyph_from_key :: (cp : u32, kind : Font_Kind, size : int) -> *Glyph
-{
-	using font_state;
-	
-	// paranoid about padding garbage creeping in
-	key : Glyph_Key;
-	key.cp = cp;
-	key.kind = kind;
-	key.size = size;
-	
-	out : *Glyph;
-	
-	data_size := size_of(type_of(key));
-	
-	str_key : string;
-	str_key.data = tzpush_array(u8, data_size);
-	str_key.count = data_size;
-	memcpy(str_key.data, *key, data_size);
-	//str_key := tprint("%", key);
-	
-	hash := hash_string(str_key);
-	
-	slot_idx := hash.U64[0] % cast(u64)slots.count;
-	slot := *slots[slot_idx];
-	
-	// check if node already exists
-	{
-		cur := slot.first;
-		while cur {
-			defer cur = cur.next;
-			
-			if cur.hash == hash {
-				out = cur;
-				break;
-			}
-		}
-	}
-	
-	// if not, allocate
-	if !out
-	{
-		// allocate glyph node
-		{
-			out = push_struct(arena, Glyph);
-			
-			if !slot.first
-			{
-				slot.first = out;
-				slot.last = out;
-			}
-			else
-			{
-				slot.last.next = out;
-				slot.last = out;
-			}
-		}
-		
-		// init with key stuff
-		{
-			out.hash = hash;
-			out.key = key;
-			out.pt_size = key.size;
-			out.kind = key.kind;
-		}
-		
-		// init with freetype stuff
-		{
-			library := libraries[xx key.kind];
-			face := faces[xx key.kind];
-			
-			FT_Set_Char_Size(face, 0, xx (key.size * 64), 0, 96);
-			
-			out.ascent = xx face.ascender >> 6;
-			out.descent = xx face.descender >> 6;
-			
-			ch, count, _ := character_utf8_to_utf32(xx *key.cp, 1);
-			
-			index := FT_Get_Char_Index(face, ch);
-			
-			FT_Load_Glyph(face, index, FT_LOAD_DEFAULT | FT_LOAD_RENDER);
-			
-			{
-				out.advance_x = xx face.glyph.advance.x >> 6;
-				out.advance_y = xx face.glyph.advance.y >> 6;
-				out.offset_x = xx face.glyph.bitmap_left;
-				out.offset_y = xx face.glyph.bitmap_top;
-				out.height = xx face.size.metrics.height >> 6;
-			}
-			
-			width := face.glyph.bitmap.width;
-			height := face.glyph.bitmap.rows;
-			bytes := face.glyph.bitmap.buffer;
-			
-			in_size := width * height;
-			out_size := width * height * 4;
-			
-			buffer :*u8= xx tzpush_array(u8, out_size);
-			
-			i := 0;
-			j := 0;
-			
-			while i != in_size
-			{
-				a := (cast(*u8)bytes)[i];
-				
-				if a
-				{
-					ew : int;
-				}
-				
-				buffer[j + 0] = 255;
-				buffer[j + 1] = 255;
-				buffer[j + 2] = 255;
-				buffer[j + 3] = a;
-				
-				i += 1;
-				j += 4;
-			}
-			
-			out.tex = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
-		}
-	}
-	
-	return out;
-	//print("% %\n", hash, i);
-}
-
-//cps :: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ{}";
-
-Entity_State :: struct
-{
-	arena : *Arena;
-	entities : []Entity;
-}
-
-entity_state_init :: () -> Entity_State
-{
-	out : Entity_State;
-	using out;
-	
-	arena = arena_init();
-	entities.data = push_array(arena, Entity, 100);
-	
-	return out;
-}
-
-entity_alloc :: (using entity_state : *Entity_State) -> *Entity
-{
-	out := entities.data + entities.count;
-	out.size = .{1,1,1};
-	out.short_name.data = out.short_name_memory.data;
-	entities.count += 1;
-	return out;
-}
-
-Camera :: struct
-{
-	speed := 4.0;
-	ROTATION_SPEED :: 0.3;
-	ROTATION_SMOOTHING :: 0.3;
-	
-	position : Vector3;
-	euler_angles : Vector3;
-	rotation : Quaternion;
-	rotation_input : Vector2;
-	fov := 60.0;
-	transform := Matrix4_Identity;
-	
-	viewport : Vector2;
-	
-	control : bool;
-}
-
-camerra : *Camera;
-
-update_2d_camera :: (using camera : *Camera, delta : float, _viewport : Vector2)
-{
-	viewport = _viewport;
-}
-
-update_flying_camera :: (using camera : *Camera, delta_time : float, vp : Vector2)
-{
-	viewport = vp;
-	
-	mouse_delta : Vector2;
-	move_input  : Vector3;
-	move_speed  : float;
-	
-	if control 
-	{
-		x, y, w, h := get_dimensions (the_window, false);
-		user32 :: #system_library "User32";
-		SetCursorPos :: (x : s32, y : s32) -> s32 #foreign user32;
-		SetCursorPos (w / 2, h / 2);
-	}
-	
-	if control 
-	{
-		move_speed = speed;
-		mouse_delta = xy (xx mouse_delta_x, xx mouse_delta_y);
-		if is_key_down (.SHIFT) then move_speed *= 10;
-		move_speed *= delta_time;
-		move_input.x = cast (float) is_key_down (xx #char "D")
-			- cast (float) is_key_down (xx #char "A");
-		move_input.y = cast (float) is_key_down (xx #char "E")
-			- cast (float) is_key_down (xx #char "Q");
-		move_input.z = cast (float) is_key_down (xx #char "S")
-			- cast (float) is_key_down (xx #char "W");
-		move_input = rotate (unit_vector (move_input), rotation);
-	}
-	
-	position += move_input * move_speed;
-	
-	//position.y = 0.15;
-	
-	rotation_input = lerp (rotation_input, mouse_delta, ROTATION_SMOOTHING);
-	delta := rotation_input * ROTATION_SPEED;
-	euler_angles.x += delta.x * PI / 180.0;
-	euler_angles.y += delta.y * PI / 180.0;
-	euler_angles.y = clamp (euler_angles.y, -80.0  * PI / 180.0, 80.0 * PI / 180.0);
-	yaw : Quaternion;
-	// I am not sure why I need to invert the axis of rotation...
-	// nor am I jon (or whoever else at thekla who on this)
-	set_from_axis_and_angle (*yaw, 0, -1, 0, euler_angles.x);
-	pitch : Quaternion;
-	set_from_axis_and_angle (*pitch, -1, 0, 0, euler_angles.y);
-	rotation = yaw * pitch;
-	
-	transform = make_translation_matrix4 (position) * rotation_matrix (Matrix4, rotation);
-}
-
-get_ortho_proj_and_view_matrix :: (camera : Camera) -> Matrix4, Matrix4
-{
-	aspect_ratio := (camera.viewport.x * 1.) / camera.viewport.y;
-	
-	proj := orthographic_projection_matrix(0, camera.viewport.x, camera.viewport.y, 0, 0, 1, true);
-	view := make_look_at_matrix(camera.position, camera.position + .{0, 0, -1}, .{0, 1, 0}, false);
-	
-	return proj, view;
-}
-
-get_perspective_proj_and_view_matrix :: (using camera : Camera) -> Matrix4, Matrix4
-{
-	view_matrix := inverse (transform);
-	
-	aspect_ratio := viewport.x / cast (float) viewport.y;
-	//projection_matrix := make_projection_matrix (fov * PI / 180.0, aspect_ratio, 10000.0, 0.1, depth_range_01 = true);
-	projection_matrix := make_inf_proj_matrix (fov * PI/180, aspect_ratio, 0.1);
-	
-	return projection_matrix, view_matrix;
-}
-
-// https://nlguillemot.wordpress.com/2016/12/07/reversed-z-in-opengl/
-make_inf_proj_matrix :: (fovY_radians : float, aspectWbyH : float, zNear : float ) -> Matrix4
-{
-	f := 1.0 / tan(fovY_radians / 2.0);
-	out : Matrix4;
-	out._11 = f / aspectWbyH;
-	out._22 = f;
-	out._43 = -1.0;
-	out._34 = zNear;
-	return out;
-}
+nil_widget : Widget;
 
 hot_entity : *Entity;
 active_entity : *Entity;
@@ -458,6 +91,10 @@ Gizmo_Mode :: enum
 
 active_node_asset_hash : u128;
 active_mesh_asset_hash : u128;
+
+the_window: Window_Type;
+
+current_asset_viewer_tab : Asset_Viewer_Tab;
 
 main :: ()
 {
@@ -481,7 +118,7 @@ main :: ()
 	fonts_folder = join(data_folder, "/fonts");
 	
 	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
-	camerra = *boss_window.tabs[1].camera;
+	
 	delta : float;
 	time_elapsed : float;
 	
@@ -495,38 +132,22 @@ main :: ()
 	
 	quit := false;
 	
-	arena : *Arena;
-	
 	ui_camera : Camera;
 	
-	arena = arena_init();
+	entity_state := entity_state_init();
 	
 	// Make the gltf load file thing part of the node_from_key
 	// then when you do cow.walk.
 	// it loads cow.glb
 	// and extracts walk and whatever else
+	// TODO(mizu): Use frame arena or something.
+	// Use temp memory for scratch stuff
 	
-	gltf_load_file(arena, "watermelon_stall.glb");
-	gltf_load_file(arena, "cow.glb");
+	gltf_load_file("watermelon_stall.glb");
+	gltf_load_file("cow.glb");
 	
 	//control_camera = true;
 	//toggle_cursor(0);
-	
-	entity_state := entity_state_init();
-	
-	{
-		po := entity_alloc(*entity_state);
-		po.node_asset_hash = hash_string("watermelon_stall.root");
-		set_entity_name(po, "wa'er melon s'all");
-		//po.pos = .{0,101.8,0};
-	}
-	
-	{
-		po := entity_alloc(*entity_state);
-		po.node_asset_hash = hash_string("cow.cow_root");
-		set_entity_name(po, "moo machine");
-		po.pos = .{-30, 40, -30};
-	}
 	
 	//watermelon_stall.root
 	
@@ -711,7 +332,7 @@ main :: ()
 							
 							if boss_window.draw_aabb
 							{
-								draw_mesh_aabb(*pb, active_mesh_asset_hash, model);
+								draw_mesh_asset_aabb(*pb, active_mesh_asset_hash, model);
 							}
 						}
 						
@@ -748,7 +369,7 @@ main :: ()
 							
 							if boss_window.draw_asset
 							{
-								push_mesh_node(*pb, model, active_node_asset_hash);
+								draw_node_asset(*pb, model, active_node_asset_hash);
 							}
 							
 							if boss_window.draw_aabb
@@ -1012,7 +633,7 @@ main :: ()
 						model = rotate(model, rotation);
 						model = scale(model, e.size);
 						
-						push_mesh_node(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
+						draw_node_asset(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
 					}
 					
 					aabb_rec :: (e : *Entity, pb : *R_Push_Buffer, hash : u128, _model : Matrix4, this_frame_hot : *bool)
@@ -1188,365 +809,3 @@ main :: ()
 	
 	print("quit safely\n");
 }
-
-is_key_down :: inline (key : Key_Code) -> bool #must
-{
-	return (input_button_states[cast (s64) key] & .DOWN) != 0;
-}
-
-is_key_pressed :: inline (key : Key_Code) -> bool #must
-{
-	return (input_button_states[cast (s64) key] & .START) != 0;
-}
-
-wheel_delta : s32;
-
-toggle_cursor :: (show : s32)
-{
-	count := ShowCursor(show);
-	if show {
-		while (count < 0) count = ShowCursor(1);
-	} else {
-		while (count >= 0) count = ShowCursor(0);
-	}
-}
-
-swap_buffers :: (win : Window_Type)
-{
-	dc := GetDC(the_window);
-	SwapBuffers(dc);
-	ReleaseDC(the_window, dc);
-}
-
-get_window_size :: (win : Window_Type) -> Vector2i
-{
-	out : Vector2i;
-	rect : RECT;
-	GetClientRect(win, *rect);
-	out.x = rect.right - rect.left;
-	out.y = rect.bottom - rect.top;
-	
-	return out;
-}
-
-the_window: Window_Type;
-
-exe_folder : string;
-data_folder : string;
-models_folder : string;
-code_folder : string;
-fonts_folder : string;
-
-Editor_Tab :: struct
-{
-	camera : Camera;
-}
-
-Editor_Window :: struct
-{
-	title : string;
-	pos : Vector2;
-	size : Vector2;
-	mouse_last_pos : Vector2;
-	is_dragging : bool;
-	hide : bool;
-	widget_root : *Widget;
-	counter : f32;
-	
-	scroll_offsets : [2]float;
-	
-	hacker_draw : bool;
-	draw_asset : bool;
-	draw_aabb : bool;
-	
-	current_app_mode_tab : App_Mode_Tab;
-	tabs : [2]Editor_Tab;
-}
-
-init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_Window
-{
-	out : Editor_Window;
-	out.title = title;
-	out.pos = pos;
-	out.size = size;
-	out.draw_asset = true;
-	out.current_app_mode_tab = .Game;
-	
-	// nice angle
-	out.tabs[App_Mode_Tab.Asset_Viewer].camera.position = .{-2, 6.4, 8.6};
-	out.tabs[App_Mode_Tab.Asset_Viewer].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
-	
-	// copied the above one
-	out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
-	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
-	
-	//out.tabs[App_Mode_Tab.Game].camera.position = .{-120, 90, 1500};
-	//out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(35), deg_to_rad(26), 0};
-	
-	return out;
-}
-
-begin_editor_window :: (window : *Editor_Window)
-{
-	using widget_state;
-	
-	root := begin_col();
-	root.fixed_pos = window.pos;
-	
-	bar_key := make_widget_key();
-	bar := widget_from_key(bar_key);
-	
-	begin_parent(bar);
-	bar.child_axis = .X;
-	
-	hide_key := make_widget_key();
-	hide := widget_from_key(hide_key);
-	
-	tabs_key := make_widget_key();
-	tab := widget_from_key(tabs_key);
-	begin_parent(tab);
-	tab.child_axis = .X;
-	
-	asset_tab_key := make_widget_key();
-	asset_tab := widget_from_key(asset_tab_key);
-	
-	game_tab_key := make_widget_key();
-	game_tab := widget_from_key(game_tab_key);
-	
-	end_parent();
-	end_parent();
-	
-	// styling
-	asset_tab.text = "asset";
-	asset_tab.size = .{140, 20};
-	asset_tab.flags |= .Draw_Text | .Draw_Bg;
-	asset_tab.font_size = 12;
-	
-	game_tab.text = "game";
-	game_tab.size = .{140, 20};
-	game_tab.flags |= .Draw_Text | .Draw_Bg;
-	game_tab.font_size = 12;
-	
-	hide.text = ifx !window.hide then "v" else ">"; 
-	hide.size = .{20, 20};
-	hide.flags |= .Draw_Text | .Draw_Bg;
-	hide.font_size = 12;
-	
-	// interactions
-	if signal_from_widget(tab) 
-	{
-		window.is_dragging = true;
-	}
-	
-	else if signal_from_widget(hide)
-	{
-		window.hide = !window.hide;
-	}
-	
-	if signal_from_widget(asset_tab) 
-	{
-		window.current_app_mode_tab = .Asset_Viewer;
-	}
-	
-	else if signal_from_widget(game_tab) 
-	{
-		window.current_app_mode_tab = .Game;
-	}
-	
-	if window.current_app_mode_tab == .Asset_Viewer
-	{
-		asset_tab.active = true;
-	}
-	
-	else if window.current_app_mode_tab == .Game
-	{
-		game_tab.active = true;
-	}
-	
-	window.widget_root = root;
-	
-	x,y := get_mouse_pointer_position(the_window, false);
-	
-	if window.is_dragging
-	{
-		delta := Vector2.{xx x, xx y} - Vector2.{xx last_mpos_x, xx last_mpos_y};
-		window.pos += delta;
-		
-		if !is_key_down(.MOUSE_BUTTON_LEFT)
-		{
-			window.is_dragging = false;
-		}
-	}
-	
-	last_mpos_x, last_mpos_y = get_mouse_pointer_position(the_window, false);
-	
-	{
-		r_flag := widget_from_key(make_widget_key());
-		
-		// text alignment is a bikeshed feature
-		r_flag.text = "       please enjoy each flag equally";
-		r_flag.size = .{300, 20};
-		r_flag.flags |= .Draw_Text | .Draw_Bg;
-		r_flag.font_size = 12;
-	}
-	
-	simple_spacer_widget(0,2);
-	
-	{
-		// pls enjoy each flag equally
-		row();
-		simple_radio_widget(*window.hacker_draw);
-		simple_spacer_widget(20,20);
-		simple_radio_widget(*window.draw_asset);
-		simple_spacer_widget(20,20);
-		simple_radio_widget(*window.draw_aabb);
-		simple_spacer_widget(20,20);
-		simple_radio_widget(*window.hide);
-	}
-	
-	simple_spacer_widget(0,2);
-}
-
-end_editor_window :: (pb : *R_Push_Buffer, window : *Editor_Window)
-{
-	end_col();
-	pb.hacker_draw = window.hacker_draw;
-	window.widget_root.parent = *nil_widget;
-	layout_and_clip_widgets(window.widget_root);
-	draw_widgets(pb, window.widget_root);
-}
-
-nil_widget : Widget;
-draw_node_asset_aabb :: (pb : *R_Push_Buffer, hash : u128, _model : Matrix4)
-{
-	node := node_from_hash(hash);
-	model := _model * node.xform;
-	
-	if node.mesh.count
-	{
-		draw_mesh_aabb(pb, node.mesh_hash, model);
-	}
-	
-	child_asset_node : *Asset;
-	
-	if node.first_key.count
-	{
-		child_asset_node = node_from_hash(node.first_hash);
-	}
-	
-	while child_asset_node
-	{
-		draw_node_asset_aabb(pb, child_asset_node.hash, model);
-		
-		if child_asset_node.next_key.count
-		{
-			child_asset_node = node_from_hash(child_asset_node.next_hash);
-		}
-		else
-		{
-			break;
-		}
-	}
-}
-
-draw_mesh_aabb :: (pb : *R_Push_Buffer, hash : u128, model : Matrix4)
-{
-	m := mesh_from_hash(hash);
-	
-	using m.aabb;
-	
-	edges : [12][2]Vector3;
-	
-	edges[0] = .[.{min.x, min.y, min.z}, .{min.x, min.y, max.z}];
-	edges[1] = .[.{min.x, min.y, min.z}, .{min.x, max.y, min.z}];
-	edges[2] = .[.{min.x, min.y, min.z}, .{max.x, min.y, min.z}];
-	edges[3] = .[.{min.x, min.y, max.z}, .{min.x, max.y, max.z}];
-	edges[4] = .[.{min.x, min.y, max.z}, .{max.x, min.y, max.z}];
-	edges[5] = .[.{min.x, max.y, min.z}, .{min.x, max.y, max.z}];
-	edges[6] = .[.{min.x, max.y, min.z}, .{max.x, max.y, min.z}];
-	edges[7] = .[.{min.x, max.y, max.z}, .{max.x, max.y, max.z}];
-	edges[8] = .[.{max.x, min.y, min.z}, .{max.x, min.y, max.z}];
-	edges[9] = .[.{max.x, min.y, min.z}, .{max.x, max.y, min.z}];
-	edges[10] = .[.{max.x, min.y, max.z}, .{max.x, max.y, max.z}];
-	edges[11] = .[.{max.x, max.y, min.z}, .{max.x, max.y, max.z}];
-	
-	// local space -> world space and drawing
-	for edge : edges
-	{
-		for *edge
-		{
-			<< it = (model * .{it.x, it.y, it.z, 1}).xyz;
-		}
-		push_debug_line(pb, edge[0], edge[1], COLOR_WHITE);
-	}
-}
-
-last_mpos_x, last_mpos_y : int;
-
-current_asset_viewer_tab : Asset_Viewer_Tab;
-
-Asset_Viewer_Tab :: enum
-{
-	Node;
-	Mesh;
-}
-
-App_Mode_Tab :: enum
-{
-	Asset_Viewer;
-	Game;
-}
-
-deg_rot_from_rad_rot :: (rad : Vector3) -> Vector3i
-{
-	rot : Vector3i;
-	rot.x = cast(s32) ((xx rad_to_deg(rad.x)) % 360 + 360) % 360;
-	rot.y = cast(s32) ((xx rad_to_deg(rad.y)) % 360 + 360) % 360;
-	rot.z = cast(s32) ((xx rad_to_deg(rad.z)) % 360 + 360) % 360;
-	
-	return rot;
-}
-
-// For when you return, you were going to make the entity updating thing its own thing.
-// Maybe make a tab for it. Maybe put the asset viewing thing in a tab function.
-// call begin and end window like normal, but process whatever tab is selected
-
-
-/*
-entity_widget_root := *nil_widget;
-	new_context := context;
-	push_context new_context
-	{
-		
-		if false
-		{
-			col();
-			entity_widget_root = _start;
-			
-			format_float := *context.print_style.default_format_float;
-			format_float.trailing_width = 1;
-			
-			if active_entity
-			{
-				txt := tprint("pos: % % %", active_entity.pos.x, active_entity.pos.y, active_entity.pos.z);
-				fixed_label(txt);
-				
-				rot : Vector3i;
-				rot.x = xx rad_to_deg(active_entity.rot.x);
-				rot.y = xx rad_to_deg(active_entity.rot.y);
-				rot.z = xx rad_to_deg(active_entity.rot.z);
-				
-				rot.x %= 360;
-				rot.y %= 360;
-				rot.z %= 360;
-				
-				txt = tprint("rot: % % %", rot.x, rot.y, rot.z);
-				fixed_label(txt);
-				
-				txt = tprint("size: % % %", active_entity.size.x, active_entity.size.y, active_entity.size.z);
-				fixed_label(txt);
-			}
-		}
-	}
-	
-*/

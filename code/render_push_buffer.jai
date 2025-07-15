@@ -1,3 +1,7 @@
+// TODO(mizu): make push mesh and push animation not use asset hashes
+// this file only pushes stuff to the push buffer
+// render_asset would handle higher level stuff / fetch meshes and use this file as base
+
 // NOTE(mizu):
 // U32 : w, h
 // U64 : ptr, tex_id
@@ -478,41 +482,6 @@ push_mesh :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_W
 			//r_mesh.skinning_xform_batch = pb.skinning_xforms.last;
 			r_mesh.base_skinning_xform = joints;
 			r_mesh.skinning_xform_batch = an_batch;
-		}
-	}
-}
-
-push_mesh_node :: (pb : *R_Push_Buffer, model : Matrix4, hash : u128, tint := COLOR_WHITE, joints : *Matrix4 = xx 0, an_batch : *Batch = xx 0)
-{
-	root_node := node_from_hash(hash);
-	computed_model := model * root_node.xform;
-	
-	// uncomment to see a funfun
-	// computed_model = root_node.xform * model;
-	
-	if root_node.mesh.count
-	{
-		push_mesh(pb, computed_model, root_node.mesh_hash, tint, joints, an_batch);
-	}
-	
-	child_asset_node : *Asset;
-	
-	if root_node.first_key.count
-	{
-		child_asset_node = node_from_hash(root_node.first_hash);
-	}
-	
-	while child_asset_node
-	{
-		push_mesh_node(pb, computed_model, child_asset_node.hash, tint, joints, an_batch);
-		
-		if child_asset_node.next_key.count
-		{
-			child_asset_node = node_from_hash(child_asset_node.next_hash);
-		}
-		else
-		{
-			break;
 		}
 	}
 }

@@ -562,7 +562,7 @@ image_create_from_memory :: (data : string, min_filter : Tex_Param,
 	return r_image_create(w, h, n, bmp_data, min_filter, mag_filter, wrap);
 }
 
-gltf_load_file :: (arena : *Arena, _filename : string)
+gltf_load_file :: (_filename : string)
 {
 	gltf_it : GLTF_It;
 	
@@ -804,15 +804,15 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 				if cgltf_animation_channel.target_path ==
 				{
 					case .cgltf_animation_path_type_rotation;
-					anim[joint_index].rot.data = push_array(arena, Joint_Sample, kf_count);
+					anim[joint_index].rot.data = push_array(asset_store.arena, Joint_Sample, kf_count);
 					anim[joint_index].rot.count = xx kf_count;
 					
 					case .cgltf_animation_path_type_translation;
-					anim[joint_index].pos.data = push_array(arena, Joint_Sample, kf_count);
+					anim[joint_index].pos.data = push_array(asset_store.arena, Joint_Sample, kf_count);
 					anim[joint_index].pos.count = xx kf_count;
 					
 					case .cgltf_animation_path_type_scale;
-					anim[joint_index].scale.data = push_array(arena, Joint_Sample, kf_count);
+					anim[joint_index].scale.data = push_array(asset_store.arena, Joint_Sample, kf_count);
 					anim[joint_index].scale.count = xx kf_count;
 				}
 				
@@ -858,7 +858,7 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 		mesh := add_mesh(mesh_key);
 		
 		mesh.num_primitives = node_mesh.primitives_count;
-		mesh.primitives = push_array(arena, Primitive, mesh.num_primitives);
+		mesh.primitives = push_array(asset_store.arena, Primitive, mesh.num_primitives);
 		
 		m_vertex_num := 0;
 		m_index_num := 0;
@@ -892,8 +892,8 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 			}
 		}
 		
-		mesh.indices = push_array(arena, u32, mesh.num_indices);
-		mesh.vertices = push_array(arena, Vertex, mesh.num_vertices);
+		mesh.indices = push_array(asset_store.arena, u32, mesh.num_indices);
+		mesh.vertices = push_array(asset_store.arena, Vertex, mesh.num_vertices);
 		
 		for i : 0 .. mesh.num_primitives - 1 {
 			init_vtx := m_vertex_num;
@@ -1022,8 +1022,6 @@ gltf_load_file :: (arena : *Arena, _filename : string)
 		}
 		
 	}
-	
-	gltf_it.arena = arena;
 	
 	// load Nodes
 	for i : 0 .. data.scenes_count - 1
@@ -1194,7 +1192,6 @@ simple_gltf_node_key :: (gltf_it : GLTF_It, tex : *cgltf_node) -> string
 
 GLTF_It :: struct
 {
-	arena : *Arena;
 	data : *cgltf_data;
 	dir : string;
 	foldername_local : string;
