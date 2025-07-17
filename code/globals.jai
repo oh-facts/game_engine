@@ -1,6 +1,8 @@
 major :: 0;
 minor :: 2;
-patch :: 8;
+patch :: 11;
+
+enable_profiling :: 0;
 
 exe_folder : string;
 data_folder : string;

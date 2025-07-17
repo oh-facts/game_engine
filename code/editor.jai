@@ -185,6 +185,6 @@ end_editor_window :: (pb : *R_Push_Buffer, window : *Editor_Window)
 	end_col();
 	pb.hacker_draw = window.hacker_draw;
 	window.widget_root.parent = *nil_widget;
-	layout_and_clip_widgets(window.widget_root);
-	draw_widgets(pb, window.widget_root);
+	
+	layout_clip_and_draw_widgets(pb, window.widget_root);
 }

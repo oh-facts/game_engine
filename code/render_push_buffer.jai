@@ -171,6 +171,8 @@ end_render :: (pb : *R_Push_Buffer)
 
 push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
 {
+	profile_scope("push batch");
+	
 	batch := list.last;
 	
 	if !batch || (batch.cap < xx (xx batch.size + push_size))
@@ -203,6 +205,8 @@ push_batch :: (list : *Batch_List, push_size : s64, cap : s64) -> *u8
 
 push_batch_list :: (group : *Batch_Group) -> *Batch_List
 {
+	profile_scope("push batch list");
+	
 	list := group.last;
 	
 	// is this correct?
@@ -309,26 +313,34 @@ push_quad :: inline (pb : *R_Push_Buffer, pos : Vector3, size : Vector2, rot : V
 
 push_quad_impl :: (group : *Batch_Group, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
 {
+	profile_scope("push quad impl");
+	
 	batches := push_batch_list(group);
 	
 	sprite :*R_Sprite = xx push_batch(batches, size_of(R_Sprite), xx MB(1));
 	
+	
 	model := Matrix4_Identity;
 	
-	//model = translate(model, .{pos.x + size.x / 2, pos.y + size.y / 2, 0});
-	model = translate(model, pos);
-	
-	roll : Quaternion;
-	set_from_axis_and_angle (*roll, 0, 0, -1, rot.z);
-	pitch : Quaternion;
-	set_from_axis_and_angle (*pitch, -1, 0, 0, rot.x);
-	yaw : Quaternion;
-	set_from_axis_and_angle (*yaw, 0, -1, 0, rot.y);
-	rotation := roll * yaw * pitch;
-	
-	model = rotate(model, rotation);
-	
-	model = scale(model, .{size.x, size.y, 0});
+	//if false 
+	{
+		profile_scope("math thing");
+		
+		//model = translate(model, .{pos.x + size.x / 2, pos.y + size.y / 2, 0});
+		model = translate(model, pos);
+		
+		roll : Quaternion;
+		set_from_axis_and_angle (*roll, 0, 0, -1, rot.z);
+		pitch : Quaternion;
+		set_from_axis_and_angle (*pitch, -1, 0, 0, rot.x);
+		yaw : Quaternion;
+		set_from_axis_and_angle (*yaw, 0, -1, 0, rot.y);
+		rotation := roll * yaw * pitch;
+		
+		model = rotate(model, rotation);
+		
+		model = scale(model, .{size.x, size.y, 0});
+	}
 	
 	sprite.model = model;
 	sprite.color = color;

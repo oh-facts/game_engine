@@ -63,6 +63,8 @@ Widget :: struct
 	fixed_pos : Vector2;
 	clip_size : Vector2;
 	view_offset : Vector2;
+	child_view_offset : Vector2;
+	
 	// --- end
 	
 	// where, if at all, are the widgets drawn?
@@ -185,6 +187,8 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 	if out.parent
 	{
 		out.fixed_pos = out.parent.fixed_pos;
+		out.view_offset.y += out.parent.child_view_offset.y;
+		out.child_view_offset.y += out.view_offset.y;
 		if !out.parent.last
 		{
 			out.parent.first = out;
@@ -287,10 +291,12 @@ end_widgets :: ()
 	ticks += 1;
 }
 
-layout_and_clip_widgets :: (root : *Widget)
+layout_clip_and_draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
 {
+	profile_scope("Layout, clip and draw widgets");
 	layout_widgets(root);
 	clip_widgets(root);
+	draw_widgets(pb, root);
 }
 
 layout_widgets :: (root : *Widget)
@@ -337,7 +343,7 @@ layout_widgets :: (root : *Widget)
 
 clip_widgets :: (root : *Widget)
 {
-	root.final_pos = root.pos + root.fixed_pos + root.parent.view_offset;;
+	root.final_pos = root.pos + root.fixed_pos + root.view_offset;;
 	root.final_size = root.size;
 	
 	if root.parent.flags & .Clip

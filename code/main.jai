@@ -71,7 +71,13 @@ from outer space
 #load "input.jai";
 #load "platform.jai";
 #load "math.jai";
+#load "profiling.jai";
 #load "string.jai";
+
+#if enable_profiling
+{
+#import "tracy" (IMPORT_MODE=.CLIENT);
+}
 
 nil_widget : Widget;
 
@@ -118,7 +124,7 @@ main :: ()
 	saved : Saved_Window_Info;
 	//toggle_fullscreen(the_window, true, *saved);
 	
-	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 300});
+	boss_window := init_editor_window("asset viewer", .{32, 32}, .{300, 800});
 	
 	delta : float;
 	time_elapsed : float;
@@ -167,6 +173,8 @@ main :: ()
 	
 	while !quit
 	{
+		profile_tick();
+		
 		counter += delta;
 		
 		time_since_last := time_elapsed;
@@ -408,6 +416,18 @@ main :: ()
 						format_float := *context.print_style.default_format_float;
 						format_float.trailing_width = 1;
 						
+						col();
+						placer_widget_root := _start;
+						
+						if point_in_rect(.{xx last_mpos_x, xx last_mpos_y}, rectF32(placer_widget_root.final_pos, placer_widget_root.final_size))
+						{
+							boss_window.scroll_offsets[current_asset_viewer_tab] += wheel_delta;
+						}
+						
+						placer_widget_root.child_view_offset.y = boss_window.scroll_offsets[current_asset_viewer_tab];
+						placer_widget_root.clip_size = boss_window.size;
+						placer_widget_root.flags |= .Clip;
+						
 						// display entity stuff
 						for e : entity_state.entities
 						{
@@ -624,43 +644,47 @@ main :: ()
 					}
 					
 					// draw entities
-					for e : entity_state.entities
 					{
-						color := COLOR_WHITE;
-						if 0
+						profile_scope("Draw Entities");
+						
+						for e : entity_state.entities
 						{
-							if *e == hot_entity
+							color := COLOR_WHITE;
+							if 0
 							{
-								color = COLOR_YELLOW;
+								if *e == hot_entity
+								{
+									color = COLOR_YELLOW;
+								}
+								if *e == active_entity
+								{
+									color = COLOR_BLUE;
+								}
 							}
-							if *e == active_entity
-							{
-								color = COLOR_BLUE;
-							}
-						}
-						
-						model := translate(Matrix4_Identity, e.pos);
-						
-						roll : Quaternion;
-						set_from_axis_and_angle (*roll, 0, 0, -1, e.rot.z);
-						pitch : Quaternion;
-						set_from_axis_and_angle (*pitch, -1, 0, 0, e.rot.x);
-						yaw : Quaternion;
-						set_from_axis_and_angle (*yaw, 0, -1, 0, e.rot.y);
-						rotation := roll * yaw * pitch;
-						
-						model = rotate(model, rotation);
-						model = scale(model, e.size);
-						
-						if e.model_kind == 
-						{
-							case .Node_Asset;
-							draw_node_asset(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
 							
-							case .Cube;
-							draw_cube(*pb, model, color);
+							model := translate(Matrix4_Identity, e.pos);
+							
+							roll : Quaternion;
+							set_from_axis_and_angle (*roll, 0, 0, -1, e.rot.z);
+							pitch : Quaternion;
+							set_from_axis_and_angle (*pitch, -1, 0, 0, e.rot.x);
+							yaw : Quaternion;
+							set_from_axis_and_angle (*yaw, 0, -1, 0, e.rot.y);
+							rotation := roll * yaw * pitch;
+							
+							model = rotate(model, rotation);
+							model = scale(model, e.size);
+							
+							if e.model_kind == 
+							{
+								case .Node_Asset;
+								draw_node_asset(*pb, model, e.node_asset_hash, color, e.joints, e.an_batch);
+								
+								case .Cube;
+								draw_cube(*pb, model, color);
+							}
+							
 						}
-						
 					}
 					
 					aabb_rec :: (e : *Entity, pb : *R_Push_Buffer, hash : u128, _model : Matrix4, this_frame_hot : *bool)

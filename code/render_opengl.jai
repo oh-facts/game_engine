@@ -221,6 +221,8 @@ r_backend_init :: (fb_size : Vector2i)
 
 r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 {
+	profile_scope("Render Submission");
+	
 	if draw_size != r_gl_state.last_draw_size
 	{
 		r_gl_framebuffer_free(r_gl_state.draw_fb);

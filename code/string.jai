@@ -22,7 +22,9 @@ str_from_cstr :: (cstr : *u8, zero_terminate : bool = false) -> string
 	return uri_str;
 }
 
-hash_string :: (data : string) -> u128 {
+hash_string :: (data : string) -> u128 
+{
+	profile_scope("hash string");
 	
 #asm { hash: vec; }
 	
