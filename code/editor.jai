@@ -72,8 +72,7 @@ begin_editor_window :: (window : *Editor_Window)
 	begin_parent(bar);
 	bar.child_axis = .X;
 	
-	hide_key := make_widget_key();
-	hide := widget_from_key(hide_key);
+	simple_hide_button(*window.hide);
 	
 	tabs_key := make_widget_key();
 	tab := widget_from_key(tabs_key);
@@ -100,20 +99,10 @@ begin_editor_window :: (window : *Editor_Window)
 	game_tab.flags |= .Draw_Text | .Draw_Bg;
 	game_tab.font_size = 12;
 	
-	hide.text = ifx !window.hide then "v" else ">"; 
-	hide.size = .{20, 20};
-	hide.flags |= .Draw_Text | .Draw_Bg;
-	hide.font_size = 12;
-	
 	// interactions
 	if signal_from_widget(tab) 
 	{
 		window.is_dragging = true;
-	}
-	
-	else if signal_from_widget(hide)
-	{
-		window.hide = !window.hide;
 	}
 	
 	if signal_from_widget(asset_tab) 

@@ -401,12 +401,18 @@ main :: ()
 					
 					simple_label(tprint("%", current_gizmo_mode), .{100,20});
 					
+					// entity system panel
 					{
-						pressed := simple_label("+", .{20,20});
-						if pressed
+						row();
+						
+						if simple_label("+", .{20,20})
 						{
 							entity_alloc(*entity_state);
 						}
+						
+						simple_label(tprint("u: %", entity_state.used_entities_count), .{60,20});
+						simple_label(tprint("f: %", entity_state.free_entities_count), .{60,20});
+						simple_label(tprint("a: %", get_active_entities_count(entity_state)), .{60,20});
 					}
 					
 					// idk if contexts are expensive like that
@@ -429,10 +435,21 @@ main :: ()
 						placer_widget_root.flags |= .Clip;
 						
 						// display entity stuff
-						for e : entity_state.entities
+						for e : entity_state
 						{
-							simple_label(e.short_name, .{300, 20}, it_index);
 							
+							{
+								row(it_index);
+								simple_hide_button(*e.expanded, it_index);
+								simple_label(e.short_name, .{260, 20}, it_index);
+								delete_signal := simple_label("-", .{20, 20}, it_index);
+								if delete_signal
+								{
+									entity_free(*entity_state, e);
+								}
+							}
+							
+							if e.expanded
 							{
 								row(it_index);
 								simple_spacer_widget(20, 0, it_index);
@@ -449,6 +466,7 @@ main :: ()
 						}
 					}
 					
+					// object pick raycast
 					{
 						ray_nds : Vector2;
 						ray_nds.x = (x / cast(f32) win_size.x) * 2 - 1;
@@ -619,7 +637,7 @@ main :: ()
 					push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
 					
 					// animate entities
-					for *e : entity_state.entities
+					for e : entity_state
 					{
 						if e.flags & .Animated
 						{
@@ -647,20 +665,9 @@ main :: ()
 					{
 						profile_scope("Draw Entities");
 						
-						for e : entity_state.entities
+						for e : entity_state
 						{
 							color := COLOR_WHITE;
-							if 0
-							{
-								if *e == hot_entity
-								{
-									color = COLOR_YELLOW;
-								}
-								if *e == active_entity
-								{
-									color = COLOR_BLUE;
-								}
-							}
 							
 							model := translate(Matrix4_Identity, e.pos);
 							
@@ -748,7 +755,7 @@ main :: ()
 					// draw aabbs
 					if boss_window.draw_aabb
 					{
-						for *e : entity_state.entities
+						for e : entity_state
 						{
 							model := translate(Matrix4_Identity, e.pos);
 							model = scale(model, e.size);

@@ -1,6 +1,7 @@
 Entity_Flags :: enum_flags
 {
 	Animated;
+	Freed;
 }
 
 Entity_Model_Kind :: enum
@@ -29,12 +30,45 @@ Entity :: struct
 	// per frame artifacts
 	joints : *Matrix4;
 	an_batch : *Batch;
+	
+	// editor
+	expanded : bool;
+	
+	free_next : *Entity;
 }
+
+/*
+Entity_Batch :: struct
+{
+	max :: 1024; 
+	entities : [max]Entity; // set to zero so you can loop nicely
+	next : *Entity_List;
+}
+
+Entity_List :: struct
+{
+	first : *Entity_Batch;
+	last : *Entity_Batch;
+	count : int;
+}
+*/
 
 Entity_State :: struct
 {
 	arena : *Arena;
-	entities : []Entity;
+	
+	entities : *Entity;
+	used_entities_count : int;
+	
+	max_entities :: 1024;
+	
+	free_entities : *Entity;
+	free_entities_count : int;
+}
+
+get_active_entities_count :: (using es : Entity_State) -> int
+{
+	return used_entities_count - free_entities_count;
 }
 
 // [256]
@@ -44,19 +78,72 @@ entity_state_init :: () -> Entity_State
 	using out;
 	
 	arena = arena_init();
-	entities.data = push_array(arena, Entity, 100);
+	entities = push_array(arena, Entity, max_entities);
 	
 	return out;
 }
 
+// TODO(mizu): Finish this.
+
 entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 {
-	out := entities.data + entities.count;
+	assert(used_entities_count < max_entities);
+	
+	out := free_entities;
+	
+	if out
+	{
+		sll_pop(*free_entities, *free_entities.free_next);
+		free_entities_count -= 1;
+		out.* = .{};
+	}
+	else
+	{
+		out = entities + used_entities_count;
+		used_entities_count += 1;
+	}
+	
 	out.size = .{1,1,1};
 	out.short_name.data = out.short_name_memory.data;
 	out.model_kind = .Cube;
-	entities.count += 1;
+	
 	return out;
+}
+
+sll_push :: (stack : $T, node : T, node_next : T) #expand
+{
+	node_next.* = stack.*;
+	stack.* = node.*;
+}
+
+sll_pop :: (stack : $T, stack_next : T) #expand
+{
+	stack.* = stack_next.*;
+}
+
+// @for_expansion
+for_expansion :: (using es : Entity_State, body: Code, flags: For_Flags) #expand
+{
+	for i : 0 .. used_entities_count - 1
+	{
+		entity := entities + i; 
+		`it := entity;
+		`it_index := i;
+		
+		if !(entity.flags & .Freed)
+		{
+#insert body;
+		}
+		
+	}
+}
+
+entity_free :: (using entity_state : *Entity_State, entity : *Entity)
+{
+	entity.flags |= .Freed;
+	sll_push(*free_entities, *entity, *entity.free_next);
+	free_entities_count += 1;
+	ooga : int;
 }
 
 set_entity_name :: (e : *Entity, name : string)

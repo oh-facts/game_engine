@@ -579,6 +579,22 @@ simple_spacer_widget :: (x : float, y : float, index := 0, depth : *Widget_Key =
 	spacer_widget.size = .{x, y};
 }
 
+simple_hide_button :: (out : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+{
+	hide_key := make_widget_key(index, depth, loc);
+	hide := widget_from_key(hide_key);
+	
+	hide.text = ifx out.* then "v" else ">"; 
+	hide.size = .{20, 20};
+	hide.flags |= .Draw_Text | .Draw_Bg;
+	hide.font_size = 12;
+	
+	if signal_from_widget(hide)
+	{
+		out.* = !(out.*);
+	}
+}
+
 widget_test4 :: () -> *Widget
 {
 	row();
