@@ -178,7 +178,25 @@ cube_index_buffer : u32;
 cube_vertex_helper :: (vertices : []Vertex, pos : Vector3, index : *int)
 {
 	v := *vertices.data[index.*];
-	index.* += 1;
 	v.pos = pos;
 	v.color = .{1, 1, 1, 1};
+	
+	// use last 3 vertex pos to calc normals
+	if index.* % 3 == 2
+	{
+		v0 := *vertices.data[index.* - 2];
+		v1 := *vertices.data[index.* - 1];
+		v2 := *vertices.data[index.* - 0];
+		
+		v01 := v1.pos - v0.pos;
+		v02 := v2.pos - v0.pos;
+		
+		norm := cross(v01, v02);
+		
+		v0.normal = norm;
+		v1.normal = norm;
+		v2.normal = norm;
+	}
+	
+	index.* += 1;
 }

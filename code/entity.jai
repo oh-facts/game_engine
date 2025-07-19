@@ -121,7 +121,6 @@ sll_pop :: (stack : $T, stack_next : T) #expand
 	stack.* = stack_next.*;
 }
 
-// @for_expansion
 for_expansion :: (using es : Entity_State, body: Code, flags: For_Flags) #expand
 {
 	for i : 0 .. used_entities_count - 1
@@ -151,6 +150,9 @@ set_entity_name :: (e : *Entity, name : string)
 	// names are u8
 	// Will this be annoying once I have other languages?
 	// Probably but its ok for now. I can't even render utf 32 text rn.
-	memcpy(e.short_name_memory.data, name.data, name.count);
+	
+	count := min(e.short_name_memory.count, name.count);
+	
+	memcpy(e.short_name_memory.data, name.data, count);
 	e.short_name.count = name.count;
 }

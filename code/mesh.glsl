@@ -76,10 +76,17 @@ in vec3 a_normal;
 void main()
 {
 	vec4 tex_col = texture(sampler2D(u_color_map), a_uv);
-	out_color = u_color * tex_col;
 	
 	vec3 nice_normal = normalize(a_normal) * 0.5 + 0.5;
-	//out_color = vec4(nice_normal, 1);
 	
-	if (u_debug) out_color = vec4(0, 1, 0, 1);
+	vec3 light_dir = normalize(vec3(1, 1, 1));
+	float diff = max(dot(normalize(a_normal), light_dir), 0.0);
+	vec3 diffuse = vec3(diff);
+	vec3 ambient = vec3(0.3);
+	
+	vec3 shading = diffuse + ambient;
+	
+	out_color = u_color * tex_col * vec4(shading, 1.0);
+	
+	//out_color = vec4(nice_normal, 1);
 }

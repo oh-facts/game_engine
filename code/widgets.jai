@@ -17,6 +17,7 @@ Widget_Flags :: enum_flags
 	Draw_Border;
 	Clip;
 	Fixed_Size;
+	Draw_Text_Edit_Indicator;
 }
 
 Widget_Axis :: enum
@@ -66,7 +67,6 @@ Widget :: struct
 	child_view_offset : Vector2;
 	
 	// --- end
-	
 	// where, if at all, are the widgets drawn?
 	final_pos : Vector2;
 	final_size : Vector2;
@@ -89,6 +89,8 @@ Widget_State :: struct
 	free_stack : *Widget;
 	ticks : u64;
 	mpos : Vector2;
+	focussed_widget_hash : u128;
+	text_input_string : string;
 }
 
 widget_state : Widget_State;
@@ -101,11 +103,20 @@ widget_init :: ()
 	widget_cache.count = 256;
 }
 
-widget_from_key :: (key : Widget_Key) -> *Widget
+make_widget_key_hash :: (key : Widget_Key) -> u128
 {
 	using widget_state;
 	str_key := tprint("%", key);
 	hash := hash_string(str_key);
+	
+	return hash;
+}
+
+widget_from_key :: (key : Widget_Key) -> *Widget
+{
+	using widget_state;
+	
+	hash := make_widget_key_hash(key);
 	
 	slot_index := hash.U64[0] % xx widget_cache.count;
 	slot := widget_cache.data + slot_index;
@@ -208,17 +219,18 @@ widget_from_key :: (key : Widget_Key) -> *Widget
 	return out;
 }
 
-make_widget_key :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> Widget_Key {
+make_widget_key :: (index := 0, depth : u128 = .{}, loc := #caller_location) -> Widget_Key {
 	out : Widget_Key;
 	
 	out.v[0] = xx index;
-	out.v[1] = xx depth;
+	out.v[1] = xx depth.U64[0];
 	out.v[2] = xx loc.line_number;
+	out.v[3] = xx depth.U64[1];
 	
 	return out;
 }
 
-row :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) #expand 
+row :: (index := 0, depth : u128 = .{}, loc := #caller_location) #expand 
 {
   `_start := begin_row(index, depth, loc);
 	
@@ -228,7 +240,7 @@ row :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) #expand
   }
 }
 
-col :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) #expand 
+col :: (index := 0, depth : u128 = .{}, loc := #caller_location) #expand 
 {
   `_start := begin_col(index, depth, loc);
 	
@@ -390,7 +402,6 @@ clip_widgets :: (root : *Widget)
 			child = child.next;
 		}
 	}
-	
 }
 
 draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
@@ -439,6 +450,13 @@ draw_widgets :: (pb : *R_Push_Buffer, root : *Widget)
 			push_ui_text(pb, root.text, pos, .Delius, root.font_size, color);
 		}
 		
+		if root.flags & .Draw_Text_Edit_Indicator
+		{
+			// get text metrics of the substring first
+			// then draw indicator after those many pixels
+			//push_ui_quad(pb, root.final_pos, root.size, 0, color, get_white_square());
+		}
+		
 		{
 			child :=  root.first;
 			while child 
@@ -469,7 +487,7 @@ end_parent :: ()
 	parent_stack = parent_stack.meta_next;
 }
 
-begin_row :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> *Widget
+begin_row :: (index := 0, depth : u128 = .{}, loc := #caller_location) -> *Widget
 {
 	using widget_state;
 	key := make_widget_key(index, depth, loc);
@@ -486,7 +504,7 @@ end_row :: ()
 	end_parent();
 }
 
-begin_col :: (index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> *Widget
+begin_col :: (index := 0, depth : u128 = .{}, loc := #caller_location) -> *Widget
 {
 	using widget_state;
 	key := make_widget_key(index, depth, loc);
@@ -525,7 +543,7 @@ signal_from_widget :: (label : *Widget) -> bool
 	return active;
 }
 
-fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> bool, *Widget
+fixed_label :: (text : string, index := 0, depth : u128 = .{}, loc := #caller_location) -> bool, *Widget
 {
 	using widget_state;
 	key := make_widget_key(index, depth, loc);
@@ -542,7 +560,7 @@ fixed_label :: (text : string, index := 0, depth : *Widget_Key = xx 0, loc := #c
 	return active, label;
 }
 
-simple_label :: (text : string, size : Vector2, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location) -> bool, *Widget
+simple_label :: (text : string, size : Vector2, index := 0, depth : u128 = .{}, loc := #caller_location) -> bool, *Widget
 {
 	using widget_state;
 	key := make_widget_key(index, depth, loc);
@@ -559,40 +577,115 @@ simple_label :: (text : string, size : Vector2, index := 0, depth : *Widget_Key 
 	return active, label;
 }
 
-simple_radio_widget :: (active : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+simple_toggle_widget :: (str1 : string, str2 : string, active : *bool, index := 0, depth : u128 = .{}, loc := #caller_location)
 {
-	flag_widget := widget_from_key(make_widget_key(index, depth, loc));
-	flag_widget.text = ifx active.* then "x" else "";
-	flag_widget.size = .{20, 20};
-	flag_widget.flags |= .Draw_Text | .Draw_Bg;
-	flag_widget.font_size = 12;
+	toggle_widget := widget_from_key(make_widget_key(index, depth, loc));
+	toggle_widget.text = ifx active.* then str1 else str2;
+	toggle_widget.size = .{20, 20};
+	toggle_widget.flags |= .Draw_Text | .Draw_Bg;
+	toggle_widget.font_size = 12;
 	
-	if signal_from_widget(flag_widget)
+	if signal_from_widget(toggle_widget)
 	{
 		active.* = !active.*;
 	}
 }
 
-simple_spacer_widget :: (x : float, y : float, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+simple_hide_button :: inline (active : *bool, index := 0, depth : u128 = .{}, loc := #caller_location)
+{
+	simple_toggle_widget(">", "v", active, index, depth, loc);
+}
+
+simple_radio_widget :: inline (active : *bool, index := 0, depth : u128 = .{}, loc := #caller_location)
+{
+	simple_toggle_widget("x", " ", active, index, depth, loc);
+}
+
+simple_spacer_widget :: (x : float, y : float, index := 0, depth : u128 = .{}, loc := #caller_location)
 {
 	spacer_widget := widget_from_key(make_widget_key(index, depth, loc));
 	spacer_widget.size = .{x, y};
 }
 
-simple_hide_button :: (out : *bool, index := 0, depth : *Widget_Key = xx 0, loc := #caller_location)
+temp_buffer : [100]u8;
+temp_buffer_used : int;
+
+simple_text_edit :: (text : string, size : Vector2, index := 0, depth : u128 = .{}, loc := #caller_location) -> bool
 {
-	hide_key := make_widget_key(index, depth, loc);
-	hide := widget_from_key(hide_key);
+	using widget_state;
+	key := make_widget_key(index, depth, loc);
 	
-	hide.text = ifx out.* then "v" else ">"; 
-	hide.size = .{20, 20};
-	hide.flags |= .Draw_Text | .Draw_Bg;
-	hide.font_size = 12;
+	text_edit := widget_from_key(key);
 	
-	if signal_from_widget(hide)
+	text_edit.text = text;
+	
+	text_edit.flags |= .Draw_Text | .Draw_Bg;
+	text_edit.font_size = 12;
+	text_edit.size = size;
+	
+	active := signal_from_widget(text_edit);
+	completed := false;
+	
+	if focussed_widget_hash == text_edit.hash
 	{
-		out.* = !(out.*);
+		text_edit.flags |= .Draw_Border | .Draw_Text_Edit_Indicator;
+		text_edit.text.data = temp_buffer.data;
+		text_edit.text.count = temp_buffer_used;
+		
+		if is_key_pressed(.MOUSE_BUTTON_LEFT) || is_key_pressed(.ENTER) || is_key_pressed(.TAB)
+		{
+			widget_state.text_input_string.data = temp_buffer.data;
+			widget_state.text_input_string.count = temp_buffer_used;
+			
+			widget_state.focussed_widget_hash = .{};
+			temp_buffer_used = 0;
+			completed = true;
+		}
+		
 	}
+	else
+	{
+		if active
+		{
+			focussed_widget_hash = text_edit.hash;
+			memcpy(temp_buffer.data, text.data, text.count);
+			temp_buffer_used = text.count;
+		}
+	}
+	
+	return completed;
+}
+
+simple_vector3_edit :: (label : string, label_size : Vector2, vec3 : *Vector3, size : Vector2, index := 0, depth : u128 = .{}, loc := #caller_location) -> bool
+{
+	using widget_state;
+	key := make_widget_key(index, depth, loc);
+	hash := make_widget_key_hash(key);
+	
+	row(depth = hash);
+	simple_label(label, label_size, depth = hash);
+	
+	out : bool;
+	
+	if simple_text_edit(tprint("%", vec3.x), size, depth = hash)
+	{
+		vec3.x = string_to_float(widget_state.text_input_string);
+		out = true;
+	}
+	
+	if simple_text_edit(tprint("%", vec3.y), size, depth = hash)
+	{
+		vec3.y = string_to_float(widget_state.text_input_string);
+		out = true;
+	}
+	
+	if simple_text_edit(tprint("%", vec3.z), size, depth = hash)
+	{
+		vec3.z = string_to_float(widget_state.text_input_string);
+		out = true;
+	}
+	
+	return out;
 }
 
 widget_test4 :: () -> *Widget

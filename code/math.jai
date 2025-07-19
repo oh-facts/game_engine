@@ -204,12 +204,24 @@ ray_aabb_intersection :: (ray : Ray, aabb : AABB) -> float, bool
 	return tmin, true;
 }
 
-deg_rot_from_rad_rot :: (rad : Vector3) -> Vector3i
+deg_rot_from_rad_rot :: (rad : Vector3) -> Vector3
 {
-	rot : Vector3i;
-	rot.x = cast(s32) ((xx rad_to_deg(rad.x)) % 360 + 360) % 360;
-	rot.y = cast(s32) ((xx rad_to_deg(rad.y)) % 360 + 360) % 360;
-	rot.z = cast(s32) ((xx rad_to_deg(rad.z)) % 360 + 360) % 360;
+	rot : Vector3;
+	
+	rot.x = xx (((xx rad_to_deg(rad.x)) % 360 + 360) % 360);
+	rot.y = xx (((xx rad_to_deg(rad.y)) % 360 + 360) % 360);
+	rot.z = xx (((xx rad_to_deg(rad.z)) % 360 + 360) % 360);
+	
+	return rot;
+}
+
+rad_rot_from_deg_rot :: (rad : Vector3) -> Vector3
+{
+	rot : Vector3;
+	
+	rot.x = deg_to_rad(rad.x);
+	rot.y = deg_to_rad(rad.y);
+	rot.z = deg_to_rad(rad.z);
 	
 	return rot;
 }

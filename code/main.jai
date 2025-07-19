@@ -96,6 +96,8 @@ Gizmo_Mode :: enum
 	Rotate;
 }
 
+// TODO(mizu): Make the focus stuff be owned by the library
+
 active_node_asset_hash : u128;
 active_mesh_asset_hash : u128;
 
@@ -183,6 +185,8 @@ main :: ()
 		
 		update_window_events();
 		
+		widget_state.text_input_string = .{};
+		
 		for events_this_frame
 		{
 			if it.type == .QUIT then quit = true;
@@ -195,10 +199,23 @@ main :: ()
 				{
 					quit = true;
 				}
+				else if it.key_code == .BACKSPACE
+				{
+					if temp_buffer_used > 0
+					{
+						temp_buffer_used -= 1;
+					}
+				}
+				
 			}
-			if it.type == .MOUSE_WHEEL
+			else if it.type == .MOUSE_WHEEL
 			{
 				wheel_delta += it.wheel_delta;
+			}
+			else if it.type == .TEXT_INPUT
+			{
+				temp_buffer.data[temp_buffer_used] = xx it.utf32;
+				temp_buffer_used += 1;
 			}
 		}
 		
@@ -415,14 +432,10 @@ main :: ()
 						simple_label(tprint("a: %", get_active_entities_count(entity_state)), .{60,20});
 					}
 					
-					// idk if contexts are expensive like that
-					new_context := context;
-					push_context new_context
 					{
-						format_float := *context.print_style.default_format_float;
-						format_float.trailing_width = 1;
-						
 						col();
+						
+						// @cleanup
 						placer_widget_root := _start;
 						
 						if point_in_rect(.{xx last_mpos_x, xx last_mpos_y}, rectF32(placer_widget_root.final_pos, placer_widget_root.final_size))
@@ -441,26 +454,34 @@ main :: ()
 							{
 								row(it_index);
 								simple_hide_button(*e.expanded, it_index);
-								simple_label(e.short_name, .{260, 20}, it_index);
+								
+								if simple_text_edit(e.short_name, .{260, 20}, it_index)
+								{
+									set_entity_name(e, widget_state.text_input_string);
+								}
+								
 								delete_signal := simple_label("-", .{20, 20}, it_index);
 								if delete_signal
 								{
 									entity_free(*entity_state, e);
 								}
 							}
-							
+							//string_to_float();
 							if e.expanded
 							{
 								row(it_index);
 								simple_spacer_widget(20, 0, it_index);
 								{
 									col(it_index);
-									simple_label(tprint("pos:  %, %, %", e.pos.x, e.pos.y, e.pos.z), .{280, 20}, it_index);
+									
+									simple_vector3_edit("pos:", .{40, 20}, *e.pos, .{60, 20}, it_index);
 									
 									rot := deg_rot_from_rad_rot(e.rot);
-									
-									simple_label(tprint("rot:  %, %, %", rot.x, rot.y, rot.z), .{280, 20}, it_index);
-									simple_label(tprint("size: %, %, %", e.size.x, e.size.y, e.size.z), .{280, 20}, it_index);
+									if simple_vector3_edit("rot:", .{40, 20}, *rot, .{60, 20}, it_index)
+									{
+										e.rot = rad_rot_from_deg_rot(rot);
+									}
+									simple_vector3_edit("size:", .{40, 20}, *e.size, .{60, 20}, it_index);
 								}
 							}
 						}
