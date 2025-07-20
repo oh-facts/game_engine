@@ -274,12 +274,16 @@ push_ui_text :: (pb : *R_Push_Buffer, text : string, pos : Vector2, font_kind : 
 			glyph := glyph_from_key(it, font_kind, font_size);
 			
 			using glyph;
-			size := tex_size_from_handle(tex);
 			
-			pos_y := offset_y;
-			
-			dp := Vector2.{x + offset_x, y - pos_y};
-			push_ui_quad(pb, dp, .{size.x, size.y}, 0, color, tex);
+			if tex.U64[0]
+			{
+				size := tex_size_from_handle(tex);
+				
+				pos_y := offset_y;
+				
+				dp := Vector2.{x + offset_x, y - pos_y};
+				push_ui_quad(pb, dp, .{size.x, size.y}, 0, color, tex);
+			}
 			
 			x += advance_x;
 		}

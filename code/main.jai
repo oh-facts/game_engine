@@ -31,6 +31,8 @@ My far plane is only 1000 so things beyon that are ignored. My planet radius is 
 from outer space
 
 [x] Higher depth precision + inf far plane. Was really annoying me. Now I can work on game.
+
+[] Minimizing causes crashes. frame buffer too small (0,0). Also, invalid argument to some sqrt func
 */
 
 // NOTE(mizu): Global modules
@@ -212,10 +214,19 @@ main :: ()
 			{
 				wheel_delta += it.wheel_delta;
 			}
+			
+			// @cleanup
+			// move this away from here / put it inside a ui_process_events
 			else if it.type == .TEXT_INPUT
 			{
-				temp_buffer.data[temp_buffer_used] = xx it.utf32;
-				temp_buffer_used += 1;
+				if widget_state.focussed_widget_hash.U64[0]
+				{
+					if temp_buffer_used < 100 
+					{
+						temp_buffer[temp_buffer_used] = xx it.utf32;
+						temp_buffer_used += 1;
+					}
+				}
 			}
 		}
 		
@@ -260,17 +271,21 @@ main :: ()
 			if !boss_window.hide
 			{
 				// idk if contexts are expensive like that
-				new_context := context;
-				push_context new_context
+				// camera panel
+				
+				//new_context := context;
+				//push_context new_context
 				{
-					format_float := *context.print_style.default_format_float;
-					format_float.trailing_width = 1;
+					//format_float := *context.print_style.default_format_float;
+					//format_float.trailing_width = 1;
 					
-					simple_label(tprint("%, %, %", current_editor_tab.camera.position.x, current_editor_tab.camera.position.y, current_editor_tab.camera.position.z), .{180, 20});
+					simple_vector3_edit("pos:", .{40, 20}, *current_editor_tab.camera.position, .{90, 20});
 					
 					rot := deg_rot_from_rad_rot(current_editor_tab.camera.euler_angles);
-					
-					simple_label(tprint("%, %, %", rot.x, rot.y, rot.z), .{180, 20});
+					if simple_vector3_edit("rot:", .{40, 20}, *rot, .{60, 20})
+					{
+						current_editor_tab.camera.euler_angles = rad_rot_from_deg_rot(rot);
+					}
 				}
 				simple_label(tprint("%", delta), .{180, 20});
 				
@@ -455,18 +470,22 @@ main :: ()
 								row(it_index);
 								simple_hide_button(*e.expanded, it_index);
 								
-								if simple_text_edit(e.short_name, .{260, 20}, it_index)
+								if simple_text_edit(e.short_name, .{240, 20}, it_index)
 								{
 									set_entity_name(e, widget_state.text_input_string);
 								}
 								
-								delete_signal := simple_label("-", .{20, 20}, it_index);
-								if delete_signal
+								if simple_label(";", .{20, 20}, it_index)
+								{
+									active_entity = e;
+								}
+								
+								if simple_label("-", .{20, 20}, it_index)
 								{
 									entity_free(*entity_state, e);
 								}
 							}
-							//string_to_float();
+							
 							if e.expanded
 							{
 								row(it_index);
@@ -474,14 +493,16 @@ main :: ()
 								{
 									col(it_index);
 									
-									simple_vector3_edit("pos:", .{40, 20}, *e.pos, .{60, 20}, it_index);
+									simple_vector3_edit("pos:", .{40, 20}, *e.pos, .{80, 20}, it_index);
 									
 									rot := deg_rot_from_rad_rot(e.rot);
-									if simple_vector3_edit("rot:", .{40, 20}, *rot, .{60, 20}, it_index)
+									if simple_vector3_edit("rot:", .{40, 20}, *rot, .{80, 20}, it_index)
 									{
 										e.rot = rad_rot_from_deg_rot(rot);
 									}
-									simple_vector3_edit("size:", .{40, 20}, *e.size, .{60, 20}, it_index);
+									
+									simple_vector3_edit("size:", .{40, 20}, *e.size, .{80, 20}, it_index);
+									simple_vector3_edit("color:", .{40, 20}, *e.color, .{80, 20}, it_index);
 								}
 							}
 						}
@@ -688,8 +709,6 @@ main :: ()
 						
 						for e : entity_state
 						{
-							color := COLOR_WHITE;
-							
 							model := translate(Matrix4_Identity, e.pos);
 							
 							roll : Quaternion;
@@ -703,6 +722,9 @@ main :: ()
 							model = rotate(model, rotation);
 							model = scale(model, e.size);
 							
+							color : Vector4;
+							color.xyz = e.color;
+							color.w = 1;
 							if e.model_kind == 
 							{
 								case .Node_Asset;

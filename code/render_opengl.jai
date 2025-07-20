@@ -180,6 +180,11 @@ r_backend_init :: (fb_size : Vector2i)
 	glCreateVertexArrays(1, *stupid_fucking_opengl);
 	glBindVertexArray(stupid_fucking_opengl);
 	
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+	
+	
+	gl_enable_debug_output(true);
 	// init shaders
 	{
 		init_shader(.Sprite, "sprite");
@@ -204,14 +209,17 @@ r_backend_init :: (fb_size : Vector2i)
 	
 	r_gl_state.white_square = r_image_create(1, 1, 4, xx data.data, .Nearest, .Nearest, .Repeat);
 	
+	if false
 	{
-		data := read_entire_file(tprint("%/noise.png", data_folder));
-		hmap = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
-	}
-	
-	{
-		data := read_entire_file(tprint("%/mountain.png", data_folder));
-		mountain_map = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
+		{
+			data := read_entire_file(tprint("%/noise.png", data_folder));
+			hmap = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
+		}
+		
+		{
+			data := read_entire_file(tprint("%/mountain.png", data_folder));
+			mountain_map = tex_id_from_handle(image_create_from_memory(data, .Linear, .Linear, .Repeat));
+		}
 	}
 	
 	// init draw framebuffer

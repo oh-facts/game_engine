@@ -35,6 +35,8 @@ Entity :: struct
 	expanded : bool;
 	
 	free_next : *Entity;
+	
+	color : Vector3;
 }
 
 /*
@@ -64,6 +66,7 @@ Entity_State :: struct
 	
 	free_entities : *Entity;
 	free_entities_count : int;
+	gen_count : int;
 }
 
 get_active_entities_count :: (using es : Entity_State) -> int
@@ -106,7 +109,11 @@ entity_alloc :: (using entity_state : *Entity_State) -> *Entity
 	out.size = .{1,1,1};
 	out.short_name.data = out.short_name_memory.data;
 	out.model_kind = .Cube;
+	out.color = .{1,1,1};
 	
+	set_entity_name(out, tprint("%", gen_count));
+	
+	gen_count += 1;
 	return out;
 }
 
@@ -145,6 +152,12 @@ entity_free :: (using entity_state : *Entity_State, entity : *Entity)
 	ooga : int;
 }
 
+// still bug when setting name
+// actually I think it happened before I pressed enter?
+// it happened after
+// also, editing the 4th entity, affected the 3rd entity
+// and made the 4th entity corrupted
+
 set_entity_name :: (e : *Entity, name : string)
 {
 	// names are u8
@@ -154,5 +167,5 @@ set_entity_name :: (e : *Entity, name : string)
 	count := min(e.short_name_memory.count, name.count);
 	
 	memcpy(e.short_name_memory.data, name.data, count);
-	e.short_name.count = name.count;
+	e.short_name.count = count;
 }

@@ -43,6 +43,8 @@ GLTF_Scene
 
 // do I polymorph with unions or #using as?
 
+// I think I want to make node mesh hiereachy links pointers because traversing them as keys is very clunky
+
 Asset :: struct
 {
 	// hash link.
@@ -114,6 +116,8 @@ Animation_Asset :: struct
 	skin : string;
 	skin_hash : u128;
 }
+
+// TODO(mizu): Make get_next(), etc. functions so you waste lesser time
 
 Node_Asset :: struct
 {

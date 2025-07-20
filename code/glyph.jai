@@ -72,7 +72,7 @@ font_state_init :: ()
 	
 	paths :[2]string = .["delius.ttf", "akasha.ttf"];
 	
-	for 0 .. 1
+	for 0 .. 0
 	{
 		font_path := tprint("%/%", fonts_folder, paths[it]);
 		font_data := read_entire_file(font_path);
@@ -177,37 +177,44 @@ glyph_from_key :: (cp : u32, kind : Font_Kind, size : int) -> *Glyph
 				out.height = xx face.size.metrics.height >> 6;
 			}
 			
-			width := face.glyph.bitmap.width;
-			height := face.glyph.bitmap.rows;
 			bytes := face.glyph.bitmap.buffer;
 			
-			in_size := width * height;
-			out_size := width * height * 4;
-			
-			buffer :*u8= xx tzpush_array(u8, out_size);
-			
-			i := 0;
-			j := 0;
-			
-			while i != in_size
+			// no bytes means the glyph has no texture
+			// but other values are probably valid
+			if bytes
 			{
-				a := (cast(*u8)bytes)[i];
+				width := face.glyph.bitmap.width;
+				height := face.glyph.bitmap.rows;
 				
-				if a
+				in_size := width * height;
+				out_size := width * height * 4;
+				
+				buffer :*u8= xx tzpush_array(u8, out_size);
+				
+				i := 0;
+				j := 0;
+				
+				while i != in_size
 				{
-					ew : int;
+					a := (cast(*u8)bytes)[i];
+					
+					if a
+					{
+						ew : int;
+					}
+					
+					buffer[j + 0] = 255;
+					buffer[j + 1] = 255;
+					buffer[j + 2] = 255;
+					buffer[j + 3] = a;
+					
+					i += 1;
+					j += 4;
 				}
 				
-				buffer[j + 0] = 255;
-				buffer[j + 1] = 255;
-				buffer[j + 2] = 255;
-				buffer[j + 3] = a;
-				
-				i += 1;
-				j += 4;
+				out.tex = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
 			}
 			
-			out.tex = r_image_create(xx width, xx height, 4, buffer, .Linear, .Linear, .Clamp_To_Edge);
 		}
 	}
 	
