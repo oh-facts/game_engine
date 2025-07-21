@@ -258,9 +258,14 @@ main :: ()
 			current_editor_tab := *boss_window.tabs[boss_window.current_app_mode_tab];
 			
 			update_flying_camera(*current_editor_tab.camera, delta, .{xx win_size.x, xx win_size.y});
+			
 			proj, view := get_perspective_proj_and_view_matrix(current_editor_tab.camera);
 			pb.proj = proj;
 			pb.view = view;
+			
+			light_proj := orthographic_projection_matrix(-10, 10, -10, 10, 10, 1.0, true);
+			light_view := make_look_at_matrix(.{-2, 5, -1}, .{}, .{0, 1, 0}, false);
+			pb.light_proj_view = light_proj * light_view;
 			
 			if is_key_pressed(.TAB)
 			{
@@ -338,7 +343,7 @@ main :: ()
 						boss_window.scroll_offsets[current_asset_viewer_tab] += wheel_delta;
 					}
 					
-					placer_widget_root.view_offset.y = boss_window.scroll_offsets[current_asset_viewer_tab];
+					placer_widget_root.child_view_offset.y = boss_window.scroll_offsets[current_asset_viewer_tab];
 					placer_widget_root.clip_size = boss_window.size;
 					placer_widget_root.flags |= .Clip;
 					
@@ -535,28 +540,6 @@ main :: ()
 						raycast = .{start, ray_wor};
 					}
 					
-					if active_entity
-					{
-						gizmo_size : Vector2 = .{0.5, 2};
-						gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
-						
-						for 0 .. 2
-						{
-							axis : Vector3;
-							axis.component[it] = gizmo_delta;
-							gizmo_pos := active_entity.pos + axis;
-							gizmo_color : Vector4;
-							gizmo_color.w = 1;
-							gizmo_color.component[it] = 1;
-							
-							gizmo_rot : Vector3;
-							if it == 0 gizmo_rot.z = deg_to_rad(90);
-							else if it == 2 gizmo_rot.x = deg_to_rad(90);
-							
-							push_quad(*pb, gizmo_pos, gizmo_size, gizmo_rot, gizmo_color, get_white_square());
-						}
-					}
-					
 					if active_entity && !current_editor_tab.camera.control
 					{
 						gizmo_size : Vector2 = .{0.5, 2};
@@ -600,7 +583,7 @@ main :: ()
 							if it == 0 gizmo_rot.z = deg_to_rad(90);
 							else if it == 2 gizmo_rot.x = deg_to_rad(90);
 							
-							//push_quad(*pb, gizmo_pos, gizmo_size, gizmo_rot, gizmo_color, get_white_square());
+							push_quad_no_depth(*pb, gizmo_pos, gizmo_size, gizmo_rot, gizmo_color, get_white_square());
 							
 							half_extents : Vector3;
 							
@@ -675,8 +658,8 @@ main :: ()
 						}
 					}
 					
-					push_quad(*pb, .{0, 10, 0}, .{5, 5}, .{}, COLOR_RED, get_white_square());
-					push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
+					//push_quad(*pb, .{0, 10, 0}, .{5, 5}, .{}, COLOR_RED, get_white_square());
+					//push_quad(*pb, .{0, 10, 0.01}, .{1, 1}, .{}, COLOR_WHITE, get_white_square());
 					
 					// animate entities
 					for e : entity_state

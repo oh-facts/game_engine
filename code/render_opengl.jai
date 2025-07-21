@@ -24,6 +24,7 @@ VF_Shader_Kind :: enum
 	Planet;
 	Voxel;
 	Screen;
+	Depth;
 	Count;
 }
 
@@ -31,10 +32,12 @@ R_GL_Framebuffer :: struct
 {
 	color_texture : *R_GL_Image;
 	depth_stencil_texture : *R_GL_Image;
+	depth_texture : *R_GL_Image;
+	
 	id : GLuint;
 }
 
-r_gl_framebuffer_create :: (fb_size : Vector2i) -> R_GL_Framebuffer
+r_gl_draw_framebuffer_create :: (fb_size : Vector2i) -> R_GL_Framebuffer
 {
 	using out : R_GL_Framebuffer;
 	
@@ -57,12 +60,33 @@ r_gl_framebuffer_create :: (fb_size : Vector2i) -> R_GL_Framebuffer
 	return out;
 }
 
-r_gl_framebuffer_free :: (fb : R_GL_Framebuffer)
+r_gl_draw_framebuffer_free :: (fb : R_GL_Framebuffer)
 {
 	glDeleteFramebuffers(1, *fb.id);
 	
 	r_gl_image_free(fb.color_texture);
 	r_gl_image_free(fb.depth_stencil_texture);
+}
+
+r_gl_depth_framebuffer_create :: (fb_size : Vector2i) -> R_GL_Framebuffer
+{
+	using out : R_GL_Framebuffer;
+	
+	glCreateFramebuffers(1, *id);
+	
+	depth_texture = r_gl_image_create(fb_size.x, fb_size.y, GL_DEPTH_COMPONENT32, null, GL_NEAREST, GL_NEAREST, GL_CLAMP_TO_BORDER);
+	glNamedFramebufferTexture(id, GL_DEPTH_ATTACHMENT, depth_texture.id, 0);
+	glNamedFramebufferDrawBuffer(id, GL_NONE);
+	glNamedFramebufferReadBuffer(id, GL_NONE);
+	
+	fb_status := glCheckNamedFramebufferStatus(id, GL_FRAMEBUFFER);
+	
+	if fb_status != GL_FRAMEBUFFER_COMPLETE
+	{
+		assert(false, "framebuffer incomplete or something, error %", fb_status);
+	}
+	
+	return out;
 }
 
 R_GL_State :: struct 
@@ -84,6 +108,7 @@ R_GL_State :: struct
 	
 	skinning_transforms : GLuint;
 	draw_fb : R_GL_Framebuffer;
+	depth_fb : R_GL_Framebuffer;
 	
 	free_image : *R_GL_Image;
 	last_draw_size : Vector2i;
@@ -183,7 +208,6 @@ r_backend_init :: (fb_size : Vector2i)
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
 	
-	
 	gl_enable_debug_output(true);
 	// init shaders
 	{
@@ -193,6 +217,7 @@ r_backend_init :: (fb_size : Vector2i)
 		//init_shader(.Planet, "planet");
 		//init_shader(.Voxel, "voxel");
 		init_shader(.Screen, "screen");
+		init_shader(.Depth, "depth");
 	}
 	
 	compile_shaders();
@@ -223,8 +248,11 @@ r_backend_init :: (fb_size : Vector2i)
 	}
 	
 	// init draw framebuffer
-	r_gl_state.draw_fb = r_gl_framebuffer_create(fb_size);
+	r_gl_state.draw_fb = r_gl_draw_framebuffer_create(fb_size);
 	r_gl_state.last_draw_size = fb_size;
+	
+	// shadow map depth pass framebuffer
+	r_gl_state.depth_fb = r_gl_depth_framebuffer_create(.{1024 * 4, 1024 * 4});
 }
 
 r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
@@ -233,28 +261,9 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 	
 	if draw_size != r_gl_state.last_draw_size
 	{
-		r_gl_framebuffer_free(r_gl_state.draw_fb);
-		r_gl_state.draw_fb = r_gl_framebuffer_create(draw_size);
+		r_gl_draw_framebuffer_free(r_gl_state.draw_fb);
+		r_gl_state.draw_fb = r_gl_draw_framebuffer_create(draw_size);
 	}
-	
-	glBindFramebuffer(GL_FRAMEBUFFER, r_gl_state.draw_fb.id);
-	glViewport(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
-	glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
-	
-	glClearColor(0.2, 0.2, 0.3, 1.0);
-	
-	glEnable(GL_DEPTH_TEST);
-	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
-	glClearDepth(0.0);
-	glDepthFunc(GL_GREATER);
-	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_SCISSOR_TEST);
-	
-	//glPointSize(12.0);
 	
 	if pb.hacker_draw
 	{
@@ -265,28 +274,24 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
+	glClearColor(0.2, 0.2, 0.3, 1.0);
+	glClipControl(GL_LOWER_LEFT, GL_ZERO_TO_ONE);
+	glClearDepth(0.0);
+	glDepthFunc(GL_GREATER);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	glEnable(GL_CULL_FACE);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, r_gl_state.draw_fb.id);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_SCISSOR_TEST);
 	
 	// 3d meshes
 	if pb.mesh_batches.count
 	{
-		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Mesh];
-		
-		glUseProgram(shader.id);
-		
-		proj_loc := glGetUniformLocation(shader.id, "u_proj");
-		view_loc := glGetUniformLocation(shader.id, "u_view");
-		model_loc := glGetUniformLocation(shader.id, "u_model");
-		color_loc := glGetUniformLocation(shader.id, "u_color");
-		color_map_loc := glGetUniformLocation(shader.id, "u_color_map");
-		flags_loc := glGetUniformLocation(shader.id, "u_flags");
-		base_xform_loc := glGetUniformLocation(shader.id, "u_base_xform_index");
-		debug_loc := glGetUniformLocation(shader.id, "u_debug");
-		
-		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
-		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
-		glUniform1i(debug_loc, xx pb.hacker_draw);
-		
 		// do skinning if needed
 		if pb.skinning_xforms.count
 		{
@@ -304,8 +309,78 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 			glUnmapNamedBuffer(buffer);
 		}
 		
+		// depth pass
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER, r_gl_state.depth_fb.id);
+			glViewport(0, 0, xx r_gl_state.depth_fb.depth_texture.w, xx r_gl_state.depth_fb.depth_texture.h);
+			
+			glDisable(GL_SCISSOR_TEST);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			glEnable(GL_DEPTH_TEST);
+			
+			shader := r_gl_state.vf_shaders[VF_Shader_Kind.Depth];
+			glUseProgram(shader.id);
+			
+			light_proj_view_loc := glGetUniformLocation(shader.id, "u_light_proj_view");
+			model_loc := glGetUniformLocation(shader.id, "u_model");
+			
+			glUniformMatrix4fv(light_proj_view_loc, 1, GL_TRUE, *pb.light_proj_view.coef[0][0]);
+			
+			batches := pb.mesh_batches;
+			batch := batches.first;
+			
+			while batch
+			{
+				meshes : *R_Mesh = xx batch.base;
+				
+				for 0 .. batch.count - 1 
+				{
+					mesh := meshes + it;
+					glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, mesh.vertex_buffer);
+					glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.index_buffer);
+					glUniformMatrix4fv(model_loc, 1, GL_TRUE, *mesh.xform.coef[0][0]);
+					
+					glDrawElements(GL_TRIANGLES, mesh.count, GL_UNSIGNED_INT, xx (mesh.start * size_of(u32)));
+				}
+				
+				batch = batch.next;
+			}
+		}
+		
 		// draw meshes
 		{
+			glBindFramebuffer(GL_FRAMEBUFFER, r_gl_state.draw_fb.id);
+			glViewport(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
+			glScissor(xx pb.viewport.min.x, xx pb.viewport.min.y, xx pb.viewport.size.x, xx pb.viewport.size.y);
+			
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glEnable(GL_SCISSOR_TEST);
+			
+			shader := r_gl_state.vf_shaders[VF_Shader_Kind.Mesh];
+			
+			glUseProgram(shader.id);
+			
+			proj_loc := glGetUniformLocation(shader.id, "u_proj");
+			view_loc := glGetUniformLocation(shader.id, "u_view");
+			model_loc := glGetUniformLocation(shader.id, "u_model");
+			color_loc := glGetUniformLocation(shader.id, "u_color");
+			color_map_loc := glGetUniformLocation(shader.id, "u_color_map");
+			flags_loc := glGetUniformLocation(shader.id, "u_flags");
+			base_xform_loc := glGetUniformLocation(shader.id, "u_base_xform_index");
+			debug_loc := glGetUniformLocation(shader.id, "u_debug");
+			light_proj_view_loc := glGetUniformLocation(shader.id, "u_light_proj_view");
+			shadow_map_loc := glGetUniformLocation(shader.id, "u_shadow_map");
+			
+			glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+			glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+			glUniformMatrix4fv(light_proj_view_loc, 1, GL_TRUE, *pb.light_proj_view.coef[0][0]);
+			{
+				l, r := uvec2_from_u64(r_gl_state.depth_fb.depth_texture.resident);
+				glUniform2ui(shadow_map_loc, l, r);
+			}
+			glUniform1i(debug_loc, xx pb.hacker_draw);
+			
 			batches := pb.mesh_batches;
 			batch := batches.first;
 			
@@ -342,6 +417,7 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 				batch = batch.next;
 			}
 		}
+		
 	}
 	
 	// debug vertex / line batches
@@ -457,7 +533,49 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
 		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
 		
-		batches := pb.quad_lists.first;
+		{
+			batches := pb.quad_lists.first;
+			
+			while batches
+			{
+				batch := batches.first;
+				
+				while batch
+				{
+					ssbo_data : *u8 = glMapNamedBufferRange(buffer, 0, batch.size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+					
+					memcpy(ssbo_data, batch.base, batch.size);
+					
+					glUnmapNamedBuffer(buffer);
+					
+					glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batch.count);
+					
+					batch = batch.next;
+				}
+				batches = batches.next;
+			}
+		}
+	}
+	
+	// no depth whatever
+	if pb.quad_lists_no_depth.count
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+		
+		buffer := r_gl_state.inst_buffers[Instance_Buffers.Sprite];
+		shader := r_gl_state.vf_shaders[VF_Shader_Kind.Sprite];
+		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer);
+		glUseProgram(shader.id);
+		
+		proj_loc := glGetUniformLocation(shader.id, "u_proj");
+		view_loc := glGetUniformLocation(shader.id, "u_view");
+		
+		proj := Matrix4_Identity;
+		
+		glUniformMatrix4fv(view_loc, 1, GL_TRUE, *pb.view.coef[0][0]);
+		glUniformMatrix4fv(proj_loc, 1, GL_TRUE, *pb.proj.coef[0][0]);
+		
+		batches := pb.quad_lists_no_depth.first;
 		
 		while batches
 		{
@@ -532,7 +650,6 @@ r_submit :: (pb : R_Push_Buffer, draw_size : Vector2i)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_CULL_FACE);
 		
-		glClearColor(1, 0, 0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		

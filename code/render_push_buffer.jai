@@ -143,8 +143,10 @@ R_Push_Buffer :: struct
 {
 	sprite_lists : Batch_Group;
 	quad_lists : Batch_Group;
+	quad_lists_no_depth : Batch_Group;
 	
 	mesh_batches : Batch_List;
+	
 	skinning_xforms : Batch_List;
 	debug_lines : Batch_List;
 	debug_vertices : Batch_List;
@@ -152,6 +154,8 @@ R_Push_Buffer :: struct
 	viewport : RectF32;
 	proj : Matrix4;
 	view : Matrix4;
+	proj_view : Matrix4;
+	light_proj_view : Matrix4;
 	hacker_draw : bool;
 	counter : f32;
 }
@@ -313,6 +317,11 @@ push_3d_text :: (pb : *R_Push_Buffer, text : string, pos : Vector3, rot : Vector
 push_quad :: inline (pb : *R_Push_Buffer, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
 {
 	push_quad_impl(*pb.quad_lists, pos, size, rot, color, tex_id);
+}
+
+push_quad_no_depth :: inline (pb : *R_Push_Buffer, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
+{
+	push_quad_impl(*pb.quad_lists_no_depth, pos, size, rot, color, tex_id);
 }
 
 push_quad_impl :: (group : *Batch_Group, pos : Vector3, size : Vector2, rot : Vector3, color : Vector4, tex_id : Handle)
