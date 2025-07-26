@@ -89,7 +89,7 @@ void main()
 	vec3 nice_normal = normalize(a_normal) * 0.5 + 0.5;
 	
 	vec3 light_dir = normalize(vec3(-2, 5, -1));
-	float diff = max(dot(normalize(a_normal), light_dir), 0.0);
+	float diff = max(dot(normalize(a_normal), light_dir), 0.0) * 0.3;
 	vec3 diffuse = vec3(diff);
 	vec3 ambient = vec3(0.3);
 	
@@ -98,7 +98,7 @@ void main()
 	proj_coords.y = proj_coords.y * 0.5 + 0.5;
 	
 	float shadow = 0.0;
-	if (proj_coords.z < 1.0)
+	if (proj_coords.z < 1.0 && proj_coords.z > 0.0)
 	{
 		shadow = 1.0;
 		vec2 poissonDisk[4] = vec2[](
@@ -107,7 +107,7 @@ void main()
 																 vec2( -0.094184101, -0.92938870 ),
 																 vec2( 0.34495938, 0.29387760 )
 																 );
-		for (int i=0;i<5;i++)
+		for (int i=0;i<4;i++)
 		{
 			
 			float closest_depth = texture(sampler2D(u_shadow_map), proj_coords.xy + poissonDisk[i] / 700).r;
@@ -117,7 +117,7 @@ void main()
 			
 			if ((current_depth + bias) > closest_depth)
 			{
-				shadow -= 0.2;
+				shadow -= 0.25;
 			}
 			
 		}

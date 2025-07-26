@@ -704,7 +704,7 @@ r_gl_image_create :: (w : s32, h : s32, format : GLuint, bytes : *u8, min_filter
 	
 	glTextureParameteri(id, GL_TEXTURE_WRAP_S, wrap);
 	glTextureParameteri(id, GL_TEXTURE_WRAP_T, wrap);
-	borderColor :  [] float= .[0.0, 0.0, 0.0, 0.0];
+	borderColor :  [] float= .[0, 0, 0, 0];
 	
 	glTextureParameterfv(id, GL_TEXTURE_BORDER_COLOR, *borderColor[0]);
 	glGenerateTextureMipmap(id);

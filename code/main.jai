@@ -156,6 +156,35 @@ main :: ()
 		//po.pos = .{0,101.8,0};
 	}
 	
+	{
+		po := entity_alloc(*entity_state);
+		po.model_kind = .Cube;
+		po.color = .{0.255, 0.596, 0.039};
+		set_entity_name(po, "ground");
+		po.pos.y = -2.31;
+		po.size.x = 100;
+		po.size.z = 100;
+		//po.pos = .{0,101.8,0};
+	}
+	
+	for 0 .. 63
+	{
+		po := entity_alloc(*entity_state);
+		po.model_kind = .Cube;
+		
+		color : Vector3;
+		color.x = random_get_zero_to_one();
+		color.y = random_get_zero_to_one();
+		color.z = random_get_zero_to_one();
+		
+		po.color = color;
+		po.pos.y = 0;
+		po.pos.x = xx ((random_get() % 64) - 32);
+		po.pos.z = xx ((random_get() % 64) - 32);
+		
+		po.size = .{1,1,1};
+	}
+	
 	// Make the gltf load file thing part of the node_from_key
 	// then when you do cow.walk.
 	// it loads cow.glb
@@ -237,17 +266,19 @@ main :: ()
 		
 		update_2d_camera(*ui_camera, delta, .{xx win_size.x, xx win_size.y});
 		
-		ui_proj, ui_view := get_ortho_proj_and_view_matrix(ui_camera);
-		
 		pb.viewport = rectF32(0, 0, xx win_size.x, xx win_size.y);
 		
 		scissor := rectF32(0, 0, xx win_size.x, xx win_size.y);
 		{
 			params := push_batch_group_sprite_params(*pb);
-			params.proj = ui_proj;
-			params.view = ui_view;
+			params.proj = ui_camera.proj;
+			params.view = ui_camera.view;
 			params.scissor = scissor;
 		}
+		
+		//update_flying_camera(*debug_camera, delta, .{xx win_size.x, xx win_size.y});
+		//debug_camera.position.z = 3;
+		//draw_camera_frustum(debug_camera, *pb);
 		
 		begin_widgets(.{xx x,xx y});
 		begin_editor_window(*boss_window);
@@ -258,26 +289,77 @@ main :: ()
 			current_editor_tab := *boss_window.tabs[boss_window.current_app_mode_tab];
 			
 			update_flying_camera(*current_editor_tab.camera, delta, .{xx win_size.x, xx win_size.y});
+			update_flying_camera(*debug_camera, delta, .{xx win_size.x, xx win_size.y});
 			
-			proj, view := get_perspective_proj_and_view_matrix(current_editor_tab.camera);
-			pb.proj = proj;
-			pb.view = view;
+			proj := current_editor_tab.camera.proj;
+			view := current_editor_tab.camera.view;
 			
-			light_proj := orthographic_projection_matrix(-10, 10, -10, 10, 10, 1.0, true);
-			light_view := make_look_at_matrix(.{-2, 5, -1}, .{}, .{0, 1, 0}, false);
-			pb.light_proj_view = light_proj * light_view;
+			debug_camera.far = 1000;
 			
-			if is_key_pressed(.TAB)
+			if is_key_pressed(.TAB) 
 			{
-				toggle_cursor(xx current_editor_tab.camera.control);
-				current_editor_tab.camera.control = !current_editor_tab.camera.control;
+				toggle_cursor(xx control_camera);
+				control_camera = !control_camera;
+			}
+			
+			if control_camera
+			{
+				if use_debug_camera update_camera_controls(*debug_camera, delta);
+				else update_camera_controls(*current_editor_tab.camera, delta);
+			}
+			
+			if is_key_pressed(.F1)
+			{
+				use_debug_camera = !use_debug_camera;
+			}
+			
+			if use_debug_camera
+			{
+				pb.proj = debug_camera.proj;
+				pb.view = debug_camera.view;
+			}
+			else
+			{
+				pb.proj = proj;
+				pb.view = view;
+			}
+			
+			{
+				using current_editor_tab.camera;
+				
+				light_pos := Vector3.{-2, 500, -1};
+				light_dir := normalize(.{} - light_pos);
+				
+				light_view := make_look_at_matrix(light_pos, .{}, .{0, 1, 0}, false);
+				
+				draw_cube(*pb, make_translation_matrix4(light_pos), COLOR_WHITE);
+				
+				draw_frustum(frustum, *pb);
+				
+				light_space_frustum := light_view * frustum;
+				draw_frustum(light_space_frustum, *pb);
+				
+				light_space_aabb := aabb_from_frustum(light_space_frustum);
+				draw_aabb_wireframe(*pb, light_space_aabb, COLOR_ORANGE);
+				
+				m := 1;
+				light_space_aabb.min.x *= m;
+				light_space_aabb.max.x *= m;
+				light_space_aabb.min.y *= m;
+				light_space_aabb.max.y *= m;
+				light_space_aabb.min.z *= m;
+				light_space_aabb.max.z *= m;
+				
+				light_proj := orthographic_projection_matrix(light_space_aabb.min.x, light_space_aabb.max.x, light_space_aabb.min.y, light_space_aabb.max.y, -light_space_aabb.min.z, -light_space_aabb.max.z, true);
+				
+				pb.light_proj_view = light_proj * light_view;
 			}
 			
 			if !boss_window.hide
 			{
-				// idk if contexts are expensive like that
 				// camera panel
 				
+				// idk if contexts are expensive like that
 				//new_context := context;
 				//push_context new_context
 				{
@@ -540,7 +622,7 @@ main :: ()
 						raycast = .{start, ray_wor};
 					}
 					
-					if active_entity && !current_editor_tab.camera.control
+					if active_entity && !control_camera
 					{
 						gizmo_size : Vector2 = .{0.5, 2};
 						gizmo_delta := (gizmo_size.x + gizmo_size.y) / 2.;
@@ -829,6 +911,14 @@ main :: ()
 		end_editor_window(*pb, *boss_window);
 		end_widgets();
 		
+		// temp depth map thing
+		{
+			depth_tex : Handle;
+			depth_tex.U64[0] = xx r_gl_state.depth_fb.depth_texture;
+			
+			push_ui_quad(*pb, .{960 * 1.5, 0}, .{960 / 2, 960 / 2}, 0, COLOR_WHITE, depth_tex);
+		}
+		
 		pop_batch_group_sprite_params(*pb);
 		r_submit(pb, win_size);
 		end_render(*pb);
@@ -844,3 +934,6 @@ main :: ()
 	
 	print("quit safely\n");
 }
+
+use_debug_camera : bool;
+debug_camera : Camera;

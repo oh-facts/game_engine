@@ -50,7 +50,8 @@ init_editor_window :: (title : string, pos : Vector2, size : Vector2) -> Editor_
 	out.tabs[App_Mode_Tab.Asset_Viewer].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
 	
 	// copied the above one
-	out.tabs[App_Mode_Tab.Game].camera.position = .{-2, 6.4, 8.6};
+	out.tabs[App_Mode_Tab.Game].camera.position = .{0, -0.01, 0.99};
+	
 	out.tabs[App_Mode_Tab.Game].camera.euler_angles = .{deg_to_rad(15), deg_to_rad(32), 0};
 	
 	//out.tabs[App_Mode_Tab.Game].camera.position = .{-120, 90, 1500};
